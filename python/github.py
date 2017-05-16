@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import common
+
 import requests
-import urllib, urllib2
+import urllib
+import urllib2
 import sys
 import re
 from lxml import etree
@@ -68,11 +71,8 @@ class GithubLogin(object):
         pass
 
     def login(self, usr_id, password):
-        while not usr_id:
-            print 'user id is empty, please input your id:'
-            usr_id = sys.stdin.readline().strip()
-        while not password:
-            print 'password is empty, please input your password:'
-            password = sys.stdin.readline().strip()
+        common.check_login(self.session, self.logined_url, self.headers)
+        (usr_id, password) = common.confirm_password(usr_id, password)
         self.post_param(usr_id, password)
         self.bool_login()
+        common.check_login(self.session, self.logined_url, self.headers)
