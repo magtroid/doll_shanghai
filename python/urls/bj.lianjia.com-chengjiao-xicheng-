@@ -1,0 +1,926 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta http-equiv="Cache-Control" content="no-transform" /><meta http-equiv="Cache-Control" content="no-siteapp" /><meta http-equiv="Content-language" content="zh-CN" /><meta name="format-detection" content="telephone=no" /><meta name="applicable-device" content="pc"><link rel="alternate" media="only screen and (max-width: 640px)" href="https://m.lianjia.com/bj/chengjiao/xicheng/" >
+<meta name="mobile-agent" content="format=html5;url=https://m.lianjia.com/bj/chengjiao/xicheng/"><script>
+ljConf = {
+    city_id: '110000',
+    city_abbr: 'bj',
+    city_name: '北京',
+    channel: 'chengjiao',
+    page: 'chengjiao_index',
+    pageConfig: {"ajaxroot":"\/\/ajax.api.lianjia.com\/","imAppid":"LIANJIA_WEB_20160624","imAppkey":"6dfdcee27d78b1107fceeca55d80b7bd"},
+    feroot: '//s1.ljcdn.com/feroot/',
+    ucid:'',
+    cdn:'1',
+};
+</script>
+
+<title>西城二手房网签|成交查询(北京链家网)</title>
+<meta name="description" content="北京链家网发布西城网签二手房成交信息,提供房源网签总价及面积均价和同户型成交记录,信息精准详细,方便您对倾向购买的西城房源进行参考,查询西城网签二手房信息,就到北京链家网." />
+<meta name="keywords" content="西城二手房成交，西城二手房,西城二手房网签,西城二手房走势,西城二手房成交行情" />
+<link href="/favicon.ico" type="image/x-icon" rel=icon><link href="/favicon.ico" type="image/x-icon" rel="shortcut icon"><link rel="stylesheet" href="https://s1.ljcdn.com/feroot/pc/asset/common.css?_v=20170630110651">
+<link rel="stylesheet" href="https://s1.ljcdn.com/feroot/pc/asset/ershoufang/dealList/index.css?_v=20170630110651">
+<!--[if lt IE 9]><script type="text/javascript" src="https://s1.ljcdn.com/feroot/dep/common-require/html5.js?_v=20170630110651"></script><![endif]-->
+<script>
+function RESIZEIMG(b,k,l,m){var c=b.parentNode;var d=parseInt(c.offsetWidth)||k;var e=parseInt(c.offsetHeight)||l;var f=d/e;var g=b.naturalWidth||b.width;var h=b.naturalHeight||b.height;var i=g/h;var j="width";if(f<i){j="height";try{b.style["left"]="-"+parseInt(Math.abs((d-(g*e/h))/2))+"px"}catch(e){}}else if(m){try{b.style["top"]="-"+parseInt(Math.abs((e-(h*d/g))/2))+"px"}catch(e){}};b.style[j]="100%";};
+</script>
+<script>
+var _czc = _czc || [];
+_czc.push(["_setAccount", "1254525948"]);
+</script>
+
+<script type="text/javascript">
+var _smq = _smq || [];
+_smq.push(['_setAccount', '41331c2', new Date()]);
+_smq.push(['_setDomainName', 'lianjia.com']);
+_smq.push(['pageview']);
+(function() {
+var sm = document.createElement('script'); sm.type = 'text/javascript'; sm.async = true;
+sm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdnmaster.com/sitemaster/collect.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(sm, s);
+})();
+</script>
+</head><body><script>
+__STAT_LJ_CONF = {
+    params: {
+        ljweb_group: ['SEARCH','BIGDATA_PC'],
+        ljweb_id: '',
+        ljweb_mod: '',
+        ljweb_bl: '',
+        ljweb_el: '',
+        ljweb_sl: '',
+        ljweb_index: '',
+        ljweb_value: '',
+        ljweb_url: '',
+        ljweb_ljref: (document.cookie.match(/(?:^| )ljref=([^;]*)(?:;|$)/) || ['',''])[1],
+        ljweb_sample: (document.cookie.match(/(?:^| )sample_traffic_test=([^;]*)(?:;|$)/) || ['',''])[1],
+        ljweb_ref: document.referrer,
+        ljweb_cid: '110000',
+        ljweb_channel: 'chengjiao',
+        ljweb_page: 'chengjiao_index',
+        ljweb_source: '',
+        ljweb_stat_id: ''
+    }
+};
+
+
+
+var UT = {
+    send: function() {
+
+    }
+};
+var LjUserTrack = {
+    log: [],
+    initInterval: false,
+    intervalLog: function() {
+        setTimeout(function() {
+            if(window.$ULOG && $ULOG.send) {
+                for(var i = 0, l = LjUserTrack.log.length; i < l; i++) {
+                    LjUserTrack.__send(LjUserTrack.log[i]);
+                }
+
+                for(var m = 0, n = LjUserTrack.logIds.length; m < n; m++) {
+                    LjUserTrack.__sendId(LjUserTrack.logIds[m]);
+                }
+            } else {
+                LjUserTrack.intervalLog();
+            }
+        }, 16.7);
+    },
+    _start_time: +new Date,
+    __send: function(data) {
+        var evt_id = data.evt_id || '10043';
+        if('evt_id' in data) {
+            delete data.evt_id;
+        }
+
+        $ULOG.send(evt_id, {
+            "pid": (window.__UDL_CONFIG && window.__UDL_CONFIG.pid && window.__UDL_CONFIG.pid)||"lianjiaweb",
+            "key": window.location.href,
+            "action": data
+        });
+    },
+    logIds: [],
+    __sendId: function(id) {
+        id && $ULOG.send(id, {
+            "pid": (window.__UDL_CONFIG && window.__UDL_CONFIG.pid && window.__UDL_CONFIG.pid)||"lianjiaweb",
+            "key": window.location.href
+        });
+    },
+    sendId: function(id) {
+        if(window.$ULOG && $ULOG.send) {
+            LjUserTrack.__sendId(id);
+        } else {
+            LjUserTrack.logIds.push(id);
+
+            LjUserTrack.initInterval || (LjUserTrack.initInterval = true, LjUserTrack.intervalLog());
+
+        }
+    },
+    send: function(data, el, config) {
+
+        var utConf = __STAT_LJ_CONF;
+        var params = config || utConf.params,
+            win = window,
+            j;
+
+        data.groupIndex = data.ljweb_group || 0;
+
+        if (params) {
+            for (var d in params) {
+                if(params[d] !== j && data[d] === j) {
+                    data[d] = params[d];
+                }
+            }
+        }
+
+        if(el) {
+            this.checkClick(el, data);
+        }
+
+        data.ljweb_group = params['ljweb_group'][data.groupIndex || 0];
+
+        delete data.groupIndex;
+
+        if(data.typ) {
+            data.ljweb_bl = (data.ljweb_bl || '') + '_' + data.typ;
+            delete data.typ;
+        }
+
+        if(window.$ULOG && $ULOG.send) {
+            LjUserTrack.__send(data);
+        } else {
+            LjUserTrack.log.push(data);
+
+            LjUserTrack.initInterval || (LjUserTrack.initInterval = true, LjUserTrack.intervalLog());
+
+        }
+
+    },
+    checkClick: function(el, data) {
+
+        var TAG_LINK = 'A';
+        var href = '';
+        var elParent = null;
+
+        href = (el.tagName.toUpperCase() === TAG_LINK ? el.getAttribute("href", 2) : '');
+        if(!href && (elParent = el.parentNode) && elParent.nodeType === 1) {
+            href = (elParent.tagName.toUpperCase() === TAG_LINK ? elParent.getAttribute("href", 2) : '');
+        }
+
+        if(href) {
+            data.ljweb_url = href;
+        } else {
+            data.ljweb_url = data.ljweb_url
+                  || el.getAttribute("data-log_url")
+                  || (elParent=el.parentNode||el).getAttribute("data-log_url")
+                  || (
+                        (elParent=elParent.parentNode||elParent)
+                     && (elParent.nodeType === 1)
+                     && elParent.getAttribute("data-log_url")
+                     )
+                  || "";
+        }
+
+        this.attr(el, data);
+
+    },
+    path: function() {
+
+    },
+    attr: function(el, data) {
+        var modId     = el.getAttribute("log-mod");
+        var blAttr    = el.getAttribute("data-bl");
+        var elAttr    = el.getAttribute("data-el");
+        var slAttr    = el.getAttribute("data-sl");
+        var InAttr    = el.getAttribute("data-log_index");
+        var valAttr   = el.getAttribute("data-log_value");
+        var idAttr    = el.getAttribute("data-log_id");
+        var groupAttr = el.getAttribute("data-log_group");
+        var sourceAttr = el.getAttribute("data-log_source");
+        var statIdAttr = el.getAttribute("data-log_statId");
+        var evtId     = el.getAttribute("data-log_evtid");
+
+        data.ljweb_bl    = data.ljweb_bl || blAttr || '';
+        data.ljweb_el    = data.ljweb_el || elAttr || '';
+        data.ljweb_sl    = data.ljweb_sl || slAttr || '';
+        data.ljweb_index = data.ljweb_index || InAttr || '';
+        data.ljweb_value = data.ljweb_value || valAttr || '';
+        data.ljweb_id    = data.ljweb_id || idAttr || '';
+        data.ljweb_source    = data.ljweb_source || sourceAttr || '';
+        data.ljweb_stat_id    = data.ljweb_stat_id || statIdAttr || 0;
+        data.groupIndex  = data.groupIndex || groupAttr || 0;
+        data.evt_id      = data.evt_id || evtId || '';
+
+        if (!modId) {
+            if (el.parentNode && el.parentNode.nodeType === 1 && el.parentNode.tagName.toUpperCase() !== 'BODY') {
+                this.attr(el.parentNode, data);
+            }
+        } else {
+            data.ljweb_mod = modId;
+        }
+    }
+};
+
+;;(function() {
+    var isW3c = !!document.addEventListener;
+
+    LjUserTrack.send({
+        ljweb_mod: 'pv',
+        ljweb_group: 1
+    });
+
+    /*window[isW3c ? 'addEventListener' : 'attachEvent'](
+        (isW3c ? '': 'on') + 'beforeunload',
+        function(e) {
+            var _end_time = +new Date;
+            UT.send({type: 'show', subtype: 'stay', time: (_end_time-UT._start_time)/1000});
+        },
+        false);*/
+})();
+
+
+
+
+
+</script>
+<div class="banner"><div class="container"><ul class="channelList"><li><a href="//www.lianjia.com/">首页</a></li><li  class="selected"><a href="https://bj.lianjia.com/ershoufang/" >二手房</a></li><li  class=""><a href="http://bj.fang.lianjia.com/" >新房</a></li><li  class=""><a href="https://bj.lianjia.com/zufang/" >租房</a></li><li  rel="nofollow"  class=""><a href="http://you.lianjia.com/" >旅居地产</a></li><li  class=""><a href="https://us.lianjia.com/" >海外</a></li><li  class=""><a href="https://bj.lianjia.com/xiaoqu/" >小区</a></li><li  class=""><a href="https://bj.lianjia.com/jingjiren/" >经纪人</a></li><li  class=""><a href="https://bj.lianjia.com/wenda/" >指南</a><div class="childList"><a href="https://bj.lianjia.com/wenda/" >问答</a><a href="https://news.lianjia.com/bj/baike/" >百科</a></div></li><li  class=""><a href="https://bj.lianjia.com/tool.html" target="_blank">工具</a></li><li  class=""><a href="https://news.lianjia.com/bj/jingyan/" >经验</a><div class="childList"><a href="https://news.lianjia.com/bj/jingyan/" >购房经验</a><a href="https://news.lianjia.com/bj/jingyan/tougao" >我要投稿</a></div></li><li  class=""><a href="https://bj.lianjia.com/yezhu/" target="_blank">业主</a></li></ul><div class="banner-right"><div class="login" id="userInfoContainer"><i></i><a href="https://passport.lianjia.com/cas/login?service=https%3A%2F%2Fbj.lianjia.com%2Fchengjiao%2Fxicheng%2F" id="loginBtn" rel="nofollow">登录</a>/<a href="https://passport.lianjia.com/register/resources/lianjia/register.html?service=https%3A%2F%2Fbj.lianjia.com%2Fchengjiao%2Fxicheng%2F" rel="nofollow">注册</a></div><div class="phone"><i></i><span>热线电话1010-9666</span></div></div></div></div>
+
+
+<script type="text/template" id="userInfoTpl">
+  <i></i>
+  <%if(isAgent){%>
+    <a id="userNameContainer" href="<%=$.env.fixedUrl('//agent.lianjia.com/')%>"><%=username%></a>
+  <%}else{%>
+    <a id="userNameContainer" href="<%=$.env.fixedUrl('//user.lianjia.com/')%>" rel="nofollow"><%=username%></a>
+  <%}%>
+  <span id="tipContainer"></span>
+  &nbsp;&nbsp;<a href="<%=logoutUrl%>">退出</a>
+  <span id="pushNewsListContainer"></span>
+</script>
+<script type="text/template" id="pushNewsListTpl">
+  <div class="pushNewsList">
+    <%for(var i in group_by_type){%>
+      <%if(group_by_type[i].unread !== 0 && pushMsgMap.hasOwnProperty(i)){%>
+        <a href="<%=pushMsgMap[i].url%>"><%=$.replaceTpl(pushMsgMap[i].text, {unread:group_by_type[i].unread})%></a>
+      <%}%>
+    <%}%>
+  </div>
+</script>
+
+<div class="header"><div class="menu"><div class="menuLeft"><a href="/ershoufang/" class="logo"></a><ul class="typeList"><li ><a href="/ershoufang/"  title="北京在售二手房" >在售</a></li><li class="selected"><a href="/chengjiao/"  title="北京成交二手房" >成交</a></li><li ><a href="/xiaoqu/"  title="北京小区二手房" >小区</a></li><li ><a href="/ditu/"  title="北京地图找房二手房" target="_blank">地图找房</a></li></ul></div><div class="app"><a href="//www.lianjia.com/client/" target="_blank"><i></i>下载链家APP<img width="94" height="94" src="//ajax.api.lianjia.com/qr/getDownloadQr?location=menu_app&ljweb_channel_key=chengjiao_index" alt="下载链家app"></a></div></div><div class="search"><div class="input" log-mod="search"><form id="searchForm" action='/ershoufang/rs'><input type="text" id="searchInput" value="" autocomplete="off"><div class="inputRightPart"><div class="save" id="savedSearchMsg"><span id="savedSearchCount">0</span>条已保存搜索<span id="savedSearchArrow" class="downArrow"></span></div><button type='submit' class="searchButton" data-bl="search" data-el="search">&nbsp;<i></i>&nbsp;</button></div></form><div class="searchMsg" id="searchMsgContainer"></div></div></div></div>
+
+
+<script type="text/template" id="hotSearchTpl">
+  <div class="searchMsgTitle">
+    <span class="searchMsgName">热门搜索</span>
+  </div>
+  <ul data-bl="sug" data-el="history">
+    <%for(var i =0; i < list.length; i++){%>
+    <li>
+      <a role="addHistory" href="<%=list[i].url%>" data-log_index="<%=i+1%>" data-log_value="<%=list[i].string%>" class="sug--search_item">
+        <span class="msgListTitle" role="historyKey"><%=list[i].string%></span>
+      </a>
+    </li>
+    <%}%>
+  </ul>
+</script>
+<script type="text/template" id="searchHistoryTpl">
+  <div class="searchMsgTitle">
+    <span class="searchMsgName">搜索历史</span>
+    <div class="searchMsgTitleRightPart">
+      <a href="#" id="clearSearchHistory" class="manage">清除历史记录</a>
+    </div>
+  </div>
+  <ul data-bl="sug" data-el="history">
+  <%for(var i = 0; i < list.length; i++){%>
+    <li>
+      <a href="<%=list[i].url%>" role="addHistory" data-log_index="<%=i+1%>" data-log_value="<%=$.encodeHTML(list[i].name)%>" class="sug--search_item">
+        <span class="msgListTitle" role="historyKey"><%=$.encodeHTML(list[i].name)%></span>
+        <%if(list[i].newCount) {%>
+          <span class="msgListAdd"><%=list[i].newCount%>套新增房源</span>
+        <%}%>
+      </a>
+    </li>
+  <%}%>
+  </ul>
+</script>
+<script type="text/template" id="searchSuggestionTpl">
+  <div class="searchMsgTitle">
+    <span class="searchMsgName">你可能在找</span>
+  </div>
+  <ul data-bl="sug" data-el="sug">
+  <%for(var i = 0;i < list.length;i++){%>
+    <li>
+      <a href="<%=list[i].url%>" role="addHistory" data-log_index="<%=i+1%>" data-log_value="<%=list[i].title%>">
+        <span class="msgListTitle">
+          <span role="historyKey"><%=list[i].title%></span>
+          <%if(list[i].region){%>
+            <span class="msgListArea"><%=list[i].region%></span>
+          <%}%>
+        </span>
+        <%if(type === 'sell'){%>
+          <span class="msgListAdd">约<%=list[i].count%>套在售</span>
+        <%}else if(type === 'deal'){%>
+          <span class="msgListAdd">约<%=list[i].count%>套成交</span>
+        <%}%>
+      </a>
+    </li>
+  <%}%>
+  </ul>
+</script>
+<script type="text/template" id="savedSearchTpl">
+  <div class="searchMsgTitle">
+    <span class="searchMsgName">已保存搜索</span>
+    <div class="searchMsgTitleRightPart">
+    <%if(totalCount){%>
+      <a class="totalNew">查看<%=totalCount%>套新增房源</a>
+    <%}%>
+      <a href="<%=userCenterUrl%>" class="manage">管理</a>
+    </div>
+  </div>
+  <ul data-bl="sug" data-el="history">
+    <%for(var i = 0; i < savedData.length; i++){
+      var title = savedData[i].query ? savedData[i].query + '&nbsp;' : '';
+      title = title + savedData[i].title.join('&nbsp;');
+    %>
+      <li>
+        <a href="<%=savedData[i].url%>" role="savedSearch" data-log_index="<%=i+1%>" data-log_value="<%=title%>" class="sug--search_item">
+          <span class="msgListTitle"><%=title%></span>
+          <%if(savedData[i].unread && savedData[i].unread !== 0){%>
+          <span class="msgListAdd">新增<%=savedData[i].unread%>套</span>
+          <%}%>
+        </a>
+      </li>
+    <%}%>
+  </ul>
+</script>
+
+<script>
+  var hotSearchData = {
+    channel:[{"name":"\u4e8c\u624b\u623f","action":"ershoufang","channel":"ershoufang","checked":1,"tipsHot":{"query":[{"string":"\u65b0\u9f99\u57ce","url":"http:\/\/bj.lianjia.com\/ershoufang\/c1111027381003\/"},{"string":"\u5929\u901a\u82d1","url":"http:\/\/bj.lianjia.com\/ershoufang\/tiantongyuan\/"},{"string":"\u5317\u4eac\u65b0\u5929\u5730","url":"http:\/\/bj.lianjia.com\/ershoufang\/c1111027375945\/"},{"string":"\u8fdc\u6d0b\u5c71\u6c34","url":"http:\/\/bj.lianjia.com\/ershoufang\/c1111027382209\/"},{"string":"\u671b\u4eac","url":"http:\/\/bj.lianjia.com\/ershoufang\/wangjing\/"},{"string":"\u5317\u4eac\u50cf\u7d20","url":"http:\/\/bj.lianjia.com\/ershoufang\/sq45\/"},{"string":"\u8349\u623f\u7ad9\u9644\u8fd1\u623f\u6e90","url":"http:\/\/bj.lianjia.com\/ditiefang\/li46107350s46107204\/"},{"string":"13\u53f7\u7ebf\u5730\u94c1","url":"http:\/\/bj.lianjia.com\/ditiefang\/li652\/"}],"tips":"\u8bd5\u8bd5\u8f93\u5165\u5730\u94c1\u7ebf\/\u7ad9\u5728\u5730\u94c1\u9644\u8fd1\u627e\u623f\uff0c\u5982 13\u53f7\u7ebf"}},{"name":"\u5c0f\u533a","action":"xiaoqu","channel":"xiaoqu","checked":0,"tipsHot":{"query":[{"string":"\u8fdc\u6d0b\u5c71\u6c34","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027382209\/"},{"string":"\u540e\u73b0\u4ee3\u57ce","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027375357\/"},{"string":"\u8363\u4e302008","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027378998\/"},{"string":"\u5929\u901a\u897f\u82d1\u4e09\u533a ","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027380054\/"},{"string":"\u82f9\u679c\u793e\u533a","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027378713\/"},{"string":"\u534e\u8d38\u57ce","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027375158\/"},{"string":"\u5929\u901a\u82d1\u4e2d\u82d1","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027380057\/"},{"string":"\u5317\u4eac\u65b0\u5929\u5730","url":"http:\/\/bj.lianjia.com\/xiaoqu\/1111027375945\/"}],"tips":"\u8bf7\u8f93\u5165\u5c0f\u533a\u540d\u5f00\u59cb\u67e5\u627e\u5c0f\u533a"}},{"name":"\u65b0\u623f","action":"loupan","channel":"xinfang","checked":0,"tipsHot":{"query":[],"tips":"\u8bf7\u8f93\u5165\u697c\u76d8\u540d\u79f0\u5f00\u59cb\u627e\u623f"}},{"name":"\u79df\u623f","action":"zufang","channel":"zufang","checked":0,"tipsHot":{"query":[{"string":"\u5317\u4eac\u50cf\u7d20","url":"http:\/\/bj.lianjia.com\/zufang\/rs%E5%8C%97%E4%BA%AC%E5%83%8F%E7%B4%A0"},{"string":"\u56de\u9f99\u89c2","url":"http:\/\/bj.lianjia.com\/zufang\/huilongguan2"},{"string":"\u7261\u4e39\u56ed","url":"http:\/\/bj.lianjia.com\/zufang\/mudanyuan"},{"string":"\u6e05\u6cb3","url":"http:\/\/bj.lianjia.com\/zufang\/qinghe11\/"},{"string":"\u5929\u901a\u82d1","url":"http:\/\/bj.lianjia.com\/ditiezufang\/li649s20598\/"},{"string":"\u9752\u5e74\u8def","url":"http:\/\/bj.lianjia.com\/ditiezufang\/li46107350s46107139\/"}],"tips":"\u8bf7\u8f93\u5165\u533a\u57df\u3001\u5546\u5708\u6216\u5c0f\u533a\u540d\u5f00\u59cb\u627e\u623f"}},{"name":"\u7ecf\u7eaa\u4eba","action":"jingjiren","channel":"jingjiren","checked":0,"tipsHot":{"query":[],"tips":"\u8bf7\u8f93\u5165\u5546\u5708\u3001\u5c0f\u533a\u6216\u7ecf\u7eaa\u4eba\u7684\u59d3\u540d\u3001\u7535\u8bdd..."}}],
+    curChannel:'ershoufang'
+  };
+</script>
+<div class="m-filter">
+      <div class="position">
+      <dl>
+        <h2><dt title="北京成交位置">位置</dt></h2>
+        <dd>
+                  <a href="/chengjiao/" class="selected" title="北京成交区域">
+            区域<span class="arrow"></span>
+          </a>
+                </dd>
+      </dl>
+      <dl>
+        <dt></dt>
+        <dd>
+          <!-- 区域 -->
+                    <div data-role="ershoufang" >
+            <div>
+                                                <a href="/chengjiao/dongcheng/"  title="北京东城成交二手房 ">东城</a>
+                                                                <a href="/chengjiao/xicheng/" class="selected" title="北京西城成交二手房 ">西城</a>
+                                                                <a href="/chengjiao/chaoyang/"  title="北京朝阳成交二手房 ">朝阳</a>
+                                                                <a href="/chengjiao/haidian/"  title="北京海淀成交二手房 ">海淀</a>
+                                                                <a href="/chengjiao/fengtai/"  title="北京丰台成交二手房 ">丰台</a>
+                                                                <a href="/chengjiao/shijingshan/"  title="北京石景山成交二手房 ">石景山</a>
+                                                                <a href="/chengjiao/tongzhou/"  title="北京通州成交二手房 ">通州</a>
+                                                                <a href="/chengjiao/changping/"  title="北京昌平成交二手房 ">昌平</a>
+                                                                <a href="/chengjiao/daxing/"  title="北京大兴成交二手房 ">大兴</a>
+                                                                <a href="/chengjiao/yizhuangkaifaqu/"  title="北京亦庄开发区成交二手房 ">亦庄开发区</a>
+                                                                <a href="/chengjiao/shunyi/"  title="北京顺义成交二手房 ">顺义</a>
+                                                                <a href="/chengjiao/fangshan/"  title="北京房山成交二手房 ">房山</a>
+                                                                <a href="/chengjiao/mentougou/"  title="北京门头沟成交二手房 ">门头沟</a>
+                                                                <a href="/chengjiao/pinggu/"  title="北京平谷成交二手房 ">平谷</a>
+                                                                <a href="/chengjiao/huairou/"  title="北京怀柔成交二手房 ">怀柔</a>
+                                                                <a href="/chengjiao/miyun/"  title="北京密云成交二手房 ">密云</a>
+                                                                <a href="/chengjiao/yanqing/"  title="北京延庆成交二手房 ">延庆</a>
+                                                                <a href="https://lf.lianjia.com/chengjiao/yanjiao/" target="_blank"  title="北京燕郊成交二手房 ">燕郊</a>
+                                                                <a href="https://lf.lianjia.com/chengjiao/xianghe/" target="_blank"  title="北京香河成交二手房 ">香河</a>
+                                          </div>
+                          <div>
+                                  <b>A</b>
+                                      <a href="/chengjiao/andingmen/" >安定门</a>
+                                                    <b>B</b>
+                                      <a href="/chengjiao/baizhifang1/" >白纸坊</a>
+                                                    <b>C</b>
+                                      <a href="/chengjiao/caihuying/" >菜户营</a>
+                                      <a href="/chengjiao/changchunjie/" >长椿街</a>
+                                      <a href="/chengjiao/chongwenmen/" >崇文门</a>
+                                      <a href="/chengjiao/chegongzhuang1/" >车公庄</a>
+                                                    <b>D</b>
+                                      <a href="/chengjiao/dianmen/" >地安门</a>
+                                      <a href="/chengjiao/deshengmen/" >德胜门</a>
+                                                    <b>F</b>
+                                      <a href="/chengjiao/fuchengmen/" >阜成门</a>
+                                                    <b>G</b>
+                                      <a href="/chengjiao/guanganmen/" >广安门</a>
+                                      <a href="/chengjiao/guanyuan/" >官园</a>
+                                                    <b>J</b>
+                                      <a href="/chengjiao/jinrongjie/" >金融街</a>
+                                                    <b>L</b>
+                                      <a href="/chengjiao/liupukang/" >六铺炕</a>
+                                                    <b>M</b>
+                                      <a href="/chengjiao/madian1/" >马甸</a>
+                                      <a href="/chengjiao/maliandao1/" >马连道</a>
+                                      <a href="/chengjiao/muxidi1/" >木樨地</a>
+                                                    <b>N</b>
+                                      <a href="/chengjiao/niujie/" >牛街</a>
+                                                    <b>T</b>
+                                      <a href="/chengjiao/taoranting1/" >陶然亭</a>
+                                      <a href="/chengjiao/tianningsi1/" >天宁寺</a>
+                                                    <b>X</b>
+                                      <a href="/chengjiao/xisi1/" >西四</a>
+                                      <a href="/chengjiao/xuanwumen12/" >宣武门</a>
+                                      <a href="/chengjiao/xizhimen1/" >西直门</a>
+                                      <a href="/chengjiao/xinjiekou2/" >新街口</a>
+                                      <a href="/chengjiao/xidan/" >西单</a>
+                                                    <b>Y</b>
+                                      <a href="/chengjiao/yuetan/" >月坛</a>
+                                      <a href="/chengjiao/youanmennei11/" >右安门内</a>
+                                                </div>
+                      </div>
+                    <!-- 地铁 -->
+                    <!-- 学区 -->
+                  </dd>
+      </dl>
+    </div>
+  
+  <div class="list-more">
+                                                                                                                                                                                                                                                            <dl class=" hasmore" >
+          <h2><dt title="北京售价成交二手房">售价</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/p1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">200万以下</span>
+                                  <span class="cnt">(4300)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">200-250万</span>
+                                  <span class="cnt">(4009)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">250-300万</span>
+                                  <span class="cnt">(4317)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">300-400万</span>
+                                  <span class="cnt">(9265)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">400-500万</span>
+                                  <span class="cnt">(6860)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p6/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">500-800万</span>
+                                  <span class="cnt">(9195)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p7/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">800-1000万</span>
+                                  <span class="cnt">(1882)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/p8/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">1000万以上</span>
+                                  <span class="cnt">(1553)</span>
+                              </a>
+                                                              <span class="customFilter mt" data-role="price">
+                <input type="text" role="minValue" value="">
+                <span>-</span>
+                <input type="text" role="maxValue" value="">&nbsp;
+                                  <span>万</span>
+                                <button class="btn-range hide" data-url="/chengjiao/xicheng/bp{min}ep{max}/">确定</button>
+              </span>
+                                                  <span class="btn-showmore">+ 更多及自定义</span>
+                      </dd>
+        </dl>
+                                                                                                                                                                                                                                  <dl class=" hasmore" >
+          <h2><dt title="北京面积成交二手房">面积</dt></h2>
+          <dd>
+                                                                                                                  <a href="javascript:;" class="nolink" >
+                <span class="checkbox "></span>
+                <span class="name">50平以下</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">50-70平</span>
+                                  <span class="cnt">(16)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">70-90平</span>
+                                  <span class="cnt">(44)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">90-110平</span>
+                                  <span class="cnt">(93)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">110-130平</span>
+                                  <span class="cnt">(200)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a6/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">130-150平</span>
+                                  <span class="cnt">(779)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a7/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">150-200平</span>
+                                  <span class="cnt">(910)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/a8/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">200平以上</span>
+                                  <span class="cnt">(1764)</span>
+                              </a>
+                                                              <span class="customFilter mt" data-role="area">
+                <input type="text" role="minValue" value="">
+                <span>-</span>
+                <input type="text" role="maxValue" value="">&nbsp;
+                                  <span>平</span>
+                                <button class="btn-range hide" data-url="/chengjiao/xicheng/ba{min}ea{max}/">确定</button>
+              </span>
+                                                  <span class="btn-showmore">+ 更多及自定义</span>
+                      </dd>
+        </dl>
+                                                                                                                                                          <dl class=" " >
+          <h2><dt title="北京房型成交二手房">房型</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/l1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">一室</span>
+                                  <span class="cnt">(12521)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/l2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">二室</span>
+                                  <span class="cnt">(17973)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/l3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">三室</span>
+                                  <span class="cnt">(6964)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/l4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">四室</span>
+                                  <span class="cnt">(499)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/l5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">五室及以上</span>
+                                  <span class="cnt">(74)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                                                        <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京用途成交二手房">用途</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/sf1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">普通住宅</span>
+                                  <span class="cnt">(42435)</span>
+                              </a>
+                                                                                                                  <a href="javascript:;" class="nolink" >
+                <span class="checkbox "></span>
+                <span class="name">别墅</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/sf4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">四合院</span>
+                                  <span class="cnt">(80)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/sf5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">其他</span>
+                                  <span class="cnt">(210)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                                                                          <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京楼层成交二手房">楼层</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/lc4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">底层</span>
+                                  <span class="cnt">(3902)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/lc1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">低楼层</span>
+                                  <span class="cnt">(8307)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/lc2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">中楼层</span>
+                                  <span class="cnt">(15918)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/lc3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">高楼层</span>
+                                  <span class="cnt">(8813)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/lc5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">顶层</span>
+                                  <span class="cnt">(5056)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                                                                          <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京朝向成交二手房">朝向</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/f1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">朝东</span>
+                                  <span class="cnt">(10394)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/f2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">朝南</span>
+                                  <span class="cnt">(24862)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/f3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">朝西</span>
+                                  <span class="cnt">(9511)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/f4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">朝北</span>
+                                  <span class="cnt">(18015)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/f5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">南北</span>
+                                  <span class="cnt">(13007)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                                                                          <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京楼龄成交二手房">楼龄</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/y1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">5年以内</span>
+                                  <span class="cnt">(337)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/y2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">10年以内</span>
+                                  <span class="cnt">(2996)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/y3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">15年以内</span>
+                                  <span class="cnt">(13011)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/y4/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">20年以内</span>
+                                  <span class="cnt">(19342)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/y5/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">20年以上</span>
+                                  <span class="cnt">(23257)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                    <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京电梯成交二手房">电梯</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/ie2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">有电梯</span>
+                                  <span class="cnt">(22388)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/ie1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">无电梯</span>
+                                  <span class="cnt">(18479)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                                      <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京装修成交二手房">装修</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/de1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">精装修</span>
+                                  <span class="cnt">(11198)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/de2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">普通装修</span>
+                                  <span class="cnt">(12114)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/de3/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">毛坯房</span>
+                                  <span class="cnt">(601)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                                                                                                    <dl class="hide " data-role="hide-row">
+          <h2><dt title="北京供暖成交二手房">供暖</dt></h2>
+          <dd>
+                                                                    <a href="/chengjiao/xicheng/hy1/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">集体供暖</span>
+                                  <span class="cnt">(36988)</span>
+                              </a>
+                                                                    <a href="/chengjiao/xicheng/hy2/" class="" >
+                <span class="checkbox "></span>
+                <span class="name">自供暖</span>
+                                  <span class="cnt">(4540)</span>
+                              </a>
+                                                          </dd>
+        </dl>
+                  <dl class="hide otherItem" data-role="hide-row">
+      <dt class="other">其他</dt>
+      <dd>
+      <form id="otherSearchForm">
+        <input class="inp-search" type="text" value="" placeholder="在结果中搜索">
+        <button type="submit" class="btn-search">确定</button>
+      </form>
+      </dd>
+    </dl>
+      </div>
+    <div class="more btn-more">更多选项<span class="arrow"></span></div>
+  </div>
+<div class="content"><!-- 左侧内容 --><div class="leftContent"><div class="orderFilter"><div class="orderTag"><ul><li class='selected'><h3><a href="/chengjiao/xicheng/">默认排序</span></a></h3></li><li ><h3><a href="/chengjiao/xicheng/ddo21/">房屋总价</a></h3></li><li ><h3><a href="/chengjiao/xicheng/ddo31/">房屋单价</a></h3></li><li ><h3><a href="/chengjiao/xicheng/ddo11/">房屋面积</a></h3></li></ul></div><div class="filterAgain"><div class="title">筛选：</div><ul><li ><a href="/chengjiao/xicheng/ty1/"><span class="checkbox"></span>满两年</a></li><li ><a href="/chengjiao/xicheng/mw1/"><span class="checkbox"></span>满五年</a></li><li ><a href="/chengjiao/xicheng/nb1/"><span class="checkbox"></span>不看地下室</a></li><li ><a href="/chengjiao/xicheng/ng1/"><span class="checkbox"></span>不看车位</a></li></ul></div></div><div class="resultDes clear"><div class="total fl">共找到<span> 43365 </span>套北京成交房源</div><div class="button fr"><div class="clearBtn"><script>with(document)write('<a href="/chengjiao/"><span></span>清空条件</a>');</script></div></div></div><ul class="listContent"><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101724266.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/7c83c1a2-f350-46e5-831f-94cd1fc6b97d.jpg.280x210.jpg" alt="官园南里三区 2室1厅 61.6平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101724266.html" target="_blank">官园南里三区 2室1厅 61.6平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.21</div><div class="totalPrice"><span class='number'>770</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共11层) 1986年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">125000</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线车公庄346米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌798万</span><span>成交周期1天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101109496.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/48ed83f1-c268-4b89-b55a-6028cf72c89b.jpg.280x210.jpg" alt="西豪逸景 3室1厅 136.72平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101109496.html" target="_blank">西豪逸景 3室1厅 136.72平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东北 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.21</div><div class="totalPrice"><span class='number'>1130</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>高楼层(共28层) 2008年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">82651</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距7号线达官营748米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌1280万</span><span>成交周期137天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101647386.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/f0958072-95fb-4310-b259-7682db51feb4.jpg.280x210.jpg" alt="北礼士路62号院 1室1厅 46.8平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101647386.html" target="_blank">北礼士路62号院 1室1厅 46.8平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东 西 | 精装&nbsp;| 无电梯</div><div class="dealDate">2017.06.21</div><div class="totalPrice"><span class='number'>473</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>顶层(共6层) 1996年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">101069</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线车公庄345米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌510万</span><span>成交周期20天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101552424.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/06617402-c209-4579-9e1f-9af6a618a79a.jpg.280x210.jpg" alt="月坛北街 2室1厅 61.9平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101552424.html" target="_blank">月坛北街 2室1厅 61.9平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 精装&nbsp;| 无电梯</div><div class="dealDate">2017.06.20</div><div class="totalPrice"><span class='number'>760</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共9层) 1989年建板塔结合</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">122779</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线阜成门1153米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌792万</span><span>成交周期46天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101033962.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/2e1b16dc-4338-43ee-839e-6f4d540e4389.jpg.280x210.jpg" alt="扣钟北里 2室1厅 62平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101033962.html" target="_blank">扣钟北里 2室1厅 62平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>西北 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.20</div><div class="totalPrice"><span class='number'>618</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>底层(共20层) 1988年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">99678</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距6号线车公庄西569米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌650万</span><span>成交周期168天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101450503.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/2da41ad8-6bbd-4245-aaa9-07e9b16e0c79.jpg.280x210.jpg" alt="恒昌花园 3室2厅 121.28平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101450503.html" target="_blank">恒昌花园 3室2厅 121.28平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东 | 精装</div><div class="dealDate">2017.06.20</div><div class="totalPrice"><span class='number'>995</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共28层) 塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">82042</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距7号线达官营292米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌1020万</span><span>成交周期73天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101578457.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/3dffe682-99b2-44a5-8260-3db5617ebd5d.jpg.280x210.jpg" alt="汽南小区 2室1厅 52.9平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101578457.html" target="_blank">汽南小区 2室1厅 52.9平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 简装&nbsp;| 无电梯</div><div class="dealDate">2017.06.20</div><div class="totalPrice"><span class='number'>633</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>顶层(共5层) 1978年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">119660</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距1号线木樨地1133米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌635万</span><span>成交周期38天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101423293.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/bddaa7dd-37c1-493a-b462-2e9901802a90.jpg.280x210.jpg" alt="常青藤嘉园 2室1厅 87.84平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101423293.html" target="_blank">常青藤嘉园 2室1厅 87.84平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 精装</div><div class="dealDate">2017.06.19</div><div class="totalPrice"><span class='number'>800</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>高楼层(共16层) 2004年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">91075</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距7号线达官营1144米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌922万</span><span>成交周期78天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101088223.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/86ae920f-2440-46f5-8430-789891e40adb.jpg.280x210.jpg" alt="格调 2室2厅 101.09平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101088223.html" target="_blank">格调 2室2厅 101.09平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东南 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.19</div><div class="totalPrice"><span class='number'>994.3</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共14层) 2005年建板塔结合</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">98351</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满两年</span><span>距7号线湾子554米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌1080万</span><span>成交周期152天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101690865.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/239030e2-c33d-4765-9353-597c61e497ab.jpg.280x210.jpg" alt="后半壁街8号 1室1厅 42.6平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101690865.html" target="_blank">后半壁街8号 1室1厅 42.6平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 简装</div><div class="dealDate">2017.06.19</div><div class="totalPrice"><span class='number'>530</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>高楼层(共6层) 1985年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">124414</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线西直门595米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌532.5万</span><span>成交周期8天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101525992.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/8dab9082-6e9d-420b-adee-9426a858b713.jpg.280x210.jpg" alt="北营房东里 2室1厅 58.7平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101525992.html" target="_blank">北营房东里 2室1厅 58.7平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东北 | 简装&nbsp;| 有电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>598</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共20层) 1989年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">101874</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线阜成门615米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌620万</span><span>成交周期51天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101651778.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/a6a34bf6-4930-476b-9ee0-a6b8f5e3ebba.jpg.280x210.jpg" alt="平原里小区 1室1厅 44.72平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101651778.html" target="_blank">平原里小区 1室1厅 44.72平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 简装&nbsp;| 有电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>473</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共9层) 1999年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">105770</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距4号线陶然亭585米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌480万</span><span>成交周期17天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101575973.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/2c6d6093-b89b-4276-8f37-45e900cd3a3a.jpg.280x210.jpg" alt="丽水莲花 1室1厅 58.24平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101575973.html" target="_blank">丽水莲花 1室1厅 58.24平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>北 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>574</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>高楼层(共28层) 2006年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">98558</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距7号线湾子515米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌640万</span><span>成交周期38天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101611104.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/b3483b60-8cfc-46e7-8bd7-27b1ecbd4565.jpg.280x210.jpg" alt="荣丰2008 1室0厅 29.2平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101611104.html" target="_blank">荣丰2008 1室0厅 29.2平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东南 | 简装&nbsp;| 有电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>296.7</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共20层) 2004年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">101600</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满两年</span><span>距7号线达官营888米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌315万</span><span>成交周期27天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101495429.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/6d1fb07c-9c9f-4d1e-b254-4be985ec96ff.jpg.280x210.jpg" alt="建功北里 1室1厅 48.67平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101495429.html" target="_blank">建功北里 1室1厅 48.67平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 简装&nbsp;| 无电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>435</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共6层) 1994年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">89378</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌458万</span><span>成交周期60天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101664961.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/6583e36c-438c-4793-a7b1-3dcc079bc3e5.jpg.280x210.jpg" alt="冰窖口胡同73号院 2室1厅 58.1平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101664961.html" target="_blank">冰窖口胡同73号院 2室1厅 58.1平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 精装&nbsp;| 无电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>805</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>高楼层(共6层) 1987年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">138555</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线积水潭613米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌830万</span><span>成交周期13天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101697857.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/d9281af7-a647-4dd7-8601-a7fddde48dfb.jpg.280x210.jpg" alt="枣林前街 1室0厅 36.18平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101697857.html" target="_blank">枣林前街 1室0厅 36.18平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 简装&nbsp;| 无电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>335</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共6层) 1990年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">92593</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>距7号线广安门内898米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌350万</span><span>成交周期5天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101437857.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/0b851b49-aa2c-458f-88e8-4cfc81cf21a2.jpg.280x210.jpg" alt="车公庄北里 1室0厅 38.5平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101437857.html" target="_blank">车公庄北里 1室0厅 38.5平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 简装&nbsp;| 有电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>413</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>高楼层(共18层) 1986年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">107273</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距6号线车公庄西33米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌450万</span><span>成交周期74天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101041179.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/716bd260-b597-4435-8fbe-02dba1c77064.jpg.280x210.jpg" alt="真武庙六里 1室1厅 53.2平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101041179.html" target="_blank">真武庙六里 1室1厅 53.2平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>639</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共18层) 1988年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">120113</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距1号线南礼士路929米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌666万</span><span>成交周期164天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101388862.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/4515e3e7-72b0-4077-977d-ae7d1387f5c0.jpg.280x210.jpg" alt="如意里 1室1厅 42.3平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101388862.html" target="_blank">如意里 1室1厅 42.3平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东 | 简装&nbsp;| 无电梯</div><div class="dealDate">2017.06.18</div><div class="totalPrice"><span class='number'>465</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>底层(共7层) 1991年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">109930</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距4号线新街口399米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌465万</span><span>成交周期85天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101698778.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/3000f97b-3fc3-445f-9d18-57425c60feab.jpg.280x210.jpg" alt="前半壁街 2室1厅 54.3平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101698778.html" target="_blank">前半壁街 2室1厅 54.3平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 其他&nbsp;| 无电梯</div><div class="dealDate">2017.06.17</div><div class="totalPrice"><span class='number'>450</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>地下室(共6层) 1989年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">82873</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距4号线新街口536米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌488万</span><span>成交周期4天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101542901.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/77a9c880-d161-463d-9150-c31db956758a.jpg.280x210.jpg" alt="庄胜二期 1室1厅 54.17平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101542901.html" target="_blank">庄胜二期 1室1厅 54.17平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>北 | 其他&nbsp;| 有电梯</div><div class="dealDate">2017.06.17</div><div class="totalPrice"><span class='number'>740</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共12层) 2004年建板塔结合</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">136607</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>距2号线和平门536米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌780万</span><span>成交周期46天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101698934.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/8316c169-4286-43c6-88d2-3fa91886c213.jpg.280x210.jpg" alt="铁二区 2室1厅 60.3平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101698934.html" target="_blank">铁二区 2室1厅 60.3平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 精装&nbsp;| 无电梯</div><div class="dealDate">2017.06.17</div><div class="totalPrice"><span class='number'>735</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共6层) 1987年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">121891</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距1号线南礼士路759米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌750万</span><span>成交周期3天</span></span></div></div></li><li><a class="img noPic" href="https://bj.lianjia.com/chengjiao/101101697532.html" target="_blank" rel="nofollow"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101697532.html" target="_blank">清芷园 1室0厅 40平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 其他&nbsp;| 有电梯</div><div class="dealDate">2017.06.17</div><div class="totalPrice"><span class='number'>46</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>地下室(共1层) 板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">11500</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>距4号线陶然亭799米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌46万</span><span>成交周期4天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101549465.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/65e9ca17-d867-4143-ba6d-e0b134434c65.jpg.280x210.jpg" alt="常青藤嘉园 1室1厅 34.46平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101549465.html" target="_blank">常青藤嘉园 1室1厅 34.46平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.17</div><div class="totalPrice"><span class='number'>355</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共16层) 2004年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">103018</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距7号线达官营1093米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌370万</span><span>成交周期43天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101299939.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/d015fdc4-cd13-4eeb-b3e3-bc14a779a2ee.jpg.280x210.jpg" alt="红莲北里 2室1厅 61.24平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101299939.html" target="_blank">红莲北里 2室1厅 61.24平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 其他&nbsp;| 无电梯</div><div class="dealDate">2017.06.16</div><div class="totalPrice"><span class='number'>598</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共6层) 1986年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">97649</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>距7号线达官营349米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌610万</span><span>成交周期100天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101628032.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/54ea480c-46f8-4385-b44f-e730dfe502e4.jpg.280x210.jpg" alt="教场口9号院 2室1厅 69.57平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101628032.html" target="_blank">教场口9号院 2室1厅 69.57平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 | 简装&nbsp;| 有电梯</div><div class="dealDate">2017.06.15</div><div class="totalPrice"><span class='number'>840</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共21层) 2003年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">120742</span>元/平</div></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌858万</span><span>成交周期20天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101266225.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/54c9919f-f686-4263-a0d1-077f96bee6c2.jpg.280x210.jpg" alt="裕中东里 3室1厅 76.9平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101266225.html" target="_blank">裕中东里 3室1厅 76.9平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 精装&nbsp;| 无电梯</div><div class="dealDate">2017.06.15</div><div class="totalPrice"><span class='number'>855</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>底层(共6层) 1986年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">111184</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距8号线安华桥632米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌880万</span><span>成交周期105天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101314519.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/3b59e693-51f1-4c49-a3d8-e731ca426732.jpg.280x210.jpg" alt="裕中西里 3室1厅 77.1平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101314519.html" target="_blank">裕中西里 3室1厅 77.1平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>南 北 | 简装&nbsp;| 无电梯</div><div class="dealDate">2017.06.15</div><div class="totalPrice"><span class='number'>890</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>低楼层(共6层) 1989年建板楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">115435</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距8号线安华桥870米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌1008万</span><span>成交周期96天</span></span></div></div></li><li><a class="img" href="https://bj.lianjia.com/chengjiao/101101574973.html" target="_blank" rel="nofollow"><img class="lj-lazy" src="https://s1.ljcdn.com/feroot/pc/asset/img/new-version/default_block.png?_v=20170630110651" data-original="https://image1.ljcdn.com/110000-inspection/315ae85f-59a1-491d-a1a9-88c36cf57548.jpg.280x210.jpg" alt="椿树园 2室1厅 65.64平米"></a><div class="info"><div class="title"><a href="https://bj.lianjia.com/chengjiao/101101574973.html" target="_blank">椿树园 2室1厅 65.64平米</a></div><div class="address"><div class="houseInfo"><span class="houseIcon"></span>东北 | 精装&nbsp;| 有电梯</div><div class="dealDate">2017.06.14</div><div class="totalPrice"><span class='number'>800</span>万</div></div><div class="flood"><div class="positionInfo"><span class="positionIcon"></span>中楼层(共13层) 1999年建塔楼</div><div class="source">链家成交</div><div class="unitPrice"><span class="number">121877</span>元/平</div></div><div class="dealHouseInfo"><span class="dealHouseIcon"></span><span class="dealHouseTxt"><span>房屋满五年</span><span>距2号线宣武门753米</span></span></div><div class="dealCycleeInfo"><span class="dealCycleIcon"></span><span class="dealCycleTxt"><span>挂牌853万</span><span>成交周期34天</span></span></div></div></li></ul><!-- 无搜索结果 --><div class="contentBottom clear" ><div class="crumbs fl"><a href="/">链家网北京站</a><h1><span >&nbsp;&gt;&nbsp;</span></h1><a href="/chengjiao/">北京二手房成交价格</a><h1><span >&nbsp;&gt;&nbsp;</span></h1><a href="/chengjiao/xicheng/">西城二手房成交价格</a></div><div class="page-box fr"><div class="page-box house-lst-page-box" comp-module='page' page-url="/chengjiao/xicheng/pg{page}/"page-data='{"totalPage":100,"curPage":1}'></div>
+
+
+</div></div></div><!-- 右侧sidebar --><div class="rightLayout"><div class="rightContent"><div class="map hide"><div class="pic"></div><button>给自己的房子估价</button></div><div class="wrap-side-content hide" id="wrap-side-content"><div class="price" id="tpl-r-price"></div><div class="suggestCommunity" id="tpl-r-house"></div><div class="wenda zixun" id="tpl-r-redian"></div><div class="wenda" id="tpl-r-wenda"></div></div></div></div></div><div class="footer"><div class="wrapper"><div class="f-title"><div class="fl"><ul><li><a href="https://www.lianjia.com/zhuanti/home/" rel="nofollow" target="_blank">了解链家</a></li><li><a href="https://bj.lianjia.com/about/aboutlianjia/" rel="nofollow" target="_blank">关于链家</a></li><li><a href="https://bj.lianjia.com/about/contactus/" rel="nofollow" target="_blank">联系我们</a></li><li><a href="https://join.lianjia.com/" rel="nofollow" target="_blank">加入我们</a></li><li><a href="https://www.lianjia.com/privacy/" rel="nofollow" target="_blank">隐私声明</a></li><li><a href="https://bj.lianjia.com/sitemap/" target="_blank">网站地图</a></li><li><a href="https://www.lianjia.com/notice/7.html" rel="nofollow" target="_blank">友情链接</a></li><li><a href="https://agent.lianjia.com/" rel="nofollow" target="_blank">经纪人登录</a></li></ul></div><div class="fr">官方客服 1010 9666</div></div><div class="lianjia-link-box"><div class="fl"><div class="tab"><span  class="hover">城市二手房</span><span >城区二手房</span><span >城区租房</span><span >城区小区</span><span >热门小区</span><span >热门问答</span><span >热门百科</span><span >房产资讯</span></div><div class="link-list"><div><dd><a target="_blank" href="https://bj.lianjia.com/">北京房产网</a><a target="_blank" href="https://gz.lianjia.com/">广州房产网</a><a target="_blank" href="https://sz.lianjia.com/">深圳房产网</a><a target="_blank" href="https://tj.lianjia.com/">天津房产网</a><a target="_blank" href="https://cd.lianjia.com/">成都房产网</a><a target="_blank" href="https://nj.lianjia.com/">南京房产网</a><a target="_blank" href="https://hz.lianjia.com/">杭州房产网</a><a target="_blank" href="https://qd.lianjia.com/">青岛房产网</a><a target="_blank" href="https://dl.lianjia.com/">大连房产网</a><a target="_blank" href="https://xm.lianjia.com/">厦门房产网</a><a target="_blank" href="https://wh.lianjia.com/">武汉房产网</a><a target="_blank" href="https://cq.lianjia.com/">重庆房产网</a><a target="_blank" href="https://cs.lianjia.com/">长沙房产网</a><a target="_blank" href="https://jn.lianjia.com/">济南房产网</a><a target="_blank" href="https://fs.lianjia.com/">佛山房产网</a><a target="_blank" href="https://dg.lianjia.com/">东莞房产网</a><a target="_blank" href="https://yt.lianjia.com/">烟台房产网</a><a target="_blank" href="https://zs.lianjia.com/">中山房产网</a><a target="_blank" href="https://zh.lianjia.com/">珠海房产网</a><a target="_blank" href="https://hui.lianjia.com/">惠州房产网</a><a target="_blank" href="https://sy.lianjia.com/">沈阳房产网</a><a target="_blank" href="https://hf.lianjia.com/">合肥房产网</a></dd></div><div><dd><a target="_blank" href="https://bj.lianjia.com/ershoufang/changping/">昌平二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/chaoyang/">朝阳二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/dongcheng/">东城二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/daxing/">大兴二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/fangshan/">房山二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/fengtai/">丰台二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/haidian/">海淀二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/huairou/">怀柔二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/mentougou/">门头沟二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/miyun/">密云二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/pinggu/">平谷二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/shijingshan/">石景山二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/shunyi/">顺义二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/tongzhou/">通州二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/xicheng/">西城二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/yanqing/">延庆二手房</a><a target="_blank" href="https://bj.lianjia.com/ershoufang/yizhuangkaifaqu/">亦庄开发区二手房</a></dd></div><div><dd><a target="_blank" href="https://bj.lianjia.com/zufang/changping/">昌平租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/chaoyang/">朝阳租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/dongcheng/">东城租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/daxing/">大兴租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/fangshan/">房山租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/fengtai/">丰台租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/haidian/">海淀租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/huairou/">怀柔租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/mentougou/">门头沟租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/miyun/">密云租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/pinggu/">平谷租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/shijingshan/">石景山租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/shunyi/">顺义租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/tongzhou/">通州租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/xicheng/">西城租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/yanqing/">延庆租房</a><a target="_blank" href="https://bj.lianjia.com/zufang/yizhuangkaifaqu/">亦庄开发区租房</a></dd></div><div><dd><a target="_blank" href="https://bj.lianjia.com/xiaoqu/changping/">昌平小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/chaoyang/">朝阳小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/dongcheng/">东城小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/daxing/">大兴小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/fangshan/">房山小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/fengtai/">丰台小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/haidian/">海淀小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/huairou/">怀柔小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/mentougou/">门头沟小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/miyun/">密云小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/pinggu/">平谷小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/shijingshan/">石景山小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/shunyi/">顺义小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/tongzhou/">通州小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/xicheng/">西城小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/yanqing/">延庆小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/yizhuangkaifaqu/">亦庄开发区小区</a></dd></div><div><dd><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379259/">四海公寓</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027376834/">大方居</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379991/">拓然家苑</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027376397/">长丰园一区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377289/">建明里小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379275/">双河南里</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377360/">金色漫香郡</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379219/">石坊院</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027381430/">晓月苑五里</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027376565/">昌盛园二区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027374037/">大峪南路</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379919/">天露园二区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377944/">龙锦苑东三区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377940/">龙锦苑东二区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027378207/">龙跃苑东二区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027382271/">扬州水乡</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111043529456/">霁月园</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1113425634192440/">鲁能7号院颐景润园</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027381985/">云趣园一区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379943/">太平家园</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027378359/">美利新世界</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027375963/">博客雅居</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111043185817/">天通公园里</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027378401/">模式口西里</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379547/">时尚街区东区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377025/">京城雅居</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111040863031/">远洋一方润园6号院</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027376682/">朝阳新城五区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379548/">时尚街区西区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027378234/">龙泽苑东区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111041166357/">金隅景和园</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111045274984/">鸿坤理想城大满贯</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027374059/">电子城小区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377000/">金蝉北里</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027378621/">南太平庄北巷</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027378168/">龙乡中区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027380989/">新康家园</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027377800/">蓝调沙龙东区</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027381824/">瀛景园</a><a target="_blank" href="https://bj.lianjia.com/xiaoqu/1111027379180/">上东三角洲</a></dd></div><div><dd><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1001/">房价行情</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1002/">购房建议</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1003/">购房资质</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1004/">买房风险</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1005/">二手房</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1006/">新房</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b1007/">海外买房</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b2001/">税费计算</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b2002/">认购签约</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b2003/">资金监管</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b2004/">过户流程</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b2005/">入住交接</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b3001/">房屋估价</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b3002/">卖房流程</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b3003/">出售方案</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b3004/">业主风险</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b3005/">卖旧买新</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5001/">贷款利率</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5002/">首付月供</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5003/">贷款流程</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5004/">住房公积金</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5005/">商业贷款</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5006/">融资借款</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b5007/">金融方案</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b6001/">房产政策</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b6002/">法律纠纷</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b6003/">保障住房</a><a target="_blank" href="https://bj.lianjia.com/wenda/liebiao/b6004/">其他</a></dd></div><div><dd><a target="_blank" href="https://news.lianjia.com/bj/baike/0033/">房产政策</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0035/">购房建议</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0036/">购房资质</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0037/">房屋贷款</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0039/">保障住房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0040/">产权/变更</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0041/">法律纠纷</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0042/">房屋装修</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0043/">其他</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0044/">准备买房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0045/">看房/选房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0046/">签约/定房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0047/">全款/贷款</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0048/">缴税/过户</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0049/">入住/交接</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0050/">买房风险</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0051/">准备买房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0052/">看房/选房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0053/">认购新房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0054/">签约/定房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0055/">全款/贷款</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0056/">收房/验房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0057/">装修/入住</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0058/">退房/维权</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0059/">各国概况</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0060/">计划买房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0061/">签约定房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0062/">银行贷款</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0063/">交易过户</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0064/">房屋代理</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0066/">准备卖房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0067/">产权核验</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0068/">收定金/签约</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0069/">分步收款</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0070/">缴税/过户</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0071/">交房须知</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0072/">卖房风险</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0073/">准备换房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0074/">换房方案</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0075/">卖旧/买新</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0077/">缴税/过户</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0078/">交房/收房</a><a target="_blank" href="https://news.lianjia.com/bj/baike/0079/">换房风险</a></dd></div><div><dd><a target="_blank" href="https://news.lianjia.com/">房产资讯</a><a target="_blank" href="https://news.lianjia.com/bj/">北京房产资讯</a><a target="_blank" href="https://news.lianjia.com/bj/baike/">北京房产百科</a><a target="_blank" href="https://bj.lianjia.com/wenda/">北京房产知识</a><a target="_blank" href="https://news.lianjia.com/gz/">广州房产资讯</a><a target="_blank" href="https://news.lianjia.com/gz/baike/">广州房产百科</a><a target="_blank" href="https://gz.lianjia.com/wenda/">广州房产知识</a><a target="_blank" href="https://news.lianjia.com/sz/">深圳房产资讯</a><a target="_blank" href="https://news.lianjia.com/sz/baike/">深圳房产百科</a><a target="_blank" href="https://sz.lianjia.com/wenda/">深圳房产知识</a><a target="_blank" href="https://news.lianjia.com/tj/">天津房产资讯</a><a target="_blank" href="https://news.lianjia.com/tj/baike/">天津房产百科</a><a target="_blank" href="https://tj.lianjia.com/wenda/">天津房产知识</a><a target="_blank" href="https://news.lianjia.com/cd/">成都房产资讯</a><a target="_blank" href="https://news.lianjia.com/cd/baike/">成都房产百科</a><a target="_blank" href="https://cd.lianjia.com/wenda/">成都房产知识</a><a target="_blank" href="https://news.lianjia.com/nj/">南京房产资讯</a><a target="_blank" href="https://news.lianjia.com/nj/baike/">南京房产百科</a><a target="_blank" href="https://nj.lianjia.com/wenda/">南京房产知识</a><a target="_blank" href="https://news.lianjia.com/hz/">杭州房产资讯</a><a target="_blank" href="https://news.lianjia.com/hz/baike/">杭州房产百科</a><a target="_blank" href="https://hz.lianjia.com/wenda/">杭州房产知识</a><a target="_blank" href="https://news.lianjia.com/qd/">青岛房产资讯</a><a target="_blank" href="https://news.lianjia.com/qd/baike/">青岛房产百科</a><a target="_blank" href="https://qd.lianjia.com/wenda/">青岛房产知识</a><a target="_blank" href="https://news.lianjia.com/dl/">大连房产资讯</a><a target="_blank" href="https://news.lianjia.com/dl/baike/">大连房产百科</a><a target="_blank" href="https://dl.lianjia.com/wenda/">大连房产知识</a><a target="_blank" href="https://news.lianjia.com/xm/">厦门房产资讯</a><a target="_blank" href="https://news.lianjia.com/xm/baike/">厦门房产百科</a><a target="_blank" href="https://news.lianjia.com/wh/">武汉房产资讯</a><a target="_blank" href="https://news.lianjia.com/wh/baike/">武汉房产百科</a><a target="_blank" href="https://news.lianjia.com/cq/">重庆房产资讯</a><a target="_blank" href="https://news.lianjia.com/cq/baike/">重庆房产百科</a><a target="_blank" href="https://cq.lianjia.com/wenda/">重庆房产知识</a><a target="_blank" href="https://news.lianjia.com/cs/">长沙房产资讯</a><a target="_blank" href="https://news.lianjia.com/cs/baike/">长沙房产百科</a><a target="_blank" href="https://cs.lianjia.com/wenda/">长沙房产知识</a><a target="_blank" href="https://news.lianjia.com/jn/">济南房产资讯</a><a target="_blank" href="https://news.lianjia.com/jn/baike/">济南房产百科</a><a target="_blank" href="https://jn.lianjia.com/wenda/">济南房产知识</a><a target="_blank" href="https://news.lianjia.com/fs/">佛山房产资讯</a><a target="_blank" href="https://news.lianjia.com/fs/baike/">佛山房产百科</a><a target="_blank" href="https://fs.lianjia.com/wenda/">佛山房产知识</a><a target="_blank" href="https://news.lianjia.com/xa/">西安房产资讯</a><a target="_blank" href="https://news.lianjia.com/xa/baike/">西安房产百科</a><a target="_blank" href="https://news.lianjia.com/sjz/">石家庄房产资讯</a><a target="_blank" href="https://news.lianjia.com/sjz/baike/">石家庄房产百科</a><a target="_blank" href="https://news.lianjia.com/yt/">烟台房产资讯</a><a target="_blank" href="https://news.lianjia.com/yt/baike/">烟台房产百科</a><a target="_blank" href="https://news.lianjia.com/hf/">合肥房产资讯</a><a target="_blank" href="https://news.lianjia.com/hf/baike/">合肥房产百科</a><a target="_blank" href="https://hf.lianjia.com/wenda/">合肥房产知识</a></dd></div></div></div><div class="clear"></div></div><div class="bottom"><div class="copyright fl">北京链家房地产经纪有限公司 | 网络经营许可证 京ICP备11024601号-12 | © Copyright©2010-2017 链家网Lianjia.com版权所有</div></div></div></div>
+
+<script src="https://s1.ljcdn.com/feroot/pc/asset/base/fe.js?_v=20170630110651"></script><script src="https://s1.ljcdn.com/feroot/pc/asset/common/common.js?_v=20170630110651"></script><div style="display:none"><script src="https://s1.ljcdn.com/feroot/dep/ljanalytics.js?_v=20170630110651"></script></div><div id="only" data-city="bj" data-page="chengjiao_index"></div>
+<script>var path = 'https://s1.ljcdn.com/feroot/pc/asset?_v=20170630110651'.split("?");require.config({baseUrl: path[0],paths: {'echarts' : '../../dep/echarts-1.4.1/build/echarts','echarts/chart/bar' : '../../dep/echarts-1.4.1/build/echarts','echarts/chart/line' : '../../dep/echarts-1.4.1/build/echarts','echarts/chart/pie' : '../../dep/echarts-1.4.1/build/echarts','echarts3' : '../../dep/echarts3/echarts3','common': 'common','jquery-ui': '../../dep/jquery-ui/jquery-ui.min','zeroclipboard': '../../dep/zeroclipboard-2.2.0/ZeroClipboard'},urlArgs:  path[1]});var feData = {"cityName": "北京","getFavHouseUrl":       "/api/gethousefav","setFavHouseUrl":       "/api/sethousefav","getLastSearch":        "/api/getlastsearch","getCommunityHistory":  "/api/getcommunityhistory","verifyHouse":          "/api/verifyHouse","getUser":              "/api/getUser","verifyCode":           "/api/getVerifyCode","complaint":            "/api/complaint","getDecoration":        "/api/getDecoration","trendData" :           "/site/getpicinfo"}</script>
+<!-- 价格 -->
+<script type="text/template" id="priceSideBarTpl">
+<%if(tag !== 'school'){%>
+  <div class="title"><%=name%>最新参考均价</div>
+  <div class="priceMap" id="priceChartContainer"></div>
+  <a href="<%=fangjia_url%>" class="unitPrice" target="_blank">
+    <span><%=month_trans%></span>元/平米
+  </a>
+  <div class="info">
+    <a href="<%=fangjia_url%>" target="_blank">环比上月均价<%=month_trans_ratio>=0?'上涨':'下降'%> <%=month_trans_ratio%>%</a>
+    <a href="<%=chengjiao_url%>" target="_blank">/ 近90天成交<%=sold_90_day%>套</a>
+    <%if(tag === '小区'){%>
+    <div>
+      <a class="cardMoreDetail" href="<%=url%>" target="_blank">查看小区详情>></a>
+    </div>
+    <%}%>
+  </div>
+<%}else{%>
+  <a class="title" href="<%=url%>" target="_blank"><%=name%></a>
+  <div class="unitPrice school">
+    <span><%=min_unit_price%></span>万元起
+  </div>
+  <div class="info">
+    <a href="<%=url%>" target="_blank">本学区目前有在售二手房<%=sell_num%>套，划片小区<%=resblock_nums%>个</a>
+    <a class="cardMoreDetail" href="<%=url%>"  target="_blank">查看学区详情>></a>
+  </div>
+<%}%>
+</script>
+
+<!-- 在售小区 -->
+<script type="text/template" id="tpl-house">
+  <div class="title">本小区在售</div>
+  <ul>
+    <%for(var i = 0; i < list.length; i++){var item=list[i];%>
+      <li>
+        <a class="img" href="<%=item.viewUrl%>" target="_blank">
+          <img src="<%=item.pic_url%>">
+          <div class="price"><%=item.price%>万</div>
+        </a>
+        <div class="info">
+          <a href="<%=item.viewUrl%>" target="_blank"><%=item.title%></a>
+          <b><%=item.room%> / <%=item.area%>平</b>
+        </div>
+      </li>
+    <%}%>
+  </ul>
+</script>
+<!-- 热点 -->
+<script type="text/template" id="tpl-redian">
+  <div class="title">热点精选</div>
+  <ul>
+    <%for(var i=0;i<list.length;i++) { var item=list[i];%>
+      <li>
+        <i class="opt<%=i%>"><%=i+1%></i><a class="info" href="<%=item.url%>" title="<%=item.question_title%>" target="_blank"><%=item.question_title%></a>
+      </li>
+    <%}%>
+  </ul>
+</script>
+<!-- wenda -->
+<script type="text/template" id="tpl-wenda">
+  <div class="title">热门问答</div>
+  <ul>
+    <%for(var i=0;i<list.length;i++) { var item=list[i];%>
+      <li>
+        <a class="info" href="<%=item.url%>" title="<%=item.question_description%>" target="_blank"><%=item.question_title%></a>
+        <span class="time"><%=item.mtime%></span>
+      </li>
+    <%}%>
+  </ul>
+</script>
+
+
+<script type="text/javascript">
+require(['ershoufang/dealList/index'], function (main) {
+  main({
+    sidebar:{"type":"district","cityId":110000,"uuid":"41922226-12ee-4b00-83c0-954a52f4bac2","ucid":null,"id":"23008626"},
+    SIRKeyword:"",
+    filterBar:[{"id":23008626,"name":"\u897f\u57ce","url":"\/chengjiao\/"}]
+  });
+
+  var logMsg = $("[log-mod='laobi_spellcheck']");
+
+  if(logMsg.length) {
+
+    function fixUrl(originUrl, prefixStr) {
+        if(originUrl.search(/\?/) > -1) {
+            return [originUrl, prefixStr].join("&");
+        }
+
+        return [originUrl, prefixStr].join("?");
+    }
+
+    logMsg.each(function(ka, va) {
+        var ret = [];
+        var $el = $(this);
+
+        $el.find("a").each(function(k, v) {
+
+            $(this).attr("href", fixUrl($(this).attr("data-origin_url"), 'from_mod=spellcheck'));
+
+            ret.push($(this).text());
+        });
+
+        UT.send({
+            type: 'show',
+            subtype: 'module_show',
+            el: ret.join('---')
+        }, $el.get(0));
+
+        UT.send({
+            type: 'show',
+            subtype: 'module_show',
+            mod: [$el.attr("log-mod"), $el.attr("log-mod_description")].join("_"),
+            bl: $el.attr("data-bl"),
+            el: ret.join('---'),
+            value: $el.attr("data-log_value"),
+            index: ''
+        });
+
+        $el.on("mousedown", "a", function() {
+            var $m = $(this);
+
+            UT.send({
+                type: 'click',
+                subtype: 'link',
+                mod: [$el.attr("log-mod"), $el.attr("log-mod_description")].join("_"),
+                bl: $m.attr("data-bl"),
+                el: $m.attr("data-el"),
+                value: $m.attr("data-log_value"),
+                index: $m.attr("data-log_index"),
+                url: $m.get(0).getAttribute("href", 2)
+            });
+        });
+    });
+
+  }
+
+});
+require(['common/backtopV3'], function (main) {
+  main({
+    ucid: '',
+    uuid: '41922226-12ee-4b00-83c0-954a52f4bac2',
+    loadingImg: 'https://s1.ljcdn.com/feroot/pc/asset/ershoufang/sellDetail/img/loading.gif?_v=20170630110651',
+    qrImg: '//ajax.api.lianjia.com/qr/getDownloadQr'
+  });
+});
+
+</script>
+<script>require(['common/suggestion'], function (suggestion) {window.defaultSuggest = suggestion.init({requestOptions: {cityId: '110000',cityName: '北京'},url: '/api/headerSearch?channel=chengjiao&q=',main: '#keyword-box',appendTo: '#suggest-cont',redirect: true});});</script><div class="loninContaner"><div class="overlay_bg"></div><div class="panel_login animated" id="dialog"><div class="panel_info"><div class="panel_tab"><div class="title"><div class="fl">用户登录</div><label class="fr">还没有链家网账号？<a href="//passport.lianjia.com/register/resources/lianjia/register.html?service=http%3A%2F%2Fbj.lianjia.com%2F" rel="nofollow">马上注册</a></label></div><div class="clear"></div><div id="con_login_user"><form action="" method="post"><ul><li class="show-error"><dd>用户名或密码错误</dd></li><li class="item userName"><i></i><input type="text" class="the_input users" placeholder="请输入手机号" /></li><li class="item pwd"><i></i><input type="password" class="the_input password"  placeholder="请输入登录密码"/></li><li class="item checkVerimg" style="display:none;"><i></i><input type="text" class="the_input ver-img" maxlength="4"  placeholder="请输入验证码"/><img class="verImg"></li><li class="li_01"><label><input type="checkbox" name="remember" value="1" class="mind-login" checked>下次自动登录</label><a href="https://passport.lianjia.com/register/resources/lianjia/forget.html?service=http://bj.lianjia.com/" rel="nofollow">找回密码</a></li><li><a class="login-user-btn"  />立即登录</a></li></ul></form></div><div id="con_login_agent" class="undis"><form action="" method="post"><ul><li class="item"><dd></dd><input type="text" class="the_input users" placeholder="输入经纪人ID号码" /></li><li class="item"><input type="password" class="the_input password"  placeholder="登录密码"/></li><li class="li_01"><label><input type="checkbox" name="remember" value="1" class="mind-login">下次自动登录</label><a href="https://passport.lianjia.com/register/resources/lianjia/forget.html?service=http://bj.lianjia.com/" rel="nofollow">找回密码</a></li><li><input class="login-agent-btn" value="立即登录"/></li></ul></form></div></div></div><div class="registered"></div></div></div>
+<!-- LianjiaIM Style --><link property='stylesheet' rel="stylesheet" href="https://s1.ljcdn.com/feroot/pc/asset/lianjiaIM/css/lianjiaim.css?_v=20170630110651"/><script src="//s1.ljcdn.com/web-im-sdk/static/0.9/ljim-core.min.js?_v=20170706"></script><script>(function() {var imConf = {"ajaxroot":"\/\/ajax.api.lianjia.com\/","imAppid":"LIANJIA_WEB_20160624","imAppkey":"6dfdcee27d78b1107fceeca55d80b7bd"};$.listener.on('userInfo', function (data) {if (data.code === 1) {data.ucid = '';}require(['lianjiaIM/lianjiaim'], function (LianjiaIM) {var ljim = new LianjiaIM({appid: imConf.imAppid,appkey: imConf.imAppkey,userData: data,staticRoot: 'https://s1.ljcdn.com/feroot/?_v=20170630110651'});});});})();</script><script type="text/javascript">var advert = 'https://s1.ljcdn.com/feroot/pc/asset/common/advert.js?_v=20170630110651';
+    $.listener.on('userInfo', function (data) {
+      window.loginData = data;
+    });
+    var mvl = document.createElement('script');
+    mvl.type = 'text/javascript';
+    mvl.async = true;
+    mvl.src = advert;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(mvl, s);
+  </script><script type="text/javascript">(function(){var bp = document.createElement('script');var curProtocol = window.location.protocol.split(':')[0];if (curProtocol === 'https'){bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';} else {bp.src = 'http://push.zhanzhang.baidu.com/push.js';}var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(bp, s);})();</script></body></html>

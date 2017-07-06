@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import getpass
 import requests
 import sys
 import ssl
@@ -11,8 +12,7 @@ def confirm_password(account, password):
         print 'user id is empty, please input your id:'
         account = sys.stdin.readline().strip()
     while not password:
-        print 'password is empty, please input your password:'
-        password = sys.stdin.readline().strip()
+        password = getpass.getpass('password is empty, please input your password:\n')
     return (account, password)
 
 def check_login(session, url, headers):

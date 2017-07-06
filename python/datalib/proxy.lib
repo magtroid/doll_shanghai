@@ -1,0 +1,18 @@
+__dict
+https
+__dict__https
+__dict__https
+218.241.234.48	111.155.116.196	222.249.233.238	111.155.116.200
+__dict__218.241.234.48	__dict__111.155.116.196	__dict__222.249.233.238	__dict__111.155.116.200
+__dict__https__218.241.234.48
+status	city	success	ip	port	time	fail	type	id	anony
+alive	±±¾©ÊÐ	0	218.241.234.48	8080	2017Äê07ÔÂ03ÈÕ05Ê± ÑéÖ¤	0	https	218.241.234.48	¸ßÄä´úÀí
+__dict__https__111.155.116.196
+status	city	success	ip	port	time	fail	type	id	anony
+alive	±±¾©ÊÐ	0	111.155.116.196	8123	2017Äê07ÔÂ04ÈÕ05Ê± ÑéÖ¤	0	https	111.155.116.196	¸ßÄä´úÀí
+__dict__https__222.249.233.238
+status	city	success	ip	port	time	fail	type	id	anony
+alive	±±¾©ÊÐ	0	222.249.233.238	9000	2017Äê07ÔÂ04ÈÕ19Ê± ÑéÖ¤	0	https	222.249.233.238	¸ßÄä´úÀí
+__dict__https__111.155.116.200
+status	city	success	ip	port	time	fail	type	id	anony
+alive	±±¾©ÊÐ	0	111.155.116.200	8123	2017Äê07ÔÂ04ÈÕ06Ê± ÑéÖ¤	0	https	111.155.116.200	¸ßÄä´úÀí

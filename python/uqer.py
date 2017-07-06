@@ -23,6 +23,8 @@ class UqerLogin(object):
 
         self.logined_url = 'https://uqer.io/home/'
         self.post_url = 'https://gw.wmcloud.com/usermaster/authenticate/v1.json'
+        # self.notebook_url = 'https://uqer.io/labs/notebooks/Notebook0.nb'
+        self.notebook_url = 'https://uqer.io/labs/'
 
     def load_cookie(self):
         try:
@@ -49,8 +51,13 @@ class UqerLogin(object):
         common.print_net('uqer', response.text)
 
     def login(self, account, password):
-        common.check_login(self.session, self.logined_url, self.headers)
-        (account, password) = common.confirm_password(account, password)
-        self.post_param(account, password);
-        self.bool_login()
-        common.check_login(self.session, self.logined_url, self.headers)
+        if not common.check_login(self.session, self.logined_url, self.headers):
+            (account, password) = common.confirm_password(account, password)
+            self.post_param(account, password);
+            self.bool_login()
+            common.check_login(self.session, self.logined_url, self.headers)
+
+    def get_param(self):
+        response = self.session.get(self.notebook_url, headers=self.headers)
+        response.encoding='utf-8'
+        # common.print_net('notebook', response.text)

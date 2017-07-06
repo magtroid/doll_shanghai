@@ -1,0 +1,108 @@
+__dict
+http	https
+__dict__http	__dict__https
+__dict__http
+114.115.218.66	121.229.224.70	218.4.101.130	222.94.150.1	183.151.43.51	180.175.33.74	123.170.255.143	175.169.236.209	119.5.0.41	175.44.4.123	180.121.133.122	125.105.17.229	115.28.50.223	61.178.238.122	60.169.19.66	111.155.116.239	222.61.20.147	175.155.24.28	175.155.24.39	111.155.116.247	123.169.85.111
+__dict__114.115.218.66	__dict__121.229.224.70	__dict__218.4.101.130	__dict__222.94.150.1	__dict__183.151.43.51	__dict__180.175.33.74	__dict__123.170.255.143	__dict__175.169.236.209	__dict__119.5.0.41	__dict__175.44.4.123	__dict__180.121.133.122	__dict__125.105.17.229	__dict__115.28.50.223	__dict__61.178.238.122	__dict__60.169.19.66	__dict__111.155.116.239	__dict__222.61.20.147	__dict__175.155.24.28	__dict__175.155.24.39	__dict__111.155.116.247	__dict__123.169.85.111
+__dict__http__114.115.218.66
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+	retry	http	2		1天	0.007秒	114.115.218.66	2	0.039秒	8118	高匿
+__dict__http__121.229.224.70
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江苏南京	retry	http	3	Cn	1分钟	0.07秒	121.229.224.70	1	0.354秒	8118	高匿
+__dict__http__218.4.101.130
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江苏苏州	retry	http	4	Cn	316天	0.028秒	218.4.101.130	0	0.14秒	83	高匿
+__dict__http__222.94.150.1
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江苏南京	retry	http	0	Cn	93天	0.053秒	222.94.150.1	4	0.265秒	808	高匿
+__dict__http__183.151.43.51
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+浙江丽水	retry	http	0	Cn	1分钟	0.668秒	183.151.43.51	4	3.34秒	808	高匿
+__dict__http__180.175.33.74
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+上海	retry	http	2	Cn	1天	1.427秒	180.175.33.74	2	7.136秒	8118	高匿
+__dict__http__123.170.255.143
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+山东滨州	retry	http	0	Cn	28天	0.052秒	123.170.255.143	4	0.262秒	808	高匿
+__dict__http__175.169.236.209
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+辽宁大连	retry	http	0	Cn	17分钟	0.433秒	175.169.236.209	4	2.168秒	53281	高匿
+__dict__http__119.5.0.41
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+四川南充	retry	http	0	Cn	119天	0.045秒	119.5.0.41	4	0.227秒	808	高匿
+__dict__http__175.44.4.123
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+福建莆田	retry	http	0	Cn	9天	0.197秒	175.44.4.123	4	0.988秒	53281	高匿
+__dict__http__180.121.133.122
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江苏南通	retry	http	0	Cn	1分钟	0.396秒	180.121.133.122	4	1.983秒	808	高匿
+__dict__http__125.105.17.229
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+浙江衢州	retry	http	0	Cn	1天	0.05秒	125.105.17.229	4	0.252秒	808	高匿
+__dict__http__115.28.50.223
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+北京	dead	http	4	Cn	1分钟	0.011秒	115.28.50.223	0	0.057秒	8118	高匿
+__dict__http__61.178.238.122
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+甘肃兰州市城关区	dead	http	1	Cn	487天	0.067秒	61.178.238.122	3	0.338秒	63000	高匿
+__dict__http__60.169.19.66
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+安徽芜湖	using	http	3	Cn	14小时	0.028秒	60.169.19.66	0	0.14秒	9000	高匿
+__dict__http__111.155.116.239
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+北京	alive	http	0	Cn	343天	0.336秒	111.155.116.239	2	1.682秒	8123	高匿
+__dict__http__222.61.20.147
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+海南	retry	http	2	Cn	250天	1.08秒	222.61.20.147	0	5.403秒	808	高匿
+__dict__http__175.155.24.28
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+四川德阳	retry	http	0	Cn	126天	0.107秒	175.155.24.28	2	0.535秒	808	高匿
+__dict__http__175.155.24.39
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+四川德阳	retry	http	0	Cn	111天	0.082秒	175.155.24.39	2	0.414秒	808	高匿
+__dict__http__111.155.116.247
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+北京	retry	http	0	Cn	337天	0.084秒	111.155.116.247	2	0.42秒	8123	高匿
+__dict__http__123.169.85.111
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+山东淄博	retry	http	0	Cn	1分钟	0.198秒	123.169.85.111	2	0.994秒	808	高匿
+__dict__https
+49.69.116.5	115.220.150.178	121.31.100.79	222.194.14.130	222.242.171.5	113.123.18.114	125.122.23.216	112.195.96.207	113.123.18.13	117.43.0.207	222.85.50.219	153.36.79.44
+__dict__49.69.116.5	__dict__115.220.150.178	__dict__121.31.100.79	__dict__222.194.14.130	__dict__222.242.171.5	__dict__113.123.18.114	__dict__125.122.23.216	__dict__112.195.96.207	__dict__113.123.18.13	__dict__117.43.0.207	__dict__222.85.50.219	__dict__153.36.79.44
+__dict__https__49.69.116.5
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江苏苏州	alive	https	0	Cn	20小时	0.086秒	49.69.116.5	0	0.432秒	808	高匿
+__dict__https__115.220.150.178
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+浙江宁波	alive	https	0	Cn	75天	0.228秒	115.220.150.178	0	1.143秒	808	高匿
+__dict__https__121.31.100.79
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+广西防城港	alive	https	0	Cn	19分钟	0.27秒	121.31.100.79	0	1.354秒	8123	高匿
+__dict__https__222.194.14.130
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+山东威海	alive	https	0	Cn	50天	0.042秒	222.194.14.130	0	0.214秒	808	高匿
+__dict__https__222.242.171.5
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+湖南郴州	alive	https	0	Cn	70天	0.035秒	222.242.171.5	0	0.177秒	63000	高匿
+__dict__https__113.123.18.114
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+山东青岛	alive	https	0	Cn	1小时	0.504秒	113.123.18.114	0	2.52秒	808	高匿
+__dict__https__125.122.23.216
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+浙江杭州	alive	https	0	Cn	1分钟	0.842秒	125.122.23.216	0	4.213秒	808	高匿
+__dict__https__112.195.96.207
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+四川自贡	alive	https	0	Cn	11分钟	0.045秒	112.195.96.207	0	0.229秒	808	高匿
+__dict__https__113.123.18.13
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+山东青岛	alive	https	0	Cn	1分钟	0.867秒	113.123.18.13	0	4.336秒	808	高匿
+__dict__https__117.43.0.207
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江西九江	alive	https	0	Cn	40天	1.208秒	117.43.0.207	0	6.04秒	808	高匿
+__dict__https__222.85.50.219
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+河南平顶山	alive	https	0	Cn	71天	0.036秒	222.85.50.219	0	0.183秒	808	高匿
+__dict__https__153.36.79.44
+province	status	type	success	country	alive	connect	ip	fail	speed	port	anony
+江苏	alive	https	0	Cn	1分钟	0.537秒	153.36.79.44	0	2.685秒	808	高匿
