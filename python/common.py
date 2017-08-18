@@ -1,32 +1,41 @@
 #!/usr/bin/env python
 # coding=utf-8
+'''types definition
 
-import getpass
-import requests
-import sys
-import ssl
-import urllib2
+Magtroid @ 2017-08-01 14:58
+'''
+from enum import Enum
 
-def confirm_password(account, password):
-    while not account:
-        print 'user id is empty, please input your id:'
-        account = sys.stdin.readline().strip()
-    while not password:
-        password = getpass.getpass('password is empty, please input your password:\n')
-    return (account, password)
+# write page after get page
+URL_WRITE = '__write__'
+# read exist page local, if not exist get page
+URL_READ = '__read__'
+# read exist page local, if not exist continue
+URL_READ_THROUGH = '__read_through__'
+# url exist
+URL_EXIST = '__url_exists__'
 
-def check_login(session, url, headers):
-    login_code = session.get(url, headers=headers, allow_redirects=False).status_code
-    if login_code == 200:
-        print 'login success!'
-        return True
-    else:
-        print 'login failed!'
-        return False
+# html parser
+HTML_PARSER = 'html.parser'
+# href key
+HREF_KEY = 'href'
+# find none
+FIND_NONE = -1
 
-def print_net(name, text):
-    file_name = name + '_net.txt'
-    type = sys.getfilesystemencoding()
-    text = text.decode('utf-8').encode(type)
-    with open(file_name, 'w') as fp:
-        fp.writelines(text)
+# empty key
+EMPTY_KEY = ''
+
+# enum month
+class Month(Enum):
+    Jan = 1
+    Feb = 2
+    Mar = 3
+    Apr = 4
+    May = 5
+    Jun = 6
+    Jul = 7
+    Aug = 8
+    Sep = 9
+    Oct = 10
+    Nov = 11
+    Dec = 12

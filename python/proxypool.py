@@ -1,180 +1,361 @@
 #!/usr/bin/env python
 # coding=utf-8
+'''Class for proxy pool control
 
+Magtroid @ 2017-07-31 14:03
+method for proxy
+'''
+
+# import library
+import datalib
+import os
 import re
 import requests
 import sys
 import time
-import datalib
+import tools
+import common
+import traceback
+import log
 
+# const define
+_STATUS_ALIVE = 'alive'
+_STATUS_USING = 'using'
+_STATUS_DEAD  = 'dead'
+_STATUS_RETRY = 'retry'
+
+_PROXY_LIMIT_STRING = '流量异常'
+
+_TYPE_KEY = 'type'
+_SUCC_KEY = 'success'
+_FAIL_KEY = 'fail'
+_IP_KEY = 'ip'
+_PORT_KEY = 'port'
+_STATUS_KEY = 'status'
+
+_CITY_KEY = 'city'
+_ANONY_KEY = 'anony'
+
+# main class
 class ProxyPool(object):
-    def __init__(self):
-        self.headers = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.37',
-        }
-        self.session = requests.session()
-        self.proxy_list = datalib.DataLib('./datalib/proxy.lib')
-        self.proxy_list.load_data()
-        self.write_data()
-        self.proxy_num = 0
-        self.proxy = {'http':'',
-                      'https':''}
-        self.request_num = 0
-        self.request_threshold = 100
-        self.test_url = {'http': 'http://example.org',
-                         'https': 'https://example.org',}
+    # public:
+    #   reload_proxy
+    #   current_proxy
+    #   set_proxy
+    #   try_proxy
+    #   proxy_num
+    #   set_shreshold
+    #   insert_proxy
+    #   delete_proxy
+    #   get_page
+    #   write_data_lib
 
-    def show_proxy(self):
-        print 'current proxy is %s' % self.proxy
+    # private:
+    #   __switch_proxy
+    #   __update_proxy
+    #   __reset_proxy
+    #   __get_page_from_file
+    #   __write_page_to_file
 
-    def insert_data(self, lkey, proxy_data):
-        self.proxy_list.insert_data(lkey, proxy_data)
-        self.proxy_num += 1
+    def __init__(self, vlog = 0):
+        self.__vlog = log.VLOG(vlog)
+        self.__headers = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.37',}
+        self.__session = requests.session()
+        self.__url_dir = 'urls/'
+        self.__proxy = {'http':'',
+                        'https':''}
+        self.__test_url = {'http': 'http://example.org',
+                           'https': 'https://example.org',}
+        self.__request_num = 0
+        self.__request_threshold = 100  # set to control proxy
+        self.__time_out = 10
+        self.__data_lib_file = './datalib/proxy.lib'
+        self.__disable_controler = False
+        self.__proxy_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
+        self.__proxy_lib.load_data_lib()
+        self.__proxy_num = self.__proxy_lib.data_num()
 
-    def set_threshold(self, num):
-        self.reqest_threshold = num
+    # when update new data lib, use this to merge into current
+    def reload_proxy(self):
+        self.__update_proxy()
+        self.__reset_proxy()
 
+    # print current proxy set
+    def current_proxy(self):
+        print 'current proxy is %s' % self.__proxy
+
+    # set proxy set to target proxy
     def set_proxy(self, proxy):
-        self.proxy[proxy['type']] = '%s://%s:%s' % (proxy['type'], proxy['ip'], proxy['port'])
+        self.__proxy[proxy[_TYPE_KEY]] = '%s://%s:%s' % (proxy[_TYPE_KEY], \
+                                                         proxy[_IP_KEY], \
+                                                         proxy[_PORT_KEY])
 
-    def simple_try_proxy(self, proxy):
-        proxy_tmp = self.proxy.copy()
-        self.set_proxy(proxy)
-        try:
-            response = self.session.get(self.test_url[proxy['type']], headers=self.headers, proxies=self.proxy, timeout=5)
-            self.proxy.update(proxy_tmp)
-            type = sys.getfilesystemencoding()
-            return response.text.decode('utf-8').encode(type)
-        except:
-            print 'bad proxy: %s:%s, change one' % (proxy['ip'], proxy['port'])
-            self.proxy.update(proxy_tmp)
-            return ''
+    # try if target proxy works
+    # return page response if success
+    def try_proxy(self, proxy, url = None):
+        url_list = []
+        # fill try url list
+        if not url:
+            if proxy.has_key(_TYPE_KEY):
+                url_list.append(self.__test_url[proxy[_TYPE_KEY]])
+            else:
+                for item in self.__test_url.items():
+                    url_list.append(item[1])
+        else:
+            url_list.append(url)
+        proxy_tmp = self.__proxy.copy()
+        # iterate try each type of url
+        for surl in url_list:
+            proxy[_TYPE_KEY] = tools.get_url_type(surl)
+            print 'try types: %s' % proxy[_TYPE_KEY]
+            self.set_proxy(proxy)
+            try:
+                response = self.__session.get(surl, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
+                self.__proxy.update(proxy_tmp)
+                proxy[_TYPE_KEY] = tools.get_url_type(surl)
+                proxy[_SUCC_KEY] += 1
+                return response.text
+            except requests.exceptions.RequestException:
+                pass
 
-    def try_proxy(self, proxy, url):
-        proxy_tmp = self.proxy.copy()
-        self.set_proxy(proxy)
-        try:
-            response = self.session.get(url, headers=self.headers, proxies=self.proxy, timeout=5)
-            self.proxy.update(proxy_tmp)
-            type = sys.getfilesystemencoding()
-            return response.text.decode('utf-8').encode(type)
-        except:
-            print 'bad proxy: %s:%s, change one' % (proxy['ip'], proxy['port'])
-            self.proxy.update(proxy_tmp)
-            return ''
+        proxy[_FAIL_KEY] += 1
+        try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
+        per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
+        print 'bad proxy: %s:%s, change one (s/f : %d/%d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                                                                     proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
+                                                                     per)
+        self.__proxy.update(proxy_tmp)
+        return ''
 
-    def reset_proxy(self):
-        print 'reset proxy'
-        for url_type in self.proxy.keys():
-            self.proxy[url_type] = ''
-        for url_type in self.proxy_list.data_lib.keys():
-            for ip in self.proxy_list.data_lib[url_type].keys():
-                self.proxy_list.data_lib[url_type][ip]['status'] = 'alive'
+    # return proxy number of current proxy pool
+    def proxy_num(self):
+        return self.__proxy_num
 
-    def get_url_type(self, url):
-        type = re.search('^(.*?)://', url).group(1)
-        return type
+    # set shreshold of max tried times of one proxy
+    def set_threshold(self, num):
+        self.__request_threshold = num
 
-    def switch_proxy(self, url):
-        url_type = self.get_url_type(url)
+    # insert proxy
+    def insert_proxy(self, lkey, proxy_data):
+        if self.__proxy_lib.insert_data(lkey, proxy_data, _IP_KEY):
+            self.__proxy_num += 1
+
+    # delete proxy
+    def delete_proxy(self, lkey):
+        if self.__proxy_lib.delete_data(lkey):
+            self.__proxy_num -= 1
+
+    # return page using all proxy necessary
+    def get_page(self, url, get_page_type = None):
         response = ''
-        if self.proxy_list.data_lib.has_key(url_type) and len(self.proxy_list.data_lib[url_type]) is not 0:
-            proxy_list = self.proxy_list.data_lib[url_type]
+        if get_page_type:
+            response = self.__get_page_from_file(url, get_page_type)
+            if response:
+                return response
+
+        exit = False
+        while not exit:
+            if self.__request_num < self.__request_threshold:
+                try:
+                    response = self.__session.get(url, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
+                    response = response.text
+                except requests.exceptions.RequestException:
+                    print 'bad proxy, switch proxy'
+                    response = self.__switch_proxy(url)
+                    self.__request_num = 0
+            else:
+                print 'request control, switch proxy'
+                response = self.__switch_proxy(url)
+                self.__request_num = 0
+            self.__request_num += 1
+
+            if response == '':
+                print 'get page failed, try to reload proxy'
+                time.sleep(1)
+                self.__request_num = self.__request_threshold
+                self.reload_proxy()
+                exit = False
+            elif response.find(_PROXY_LIMIT_STRING) != common.FIND_NONE:
+                self.__request_num = self.__request_threshold
+            else:
+                exit = True
+
+        # write pages
+        if get_page_type and response:
+            self.__write_page_to_file(url, response)
+        return response
+
+    # write data lib
+    def write_data_lib(self):
+        self.__proxy_lib.write_data_lib()
+
+    # switch to next available proxy
+    # and return the page
+    def __switch_proxy(self, url):
+        url_type = tools.get_url_type(url)
+        url_type_path = datalib.DATA_KEY + datalib.LIB_CONNECT+ url_type
+        response = ''
+
+        if self.__proxy_lib.lhas_key(url_type_path):
+            proxy_lib = self.__proxy_lib.get_data(url_type_path)
             loop = 0
+            # loop 2 times, 1st: dead -> retry 2nd: retry -> dead
+            # to try all proxy circulation
             while not response:
                 loop += 1
-                for ip in proxy_list.keys():
-                    # not selected:
+                for ip in proxy_lib.keys():
+                    # not selected: alive -> using/dead
+                    #               using -> dead
+                    #               dead  -> retry (loop1)
+                    #               retry -> using/dead (loop2)
                     if not response:
-                        if proxy_list[ip]['status'] == 'alive':
-                            response = self.try_proxy(proxy_list[ip], url)
+                        if proxy_lib[ip][_STATUS_KEY] == _STATUS_ALIVE:
+                            response = self.try_proxy(proxy_lib[ip], url)
                             if response:
-                                self.set_proxy(proxy_list[ip])
-                                proxy_list[ip]['success'] = str(int(proxy_list[ip]['success']) + 1)
-                                proxy_list[ip]['status'] = 'using'
+                                self.set_proxy(proxy_lib[ip])
+                                proxy_lib[ip][_STATUS_KEY] = _STATUS_USING
                             else:
-                                proxy_list[ip]['fail'] = str(int(proxy_list[ip]['fail']) + 1)
-                                proxy_list[ip]['status'] = 'dead'
-                        elif proxy_list[ip]['status'] == 'using':
-                            proxy_list[ip]['status'] = 'dead'
-                        elif proxy_list[ip]['status'] == 'dead':
+                                proxy_lib[ip][_STATUS_KEY] = _STATUS_DEAD
+                        elif proxy_lib[ip][_STATUS_KEY] == _STATUS_USING:
+                            proxy_lib[ip][_STATUS_KEY] = _STATUS_DEAD
+                        elif proxy_lib[ip][_STATUS_KEY] == _STATUS_DEAD:
                             if loop is 1:
-                                proxy_list[ip]['status'] = 'retry'  # set retry for second loop
+                                proxy_lib[ip][_STATUS_KEY] = _STATUS_RETRY  # set retry for second loop
                             elif loop is 2:
                                 continue
                         else:  # retry
                             if loop is 1:  # wait for second loop
                                 continue
                             elif loop is 2:
-                                response = self.try_proxy(proxy_list[ip], url)
+                                response = self.try_proxy(proxy_lib[ip], url)
                                 if response:
-                                    self.set_proxy(proxy_list[ip])
-                                    proxy_list[ip]['success'] = str(int(proxy_list[ip]['success']) + 1)
-                                    proxy_list[ip]['status'] = 'using'
+                                    self.set_proxy(proxy_lib[ip])
+                                    proxy_lib[ip][_STATUS_KEY] = _STATUS_USING
                                 else:
-                                    proxy_list[ip]['fail'] = str(int(proxy_list[ip]['fail']) + 1)
-                                    proxy_list[ip]['status'] = 'dead'
-                    # selected
+                                    proxy_lib[ip][_STATUS_KEY] = _STATUS_DEAD
+                    # selected : alive
+                    #            using -> dead
+                    #            dead  -> retry
+                    #            retry -> alive (loop2)
                     else:
-                        if proxy_list[ip]['status'] == 'alive':
+                        if proxy_lib[ip][_STATUS_KEY] == _STATUS_ALIVE:
                             continue
-                        elif proxy_list[ip]['status'] == 'using':
-                            proxy_list[ip]['status'] = 'dead'
-                        elif proxy_list[ip]['status'] == 'dead':
-                            proxy_list[ip]['status'] = 'retry'  # set retry for second loop
+                        elif proxy_lib[ip][_STATUS_KEY] == _STATUS_USING:
+                            proxy_lib[ip][_STATUS_KEY] = _STATUS_DEAD
+                        elif proxy_lib[ip][_STATUS_KEY] == _STATUS_DEAD:
+                            proxy_lib[ip][_STATUS_KEY] = _STATUS_RETRY  # set retry for second loop
                         else:  # retry
                             if loop is 1:
                                 continue
                             elif loop is 2:
-                                proxy_list[ip]['status'] = 'alive'  # set retry for second loop
+                                proxy_lib[ip][_STATUS_KEY] = _STATUS_ALIVE  # set retry for second loop
                 if loop is 2:
                     break
             if not response:
                 print 'no proxy available'
-                self.reset_proxy()
+                self.__reset_proxy()
                 return response
             else:
-                print 'switch proxy success, switch to %s' % self.proxy[url_type]
+                print 'switch proxy success, switch to %s' % self.__proxy[url_type]
                 return response
         else:
-            print 'bad url type: %s' % url_type
-            self.reset_proxy()
+            print 'bad url type: %s: %s' % (url_type, url)
+            self.__reset_proxy()
             return response
 
-    def get_page(self, url, *param):
-        time.sleep(1)
+    # update proxy data lib with new dict
+    # and update data number
+    def __update_proxy(self, file = None):
+        if not file:
+            file = self.__data_lib_file
+        self.__proxy_lib.update_data_lib(file)
+        self.__proxy_num = self.__proxy_lib.data_num()
+
+    # reset proxy to empty
+    # reset all proxy data status to alive
+    def __reset_proxy(self):
+        print 'reset proxy'
+        for url_type in self.__proxy.keys():
+            self.__proxy[url_type] = ''
+        data = self.__proxy_lib.get_data()
+        for url_type in data.keys():
+            for ip in data[url_type].keys():
+                data[url_type][ip][_STATUS_KEY] = _STATUS_ALIVE
+
+    # read page from exists file
+    def __get_page_from_file(self, url, type):
         response = ''
-
-        if len(param) > 0 and param[0] == 'test_read':
-            name = re.sub('https?://', '',  url)
-            name = re.sub('/', '-', name)
-            name = 'urls/' + name
-            with open(name) as fp_in:
-                lines = fp_in.readlines()
-                for line in lines:
-                    response = response + line
-
-        if self.request_num < self.request_threshold:
-            try:
-                response = self.session.get(url, headers=self.headers, proxies=self.proxy, timeout=5)
-                type = sys.getfilesystemencoding()
-                response = response.text.decode('utf-8').encode(type)
-            except:
-                print 'bad proxy, switch proxy'
-                response = self.switch_proxy(url)
-                self.request_num = 0
-        else:
-            response = self.switch_proxy(url)
-            self.request_num = 0
-        self.request_num += 1
-
-        if len(param) > 0 and param[0] == 'test_write':
-            name = re.sub('https?://', '',  url)
-            name = re.sub('/', '-', name)
-            name = 'urls/' + name
-            with open(name, 'w') as fp_out:
-                fp_out.writelines(response)
-
+        name = re.sub('^.*?://', '',  url)
+        name = re.sub('/', '-', name)
+        name = self.__url_dir + name
+        if os.path.isfile(name):
+            if type == common.URL_READ:
+                with open(name) as fp_in:
+                    lines = fp_in.readlines()
+                    for line in lines:
+                        response = response + line
+            elif type == common.URL_READ_THROUGH:
+                response = common.URL_EXISTS
+            else:  # common.URL_WRITE
+                pass
         return response
 
-    def write_data(self):
-        self.proxy_list.write_data_lib()
+    # write page to file
+    def __write_page_to_file(self, url, response):
+        name = re.sub('^.*?://', '',  url)
+        name = re.sub('/', '-', name)
+        name = self.__url_dir + name
+        with open(name, 'w') as fp_out:
+            fp_out.writelines(response)
+
+# data process class
+class ProxyPoolData(object):
+    # public:
+    #   display_data
+    # private:
+    #   __overview_data
+    #   __display_detail_data
+    def __init__(self):
+        self.__data_lib_file = './datalib/proxy.lib'
+        self.__disable_controler = True
+        self.__proxy_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
+        self.__proxy_lib.load_data_lib()
+
+    # display proxy data lib
+    def display_data(self):
+        self.__overview_data()
+        self.__display_detail_data()
+
+    # display overview data in proxy data lib
+    def __overview_data(self):
+        data = self.__proxy_lib.get_data()
+        for type_items in data.items():
+            print 'proxy type: %s' % type_items[0]
+            for proxy_item in sorted(type_items[1].items(), key = lambda d:d[1][_SUCC_KEY], reverse = True):
+                proxy = proxy_item[1]
+                try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
+                per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
+                print '\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                                                                proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
+                                                                per)
+        print
+
+    # choose one proxy and display detail
+    def __display_detail_data(self):
+        while 1:
+            commond = tools.choose_commond()
+            if commond == 'cancel' or commond == 'q':
+                print 'canceled...'
+                break
+            data = self.__proxy_lib.get_data()
+            for type_items in data.items():
+                if type_items[1].has_key(commond):
+                    proxy = type_items[1][commond]
+                    try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
+                    per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
+                    print '\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                                                                    proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
+                                                                    per)
+                    print '\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY], \
+                                                                     proxy[_CITY_KEY], \
+                                                                     proxy[_ANONY_KEY])
