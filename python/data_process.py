@@ -38,7 +38,7 @@ def main(argv):
         if not FLAGS.stock_id:
             vlog.VLOG('choose a stock')
             return 
-        stock_data = stock.StockData(FLAGS.stock_id)
+        stock_data = stock.StockData(FLAGS.stock_id, int(FLAGS.v))
         stock_data.display_data()
     else:
         vlog.VLOG(FLAGS.target)

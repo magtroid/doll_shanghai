@@ -6,8 +6,9 @@ import signal
 import sys
 import unique
 import enum
-from aa_aa import _abc, _aac
 from enum import Enum
+from datetime import datetime, timedelta
 
-print _aac
-_abc()
+a = [12, 13, 14]
+b = '.'.join(map(str, a))
+print b

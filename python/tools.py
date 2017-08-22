@@ -34,6 +34,7 @@ _TIME_ACCU = 6  # year month day hour minute second
 #   get_weekday
 #   date_valid
 #   date_compare
+#   date_list_to_str
 #   choose_commond
 #   get_url_type
 #   parse_href_url
@@ -55,14 +56,19 @@ def is_leap_year(year):
 def get_time_str():
     return ''.join(map(str, time.localtime()[:_TIME_ACCU]))
 
-# return current date offset delta date
+# return target date offset delta date
+# if targe date is empty, return current date offset
 # if delta date is empty, return current date
-def get_date(delta_date = None):
+def get_date(delta_date = None, current_date = None):
     date = []
     if not delta_date:
         delta_date = 0
+    if not current_date:
+        current_date = datetime.now()
+    else:
+        current_date = datetime(*current_date)
 
-    date_target = datetime.now() + timedelta(days = delta_date)
+    date_target = current_date + timedelta(days = delta_date)
     date = map(int, str(date_target).split()[0].split('-'))
     return date
 
@@ -114,6 +120,15 @@ def date_compare(date1, date2):
     return diff[0] if diff[0] else \
            diff[1] if diff[1] else \
            diff[2]
+
+# convert list data into str, xxxx.xx.xx format
+def date_list_to_str(date):
+    date_str = str(date[0])
+    if len(date) > 1:
+        date_str += '.0' + str(date[1]) if date[1] < 10 else '.' + str(date[1])
+    if len(date) > 2:
+        date_str += '.0' + str(date[2]) if date[2] < 10 else '.' + str(date[2])
+    return date_str
 
 # get commond
 # if input choose, select the key of choose

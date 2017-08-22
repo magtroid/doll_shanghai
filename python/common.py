@@ -39,3 +39,8 @@ class Month(Enum):
     Oct = 10
     Nov = 11
     Dec = 12
+
+# month day
+WEEK_DAY = 7
+MONTH_DAY = 30
+YEAR_DAY = 365

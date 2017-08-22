@@ -267,7 +267,7 @@ class LianJia(object):
         if len(self.__start_date) is 0 or len(self.__end_date) is 0:
             return False
         else:
-            print 'start to get data in time duration: %s to %s' % (' '.join(str(i) for i in self.__start_date), ' '.join(str(j) for j in self.__end_date))
+            print 'start to get data in time duration: %s to %s' % (' '.join(map(str, self.__start_date)), ' '.join(map(str, self.__end_date)))
             return True
 
     # get region and subregion of lianjia
