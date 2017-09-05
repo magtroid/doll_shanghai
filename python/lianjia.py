@@ -421,7 +421,7 @@ class LianJia(object):
         self.__start_date = []
         self.__end_date = []
         self.__calc_data_duration()
-        lib_history[_HISTORY_TIME] = tools.get_time_str()
+        lib_history[_HISTORY_TIME] = tools.get_time_str(tools.TIME_YEAR, tools.TIME_SECOND, '')
         lib_history[_HISTORY_STATUS] = config
         lib_history[_HISTORY_UPDATE_NUM] = self.__new_data_num
         lib_history[_HISTORY_DATA_START] = self.__start_date
@@ -513,7 +513,7 @@ class LianJiaData(object):
     # if no month, add all target year, each year is a 12 list
     def __add_date_range(self, year, month_range = None):
         # add new year key
-        if not self.__date_range.has_key(year):
+        if year not in self.__date_range:
             self.__date_range[year] = [0] * 12
         # set month range
         if not month_range:
@@ -529,7 +529,7 @@ class LianJiaData(object):
     # delete date range in data show
     # if no month, delete all target year
     def __del_date_range(self, year, month_range = None):
-        if not self.__date_range.has_key(year):
+        if year not in self.__date_range:
             print 'no this year'
             return
         if not month_range:
@@ -557,7 +557,7 @@ class LianJiaData(object):
             count += 1
             tools.schedule(count, data_num)
             region = sdata[1][_REGION_KEY]
-            if not self.__region.has_key(region):
+            if region not in self.__region:
                 self.__region[region] = dict()
                 self.__region[region][_REGION_NUM_KEY] = 1
                 self.__region[region][_REGION_DATA_KEY] = dict()
@@ -610,7 +610,7 @@ class LianJiaData(object):
                 date = date[:2]
             if len(date) is 1:
                 continue
-            if not data_distribution.has_key(str(date)):
+            if str(date) not in data_distribution:
                 continue
 
             data_distribution[str(date)][_DISTR_NUM_KEY] += 1

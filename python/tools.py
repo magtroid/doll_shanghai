@@ -7,7 +7,9 @@ Magtroid @ 2017-06-26 15:58
 
 # import library
 from datetime import datetime, timedelta
+import os
 import re
+import select
 import sys
 import time
 
@@ -26,10 +28,17 @@ INCLUDE  =  2
 # stock tape
 
 # time
-_TIME_ACCU = 6  # year month day hour minute second
+# year month day hour minute second
+TIME_YEAR = 0
+TIME_MONTH = 1
+TIME_DAY = 2
+TIME_HOUR = 3
+TIME_MINUTE = 4
+TIME_SECOND = 5
 
 # function
 #   is_leap_year
+#   get_time_str
 #   get_date
 #   get_weekday
 #   date_valid
@@ -40,6 +49,10 @@ _TIME_ACCU = 6  # year month day hour minute second
 #   parse_href_url
 #   ultra_encode
 #   schedule
+#   open_file
+#   fetch_stock_data
+#   kbhit
+#   sleep
 
 # check if a year is leap year
 def is_leap_year(year):
@@ -53,8 +66,18 @@ def is_leap_year(year):
         return True
 
 # return current time, str format
-def get_time_str():
-    return ''.join(map(str, time.localtime()[:_TIME_ACCU]))
+def get_time_str(start, end, spliter):
+    if start < TIME_YEAR:
+        start = TIME_YEAR
+    if end > TIME_SECOND:
+        end = TIME_SECOND
+    if end < start:
+        end = start
+    times = map(str, time.localtime()[start : end+1])
+    for n,each in enumerate(times):
+        if len(each) is 1:
+            times[n] = '0' + each
+    return spliter.join(times)
 
 # return target date offset delta date
 # if targe date is empty, return current date offset
@@ -136,7 +159,7 @@ def choose_commond(choose = None, option = None):
     if choose:
         print 'choose your items: %s\n or press "cancel" or "q" to quit' % str(choose.keys()).decode('string_escape')
         commond = sys.stdin.readline().strip()
-        while not choose.has_key(commond.split(':')[0]):
+        while commond.split(':')[0] not in choose:
             if commond == 'cancel' or commond == 'q':
                 return commond
             else:
@@ -208,3 +231,24 @@ def schedule(num, total):
         # print '\r%s %.2f%% (%d/%d)' % (('%%-%ds' % _SCHEDULE_LEN) % (int(_SCHEDULE_LEN * percent / 99) * '='), percent, num, total),
         print '\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
         sys.stdout.flush()
+
+# open file
+def open_file(file_name):
+    if re.search('/', file_name):
+        file_dir = re.search('(.*)/', file_name).group(1)
+        if not os.path.isdir(file_dir):
+            os.makedirs(file_dir)
+    fp = open(file_name, 'w')
+    return fp
+
+# monitor keyboard hit in runing program
+def kbhit():
+    r = select.select([sys.stdin], [], [], 0.01)
+    rstr = ''
+    if len(r[0]) > 0:
+        rstr = sys.stdin.readline().strip()
+    return rstr
+
+# sleep time
+def sleep(t):
+    time.sleep(t)

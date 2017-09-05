@@ -21,5 +21,6 @@ class Controler(object):
 
     def __exit(self, signum, frame):  
         print 'Stoped by user!'
-        self.__control_lib.write_data_lib()
+        if not self.__control_lib.get_controler_switch():
+            self.__control_lib.write_data_lib()
         sys.exit()         

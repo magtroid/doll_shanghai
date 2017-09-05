@@ -24,7 +24,10 @@ _STATUS_USING = 'using'
 _STATUS_DEAD  = 'dead'
 _STATUS_RETRY = 'retry'
 
-_PROXY_LIMIT_STRING = '流量异常'
+_PROXY_LIMIT_STRING = ['流量异常',
+                       '502 Bad Gateway',
+                       'Maximum number of open connections reached',
+                       'Failed to get IP address for hostname',]
 
 _TYPE_KEY = 'type'
 _SUCC_KEY = 'success'
@@ -67,7 +70,7 @@ class ProxyPool(object):
         self.__test_url = {'http': 'http://example.org',
                            'https': 'https://example.org',}
         self.__request_num = 0
-        self.__request_threshold = 100  # set to control proxy
+        self.__request_threshold = 150  # set to control proxy
         self.__time_out = 10
         self.__data_lib_file = './datalib/proxy.lib'
         self.__disable_controler = False
@@ -92,11 +95,11 @@ class ProxyPool(object):
 
     # try if target proxy works
     # return page response if success
-    def try_proxy(self, proxy, url = None):
+    def try_proxy(self, proxy, url = None, regex = None):
         url_list = []
         # fill try url list
         if not url:
-            if proxy.has_key(_TYPE_KEY):
+            if _TYPE_KEY in proxy:
                 url_list.append(self.__test_url[proxy[_TYPE_KEY]])
             else:
                 for item in self.__test_url.items():
@@ -113,6 +116,9 @@ class ProxyPool(object):
                 response = self.__session.get(surl, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
                 self.__proxy.update(proxy_tmp)
                 proxy[_TYPE_KEY] = tools.get_url_type(surl)
+                if regex is not None:
+                    if not re.search(regex, response.text):
+                        continue
                 proxy[_SUCC_KEY] += 1
                 return response.text
             except requests.exceptions.RequestException:
@@ -125,7 +131,7 @@ class ProxyPool(object):
                                                                      proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
                                                                      per)
         self.__proxy.update(proxy_tmp)
-        return ''
+        return common.NONE
 
     # return proxy number of current proxy pool
     def proxy_num(self):
@@ -146,8 +152,8 @@ class ProxyPool(object):
             self.__proxy_num -= 1
 
     # return page using all proxy necessary
-    def get_page(self, url, get_page_type = None):
-        response = ''
+    def get_page(self, url, get_page_type = None, regex = None):
+        response = common.NONE
         if get_page_type:
             response = self.__get_page_from_file(url, get_page_type)
             if response:
@@ -169,19 +175,29 @@ class ProxyPool(object):
                 self.__request_num = 0
             self.__request_num += 1
 
-            if response == '':
+            if response is common.NONE:
                 print 'get page failed, try to reload proxy'
                 time.sleep(1)
-                self.__request_num = self.__request_threshold
+                # self.__request_num = self.__request_threshold  # TODO
                 self.reload_proxy()
                 exit = False
-            elif response.find(_PROXY_LIMIT_STRING) != common.FIND_NONE:
-                self.__request_num = self.__request_threshold
-            else:
+            elif response == '':  # TODO(magtroid): add logic for restriction
                 exit = True
+            else:
+                limit_flag = False
+                for limit_str in _PROXY_LIMIT_STRING:
+                    if response.find(limit_str) != common.FIND_NONE:
+                        limit_flag = True
+                        self.__request_num = self.__request_threshold
+                if regex is not None:
+                    if not re.search(regex, response):
+                        limit_flag = True
+                        self.__request_num = self.__request_threshold
+                if limit_flag is False:
+                    exit = True
 
         # write pages
-        if get_page_type and response:
+        if get_page_type and response is not common.NONE:
             self.__write_page_to_file(url, response)
         return response
 
@@ -194,24 +210,24 @@ class ProxyPool(object):
     def __switch_proxy(self, url):
         url_type = tools.get_url_type(url)
         url_type_path = datalib.DATA_KEY + datalib.LIB_CONNECT+ url_type
-        response = ''
+        response = common.NONE
 
         if self.__proxy_lib.lhas_key(url_type_path):
             proxy_lib = self.__proxy_lib.get_data(url_type_path)
             loop = 0
             # loop 2 times, 1st: dead -> retry 2nd: retry -> dead
             # to try all proxy circulation
-            while not response:
+            while response is common.NONE:
                 loop += 1
                 for ip in proxy_lib.keys():
                     # not selected: alive -> using/dead
                     #               using -> dead
                     #               dead  -> retry (loop1)
                     #               retry -> using/dead (loop2)
-                    if not response:
+                    if response is common.NONE:
                         if proxy_lib[ip][_STATUS_KEY] == _STATUS_ALIVE:
                             response = self.try_proxy(proxy_lib[ip], url)
-                            if response:
+                            if response is not common.NONE:
                                 self.set_proxy(proxy_lib[ip])
                                 proxy_lib[ip][_STATUS_KEY] = _STATUS_USING
                             else:
@@ -228,7 +244,7 @@ class ProxyPool(object):
                                 continue
                             elif loop is 2:
                                 response = self.try_proxy(proxy_lib[ip], url)
-                                if response:
+                                if response is not common.NONE:
                                     self.set_proxy(proxy_lib[ip])
                                     proxy_lib[ip][_STATUS_KEY] = _STATUS_USING
                                 else:
@@ -251,7 +267,7 @@ class ProxyPool(object):
                                 proxy_lib[ip][_STATUS_KEY] = _STATUS_ALIVE  # set retry for second loop
                 if loop is 2:
                     break
-            if not response:
+            if response is common.NONE:
                 print 'no proxy available'
                 self.__reset_proxy()
                 return response
@@ -349,7 +365,7 @@ class ProxyPoolData(object):
                 break
             data = self.__proxy_lib.get_data()
             for type_items in data.items():
-                if type_items[1].has_key(commond):
+                if commond in type_items[1]:
                     proxy = type_items[1][commond]
                     try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                     per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0

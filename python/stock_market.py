@@ -59,7 +59,7 @@ class StockMarket(object):
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
         self.__stock_market_lib.load_data_lib()
         self.__get_page_type = common.URL_READ
-        self.__stock_market_class = [_ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+        self.__stock_market_class = [_CY_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
         self.__tape_set = {_SH_TAPE_ID, _SZ_TAPE_ID, _CY_TAPE_ID}
         self.__get_stock_list(_PROCESS_STOCK_LIST)
 
@@ -115,7 +115,7 @@ class StockMarket(object):
             print 'scrap tape: {stock_code} ({stock_name})'.format(stock_code = stock_code, \
                                                                    stock_name = tape_item[1][_NAME_KEY])
             # get link new lib
-            if not tape_item[1].has_key(datalib.LINK_FEATURE):
+            if datalib.LINK_FEATURE not in tape_item[1]:
                 stock_data = stock.Stock(stock_code, proxy_pool = self.__proxy_pool)
                 if stock_data.get_stock_data():
                     tape_item[1][datalib.LINK_FEATURE] = stock_data.get_stock_lib()
@@ -135,7 +135,7 @@ class StockMarket(object):
                                                                                    num = stock_num, \
                                                                                    all_num = len(class_data))
                 # get link new lib
-                if not stock_item[1].has_key(datalib.LINK_FEATURE) or \
+                if datalib.LINK_FEATURE not in stock_item[1] or \
                    stock_item[1][datalib.LINK_FEATURE] == None:
                     stock_data = stock.Stock(stock_code, proxy_pool = self.__proxy_pool)
                 else:

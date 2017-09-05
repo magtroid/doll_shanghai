@@ -45,6 +45,7 @@ _LIB_FILE_KEY = 'LIB_FILE'
 # main class
 class DataLib(object):
     # public:
+    #   get_controler_switch
     #   load_data_lib
     #   update_data_lib
     #   get_data_lib
@@ -73,6 +74,7 @@ class DataLib(object):
     def __init__(self, resource, disable_controler = None, vlog = 0):
         self.__root_key = [DATA_KEY, CONFIG_KEY]
         self.__vlog = log.VLOG(vlog)
+        self.__disable_controler = False
         if isinstance(resource, str):
             self.__data_file = resource
             self.__data_lib = dict()
@@ -84,10 +86,16 @@ class DataLib(object):
         if not disable_controler:
             self.__controler = controler.Controler(self)
 
+    # return controler switch
+    def get_controler_switch(self):
+        return self.__disable_controler
+
     # load data lib from data_file
     # return a lib dict
     # if data_file empty, load self data file and set to self
     def load_data_lib(self, data_file = None):
+        controler_switch = self.__disable_controler
+        self.__disable_controler = True
         self_load = False
         if not data_file:
             data_file = self.__data_file
@@ -114,6 +122,7 @@ class DataLib(object):
                     else:
                         print 'error format %s\nfail to load data lib' % index_segs[1]
                         self.__reset_data_lib(data_lib)
+                        self.__disable_controler = controler_switch
                         return
                     keys_segs = map(str.strip, keys.split('\t'))
                     values_segs = map(str.strip, values.split('\t'))
@@ -158,7 +167,9 @@ class DataLib(object):
         if self_load:
             self.__reset_data_lib()
             self.__data_lib = data_lib
+            self.__disable_controler = controler_switch
         else:
+            self.__disable_controler = controler_switch
             return data_lib
 
     # load file data and merge into self.__data_lib
@@ -175,7 +186,7 @@ class DataLib(object):
     # insert data
     # id_feature is the key to set ID
     def insert_data(self, lkey, data, id_feature):
-        if not data.has_key(id_feature):
+        if id_feature not in data:
             print 'failed to insert data, no id features: ' % id_feature
             return False
         key_segs = lkey.split(LIB_CONNECT)
@@ -183,13 +194,13 @@ class DataLib(object):
         for key in key_segs:
             if not key:  # pass empty key
                 continue
-            if not cdata.has_key(key):
+            if key not in cdata:
                 cdata[key] = dict()
             cdata = cdata[key]
 
         # insert data and insert ID key
         key = data[id_feature]
-        if not cdata.has_key(key):
+        if key not in cdata:
             cdata[key] = data.copy()
             cdata[key][DATA_FEATURE] = key  # insert ID key
             self.__increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
@@ -203,22 +214,22 @@ class DataLib(object):
         key_segs = lkey.split(LIB_CONNECT)
         cdata = self.get_data()
         for i in range(len(key_segs)-1):
-            if not cdata.has_key(key_segs[i]):
+            if key_segs[i] not in cdata:
                 print 'no %s key to delete' % key_segs[i]
                 return False
             cdata = cdata[key_segs[i]]
-        if not cdata.has_key(key_segs[-1]):
+        if key_segs[-1] not in cdata:
             print 'no such data: %s' % key_segs[-1]
             return False
         else:
             del cdata[key_segs[-1]]
-            self.__decrease_data(CONFIG_KEY + LIB_CONNEC + T_DATA_NUM_KEY)
+            self.__decrease_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
 
             # check if parent dict is empty after delete
             # if so, delete it
             # recursive check parent dict
             for i in range(len(key_segs)-2, -1, -1):
-                cdata = self.__data_lib
+                cdata = self.get_data()
                 for j in range(i-1):
                     cdata = cdata[key_segs[j]]
                 if len(cdata[key_segs[i]]) is 0:
@@ -228,7 +239,7 @@ class DataLib(object):
 
     # insert config
     def insert_config(self, lkey, config, id_feature):
-        if not config.has_key(id_feature):
+        if id_feature not in config:
             print 'failed to insert config, no id features: ' % id_feature
             return False
         key_segs = lkey.split(LIB_CONNECT)
@@ -236,13 +247,13 @@ class DataLib(object):
         for key in key_segs:
             if not key:  # pass empty key
                 continue
-            if not cconfig.has_key(key):
+            if key not in cconfig:
                 cconfig[key] = dict()
             cconfig = cconfig[key]
 
         # insert config
         key = config[id_feature]
-        if not cconfig.has_key(key):
+        if key not in cconfig:
             cconfig[key] = config.copy()
             return True
         else:
@@ -263,7 +274,7 @@ class DataLib(object):
         for key in key_segs:
             if not key:  # pass empty key
                 continue
-            if isinstance(cdata, dict) and cdata.has_key(key):
+            if isinstance(cdata, dict) and key in cdata:
                 cdata = cdata[key]
             else:
                 print key
@@ -276,7 +287,7 @@ class DataLib(object):
         key_segs = lkey.split(LIB_CONNECT)
         cdata = self.__data_lib
         for key in key_segs:
-            if cdata.has_key(key):
+            if key in cdata:
                 cdata = cdata[key]
             else:
                 return False
@@ -349,7 +360,7 @@ class DataLib(object):
         key_segs = lkey.split(LIB_CONNECT)
         cdata = data_lib
         for key in key_segs[:-1]:
-            if not cdata.has_key(key):
+            if key not in cdata:
                 cdata[key] = dict()
             cdata = cdata[key]
         cdata[key_segs[-1]] = value
@@ -385,10 +396,10 @@ class DataLib(object):
     def __merge_data_lib(self, data1, data2):
         for key in data2.keys():
             if isinstance(data2[key], dict):
-                if not data1.has_key(key):
+                if key not in data1:
                     data1[key] = data2[key]
                     # check if data increase data number
-                    if data1[key].has_key(DATA_FEATURE):
+                    if DATA_FEATURE in data1[key]:
                         self.__increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
                 else:
                     self.__merge_data_lib(data1[key], data2[key])

@@ -10,6 +10,7 @@ import log
 # login files
 import github
 import lianjia
+import monitor
 import proxy
 import proxy66
 import stock
@@ -22,7 +23,7 @@ sys.path.append('./gflags')
 import gflags
 
 FLAGS = gflags.FLAGS
-gflags.DEFINE_string('target', 'stock', 'zhihu | github | uqer | lianjia | proxy-xici | proxy-66ip | stock_market | stock')
+gflags.DEFINE_string('target', 'stock', 'zhihu | github | uqer | lianjia | proxy-xici | proxy-66ip | stock_market | stock | monitor')
 # gflags.DEFINE_string('account', '15101116531', '')
 # gflags.DEFINE_string('password', '1122344751', '')
 gflags.DEFINE_string('account', '', '')
@@ -70,6 +71,9 @@ def main(argv):
         stock_data = stock.Stock(FLAGS.stock_id)
         stock_data.get_stock_data()
         stock_data.write_stock_data()
+    elif FLAGS.target == 'monitor':
+        stock_monitor = monitor.StockMonitor()
+        stock_monitor.stock_monitor()
     else:
         vlog.VLOG(FLAGS.target)
         vlog.VLOG('error')

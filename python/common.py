@@ -21,6 +21,8 @@ HTML_PARSER = 'html.parser'
 HREF_KEY = 'href'
 # find none
 FIND_NONE = -1
+# None string
+NONE = '__none__'
 
 # empty key
 EMPTY_KEY = ''

@@ -42,7 +42,8 @@ class Proxy(object):
     def __init__(self, proxy_pool = None):
         self.__url = 'http://www.66ip.cn'
         # self.__target_url = 'https://bj.lianjia.com/chengjiao'
-        self.__target_url = 'http://finance.ifeng.com'
+        self.__target_url = 'http://api.finance.ifeng.com/akmonthly/?code=sh603737&type=last'
+        self.__regex = '^{"record.*}$'
         # self.__target_url = 'http://www.66ip.cn'
         self.__max_proxy_num = 20
         self.__proxy_num = 0
@@ -137,7 +138,7 @@ class Proxy(object):
             proxy_unit[_SUCC_KEY] = 0
             proxy_unit[_FAIL_KEY] = 0
 
-            if self.__proxy_pool.try_proxy(proxy_unit, self.__target_url):
+            if self.__proxy_pool.try_proxy(proxy_unit, self.__target_url, regex = self.__regex):
                 proxy_unit[_CITY_KEY] = proxy_tds[2]
                 proxy_unit[_ANONY_KEY] = proxy_tds[3]
                 proxy_unit[_STATUS_KEY] = _STATUS_DEFAULT
