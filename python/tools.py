@@ -37,6 +37,7 @@ TIME_MINUTE = 4
 TIME_SECOND = 5
 
 # function
+#   stdin
 #   is_leap_year
 #   get_time_str
 #   get_date
@@ -53,6 +54,10 @@ TIME_SECOND = 5
 #   fetch_stock_data
 #   kbhit
 #   sleep
+
+# return stdin
+def stdin():
+    return sys.stdin.readline().strip()
 
 # check if a year is leap year
 def is_leap_year(year):
@@ -232,7 +237,8 @@ def schedule(num, total):
         print '\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
         sys.stdout.flush()
 
-# open file
+# open file for write
+# if not exist, create one
 def open_file(file_name):
     if re.search('/', file_name):
         file_dir = re.search('(.*)/', file_name).group(1)

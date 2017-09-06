@@ -47,7 +47,7 @@ class ProxyPool(object):
     #   set_proxy
     #   try_proxy
     #   proxy_num
-    #   set_shreshold
+    #   set_threshold
     #   insert_proxy
     #   delete_proxy
     #   get_page

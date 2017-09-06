@@ -72,7 +72,7 @@ def main(argv):
         stock_data.get_stock_data()
         stock_data.write_stock_data()
     elif FLAGS.target == 'monitor':
-        stock_monitor = monitor.StockMonitor()
+        stock_monitor = monitor.StockMonitor(vlog = int(FLAGS.v))
         stock_monitor.stock_monitor()
     else:
         vlog.VLOG(FLAGS.target)

@@ -53,6 +53,9 @@ class DataLib(object):
     #   delete_data
     #   insert_config
     #   get_data
+    #   set_data
+    #   increase_data
+    #   decrease_data
     #   lhas_key
     #   data_num
     #   lib_file
@@ -62,9 +65,6 @@ class DataLib(object):
     # private
     #   __merge_data_lib
     #   __reset data_lib
-    #   __set_data
-    #   __increase_data
-    #   __decrease_data
     #   __write_link_data
     #   __write_data
 
@@ -159,7 +159,7 @@ class DataLib(object):
                         unit_tmp.update(unit)
         else:
             print 'no data current'
-        self.__set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, \
+        self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, \
                         data_file, data_lib)
         print 'load ok'
         print 'all data number: %d' % self.data_num(data_lib)
@@ -186,9 +186,14 @@ class DataLib(object):
     # insert data
     # id_feature is the key to set ID
     def insert_data(self, lkey, data, id_feature):
-        if id_feature not in data:
-            print 'failed to insert data, no id features: ' % id_feature
-            return False
+        if isinstance(data, dict):
+            if id_feature not in data:
+                print 'failed to insert data, no id features: ' % id_feature
+                return False
+            else:
+                data_key = data[id_feature]
+        else:
+            data_key = id_feature
         key_segs = lkey.split(LIB_CONNECT)
         cdata = self.get_data()
         for key in key_segs:
@@ -199,14 +204,16 @@ class DataLib(object):
             cdata = cdata[key]
 
         # insert data and insert ID key
-        key = data[id_feature]
-        if key not in cdata:
-            cdata[key] = data.copy()
-            cdata[key][DATA_FEATURE] = key  # insert ID key
-            self.__increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
+        if data_key not in cdata:
+            if isinstance(data, dict):
+                cdata[data_key] = data.copy()
+                cdata[data_key][DATA_FEATURE] = data_key  # insert ID key
+            else:
+                cdata[data_key] = data
+            self.increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
             return True
         else:
-            self.__vlog.VLOG('error to insert data: exists in id: %s' % key, 1)
+            self.__vlog.VLOG('error to insert data: exists in id: %s' % data_key, 1)
             return False
 
     # delete data
@@ -223,7 +230,7 @@ class DataLib(object):
             return False
         else:
             del cdata[key_segs[-1]]
-            self.__decrease_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
+            self.decrease_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
 
             # check if parent dict is empty after delete
             # if so, delete it
@@ -282,6 +289,45 @@ class DataLib(object):
                 return None
         return cdata
 
+    # set data value, if not exist, form one
+    # if data_lib exist, set data lib instead
+    def set_data(self, lkey, value, data_lib = None):
+        if data_lib == None:
+            data_lib = self.__data_lib
+        key_segs = lkey.split(LIB_CONNECT)
+        cdata = data_lib
+        for key in key_segs[:-1]:
+            if key not in cdata:
+                cdata[key] = dict()
+            cdata = cdata[key]
+        cdata[key_segs[-1]] = value
+
+    # increase data value by number (default 1)
+    def increase_data(self, lkey, number = None):
+        if not number:
+            number = 1
+        if self.lhas_key(lkey):
+            key_segs = lkey.split(LIB_CONNECT)
+            cdata = self.__data_lib
+            for key in key_segs[:-1]:
+                cdata = cdata[key]
+            last_key = key_segs[-1]
+            if isinstance(cdata[last_key], (int, float)):
+                cdata[last_key] += number
+
+    # decrease data value by number (default 1)
+    def decrease_data(self, lkey, number = None):
+        if not number:
+            number = 1
+        if self.lhas_key(lkey):
+            key_segs = lkey.split(LIB_CONNECT)
+            cdata = self.__data_lib
+            for key in key_segs[:-1]:
+                cdata = cdata[key]
+            last_key = key_segs[-1]
+            if isinstance(cdata[last_key], (int, float)):
+                cdata[last_key] -= number
+
     # check if data lib has key
     def lhas_key(self, lkey):
         key_segs = lkey.split(LIB_CONNECT)
@@ -318,7 +364,7 @@ class DataLib(object):
             data_lib = self.__data_lib
         if not data_file:
             data_file = self.lib_file() if self.lib_file() else self.__data_file
-        self.__set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, data_file)
+        self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, data_file)
         print 'start to write data %s...' % data_file
         if not isinstance(data_lib, dict):
             print 'error data lib type'
@@ -346,50 +392,11 @@ class DataLib(object):
             data_lib[key] = dict()
 
         if self_reset:
-            self.__set_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY, 0)
-            self.__set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, '')
+            self.set_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY, 0)
+            self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, '')
         else:
-            self.__set_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY, 0, data_lib)
-            self.__set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, '', data_lib)
-
-    # set data value, if not exist, form one
-    # if data_lib exist, set data lib instead
-    def __set_data(self, lkey, value, data_lib = None):
-        if data_lib == None:
-            data_lib = self.__data_lib
-        key_segs = lkey.split(LIB_CONNECT)
-        cdata = data_lib
-        for key in key_segs[:-1]:
-            if key not in cdata:
-                cdata[key] = dict()
-            cdata = cdata[key]
-        cdata[key_segs[-1]] = value
-
-    # increase data value by number (default 1)
-    def __increase_data(self, lkey, number = None):
-        if not number:
-            number = 1
-        if self.lhas_key(lkey):
-            key_segs = lkey.split(LIB_CONNECT)
-            cdata = self.__data_lib
-            for key in key_segs[:-1]:
-                cdata = cdata[key]
-            last_key = key_segs[-1]
-            if isinstance(cdata[last_key], int):
-                cdata[last_key] += number
-
-    # decrease data value by number (default 1)
-    def __decrease_data(self, lkey, number = None):
-        if not number:
-            number = 1
-        if self.lhas_key(lkey):
-            key_segs = lkey.split(LIB_CONNECT)
-            cdata = self.__data_lib
-            for key in key_segs[:-1]:
-                cdata = cdata[key]
-            last_key = key_segs[-1]
-            if isinstance(cdata[last_key], int):
-                cdata[last_key] -= number
+            self.set_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY, 0, data_lib)
+            self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, '', data_lib)
 
     # only merge new dict in new data
     # merge data2 into data1
@@ -400,7 +407,7 @@ class DataLib(object):
                     data1[key] = data2[key]
                     # check if data increase data number
                     if DATA_FEATURE in data1[key]:
-                        self.__increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
+                        self.increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
                 else:
                     self.__merge_data_lib(data1[key], data2[key])
 
