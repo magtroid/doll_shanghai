@@ -85,7 +85,7 @@ class ProxyPool(object):
 
     # print current proxy set
     def current_proxy(self):
-        print 'current proxy is %s' % self.__proxy
+        self.__vlog.VLOG('current proxy is %s' % self.__proxy)
 
     # set proxy set to target proxy
     def set_proxy(self, proxy):
@@ -110,7 +110,7 @@ class ProxyPool(object):
         # iterate try each type of url
         for surl in url_list:
             proxy[_TYPE_KEY] = tools.get_url_type(surl)
-            print 'try types: %s' % proxy[_TYPE_KEY]
+            self.__vlog.VLOG('try types: %s' % proxy[_TYPE_KEY])
             self.set_proxy(proxy)
             try:
                 response = self.__session.get(surl, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
@@ -127,9 +127,9 @@ class ProxyPool(object):
         proxy[_FAIL_KEY] += 1
         try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
         per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-        print 'bad proxy: %s:%s, change one (s/f : %d/%d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
-                                                                     proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
-                                                                     per)
+        self.__vlog.VLOG('bad proxy: %s:%s, change one (s/f : %d/%d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                                                                                proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
+                                                                                per))
         self.__proxy.update(proxy_tmp)
         return common.NONE
 
@@ -166,17 +166,17 @@ class ProxyPool(object):
                     response = self.__session.get(url, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
                     response = response.text
                 except requests.exceptions.RequestException:
-                    print 'bad proxy, switch proxy'
+                    self.__vlog.VLOG('bad proxy, switch proxy')
                     response = self.__switch_proxy(url)
                     self.__request_num = 0
             else:
-                print 'request control, switch proxy'
+                self.__vlog.VLOG('request control, switch proxy')
                 response = self.__switch_proxy(url)
                 self.__request_num = 0
             self.__request_num += 1
 
             if response is common.NONE:
-                print 'get page failed, try to reload proxy'
+                self.__vlog.VLOG('get page failed, try to reload proxy')
                 time.sleep(1)
                 # self.__request_num = self.__request_threshold  # TODO
                 self.reload_proxy()
@@ -209,7 +209,7 @@ class ProxyPool(object):
     # and return the page
     def __switch_proxy(self, url):
         url_type = tools.get_url_type(url)
-        url_type_path = datalib.DATA_KEY + datalib.LIB_CONNECT+ url_type
+        url_type_path = datalib.form_lkey([datalib.DATA_KEY, url_type])
         response = common.NONE
 
         if self.__proxy_lib.lhas_key(url_type_path):
@@ -268,14 +268,14 @@ class ProxyPool(object):
                 if loop is 2:
                     break
             if response is common.NONE:
-                print 'no proxy available'
+                self.__vlog.VLOG('no proxy available')
                 self.__reset_proxy()
                 return response
             else:
-                print 'switch proxy success, switch to %s' % self.__proxy[url_type]
+                self.__vlog.VLOG('switch proxy success, switch to %s' % self.__proxy[url_type])
                 return response
         else:
-            print 'bad url type: %s: %s' % (url_type, url)
+            self.__vlog.VLOG('bad url type: %s: %s' % (url_type, url))
             self.__reset_proxy()
             return response
 
@@ -290,7 +290,7 @@ class ProxyPool(object):
     # reset proxy to empty
     # reset all proxy data status to alive
     def __reset_proxy(self):
-        print 'reset proxy'
+        self.__vlog.VLOG('reset proxy')
         for url_type in self.__proxy.keys():
             self.__proxy[url_type] = ''
         data = self.__proxy_lib.get_data()
@@ -346,22 +346,21 @@ class ProxyPoolData(object):
     def __overview_data(self):
         data = self.__proxy_lib.get_data()
         for type_items in data.items():
-            print 'proxy type: %s' % type_items[0]
+            self.__vlog.VLOG('proxy type: %s' % type_items[0])
             for proxy_item in sorted(type_items[1].items(), key = lambda d:d[1][_SUCC_KEY], reverse = True):
                 proxy = proxy_item[1]
                 try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                 per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-                print '\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
-                                                                proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
-                                                                per)
-        print
+                self.__vlog.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                                                                           proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
+                                                                           per))
 
     # choose one proxy and display detail
     def __display_detail_data(self):
         while 1:
             commond = tools.choose_commond()
             if commond == 'cancel' or commond == 'q':
-                print 'canceled...'
+                self.__vlog.VLOG('canceled...')
                 break
             data = self.__proxy_lib.get_data()
             for type_items in data.items():
@@ -369,9 +368,9 @@ class ProxyPoolData(object):
                     proxy = type_items[1][commond]
                     try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                     per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-                    print '\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
-                                                                    proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
-                                                                    per)
-                    print '\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY], \
-                                                                     proxy[_CITY_KEY], \
-                                                                     proxy[_ANONY_KEY])
+                    self.__vlog,VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                                                                               proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
+                                                                               per))
+                    self.__vlog.VLOG('\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY], \
+                                                                                proxy[_CITY_KEY], \
+                                                                                proxy[_ANONY_KEY]))

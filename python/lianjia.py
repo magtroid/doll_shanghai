@@ -81,6 +81,7 @@ class LianJia(object):
     #   __get_data_duration
     #   __in_search_range
     #   __get_scrap_duration
+    #   __fix_start_date
     #   __get_region
     #   __get_subregion
     #   __get_page_num
@@ -95,6 +96,7 @@ class LianJia(object):
         self.__vlog = log.VLOG(vlog)
         self.__city = city
         self.__city_url = 'https://' + self.__city + '.lianjia.com'
+        self.__mask_duration = 31
         self.__start_date = []  # scrap start date
         self.__end_date = []  # scrap end date
         self.__region = dict()
@@ -117,9 +119,9 @@ class LianJia(object):
     # aplay data TODO
     def aplay_data(self, data):
         for i in range(len(data)):
-            print str(data[i][0]) + '\t' + \
-                  str(data[i][1]) + '\t' + \
-                  str(data[i][2])
+            self.__vlog.VLOG(str(data[i][0]) + '\t' + \
+                             str(data[i][1]) + '\t' + \
+                             str(data[i][2]))
 
     # insert lianjia data
     def insert_lianjia_data(self, lkey, lianjia_data):
@@ -149,12 +151,12 @@ class LianJia(object):
                 subregion_url = ssubregion[0]
                 subregion_name = ssubregion[1]
                 region_index[_INDEX_SUBREGION_KEY] = subregion_name
-                print 'scrap region: %s %d/%d(%d/%d)' % (subregion_url, region_count, len(self.__region), \
-                                                         subregion_count, len(sregion[1][_REGION_SUBREGION_KEY]))
+                self.__vlog.VLOG('scrap region: %s %d/%d(%d/%d)' % (subregion_url, region_count, len(self.__region), \
+                                                                    subregion_count, len(sregion[1][_REGION_SUBREGION_KEY])))
                 self.__get_subregion_data(subregion_url, region_index)
 
-                print 'all data number: %d' % self.__lianjia_lib.data_num()
-                print 'new data number: %d' % self.__new_data_num
+                self.__vlog.VLOG('all data number: %d' % self.__lianjia_lib.data_num())
+                self.__vlog.VLOG('new data number: %d' % self.__new_data_num)
 
                 # check go on
                 if self.__go_on is _STOP_ALL:
@@ -164,19 +166,19 @@ class LianJia(object):
             if self.__go_on is _STOP_ALL:
                 break
 
-        print '%s ~ %s update %d deals' % (self.__start_date, self.__end_date, self.__new_data_num)
+        self.__vlog.VLOG('%s ~ %s update %d deals' % (self.__start_date, self.__end_date, self.__new_data_num))
         for sregion in sorted(self.__region.items(), key=lambda d:d[1][_REGION_NUM_KEY], reverse=True):
-            print '%s update %d deals' % (sregion[1][_REGION_NAME_KEY], sregion[1][_REGION_NUM_KEY])
+            self.__vlog.VLOG('%s update %d deals' % (sregion[1][_REGION_NAME_KEY], sregion[1][_REGION_NUM_KEY]))
 
-        print 'finished write data'
+        self.__vlog.VLOG('finished write data')
         write_config = _HISTORY_INTERRUPT if not self.__go_on else _HISTORY_FINISH
         self.__write_data_lib(write_config)
-        print 'done lianjia'
+        self.__vlog.VLOG('done lianjia')
 
     # calculate lianjia data lib date duration
     def __calc_data_duration(self):
         data_num = self.__lianjia_lib.data_num()
-        print 'begin to calculate date range'
+        self.__vlog.VLOG('begin to calculate date range')
         count = 0
         data = self.__lianjia_lib.get_data()
         for item in data.items():
@@ -193,7 +195,7 @@ class LianJia(object):
                 self.__start_date = date
             if date_compare_end == tools.LARGER or date_compare_end == tools.INCLUDE:
                 self.__end_date = date
-        print 'success! date range: %s ~ %s' % (self.__start_date, self.__end_date)
+        self.__vlog.VLOG('success! date range: %s ~ %s' % (self.__start_date, self.__end_date))
 
     # get data duration from data lib
     def __get_data_duration(self):
@@ -221,12 +223,12 @@ class LianJia(object):
     def __get_scrap_duration(self):
         finished = False
         while not finished:
-            print 'insert date_range duration (1 day/1 week/1 month/xxxx.xx.xx~yyyy.yy.yy/update/all)'
-            print '\tor insert "n/N" to cancel'
+            self.__vlog.VLOG('insert date_range duration (1 day/1 week/1 month/xxxx.xx.xx~yyyy.yy.yy/update/all)')
+            self.__vlog.VLOG('\tor insert "n/N" to cancel')
             date_range = sys.stdin.readline().strip()
             if date_range == _CMD_ALL:
                 self.__get_page_type = common.URL_READ
-                self.__start_date = tools.get_date(_VERY_BEGINING)
+                self.__start_date = tools.get_date(-_VERY_BEGINING)
                 self.__end_date = tools.get_date()
                 self.__stop_threshold = _NO_STOP
             elif date_range == _CMD_DAY:
@@ -241,7 +243,7 @@ class LianJia(object):
             elif date_range == _CMD_UPDATE:
                 self.__get_page_type = common.URL_WRITE
                 if len(self.__end_date) is 0:
-                    self.__start_date = tools.get_date(_VERY_BEGINING)
+                    self.__start_date = tools.get_date(-_VERY_BEGINING)
                 else:
                     self.__start_date = self.__end_date
                 self.__end_date = tools.get_date()
@@ -258,25 +260,26 @@ class LianJia(object):
                     self.__start_date = start_date
                     self.__end_date = end_date
                 else:
-                    print 'insert date invalid'
+                    self.__vlog.VLOG('insert date invalid')
                     continue
             else:
-                print 'not support this type'
+                self.__vlog.VLOG('not support this type')
                 continue
             finished = True
         if len(self.__start_date) is 0 or len(self.__end_date) is 0:
             return False
         else:
-            print 'start to get data in time duration: %s to %s' % (' '.join(map(str, self.__start_date)), ' '.join(map(str, self.__end_date)))
+            self.__fix_start_date()
+            self.__vlog.VLOG('start to get data in time duration: %s to %s' % (' '.join(map(str, self.__start_date)), ' '.join(map(str, self.__end_date))))
             return True
 
     # get region and subregion of lianjia
     def __get_region(self):
-        print 'begin to get region'
+        self.__vlog.VLOG('begin to get region')
         cjurl = self.__city_url + '/chengjiao'
         page = self.__proxy_pool.get_page(cjurl, common.URL_READ)
         if not page:
-            print 'failed to scrap region page'
+            self.__vlog.VLOG('failed to scrap region page')
             return
         else:
             soup = BeautifulSoup(page, common.HTML_PARSER)
@@ -286,12 +289,12 @@ class LianJia(object):
                 region_count += 1
                 region_name = str(region_element.get_text())
                 region_url = tools.parse_href_url(region_element[common.HREF_KEY], self.__city_url)
-                print 'region %d/%d %s' % (region_count, len(region_elements), region_name)
+                self.__vlog.VLOG('region %d/%d %s' % (region_count, len(region_elements), region_name))
                 self.__region[region_url] = dict()
                 self.__region[region_url][_REGION_NAME_KEY] = region_name
                 self.__region[region_url][_REGION_SUBREGION_KEY] = self.__get_subregion(region_url)
                 self.__region[region_url][_REGION_NUM_KEY] = 0
-        print 'all %d regions' % self.__subregion_number
+        self.__vlog.VLOG('all %d regions' % self.__subregion_number)
 
     # get subregion from a region
     # empty if no subregion of failed
@@ -300,13 +303,13 @@ class LianJia(object):
         page = self.__proxy_pool.get_page(url, common.URL_READ)
         subregion = dict()
         if not page:
-            print 'failed to scrap subregion'
+            self.__vlog.VLOG('failed to scrap subregion')
             return subregion
         else:
             soup = BeautifulSoup(page, common.HTML_PARSER)
             subregion_classes = soup.select('div[data-role="ershoufang"] div')
             if len(subregion_classes) < 2:
-                print 'no subregion for page %s' % url
+                self.__vlog.VLOG('no subregion for page %s' % url)
                 return subregion
             subregion_count = 0
             subregion_elements = subregion_classes[1].select('a')
@@ -315,7 +318,7 @@ class LianJia(object):
                 subregion_count += 1
                 subregion_name = str(subregion_element.get_text())
                 subregion_url = tools.parse_href_url(subregion_element[common.HREF_KEY], city_url)
-                print '\tsub region %d/%d %s' % (subregion_count, len(subregion_elements), subregion_name)
+                self.__vlog.VLOG('\tsub region %d/%d %s' % (subregion_count, len(subregion_elements), subregion_name))
                 subregion[subregion_url] = subregion_name
         return subregion
 
@@ -324,7 +327,7 @@ class LianJia(object):
         page_num = 0
         page = self.__proxy_pool.get_page(url, common.URL_READ)
         if not page:
-            print 'failed to scrap page number page'
+            self.__vlog.VLOG('failed to scrap page number page')
         else:
             soup = BeautifulSoup(page, common.HTML_PARSER)
             for page_segment in soup.select('[comp-module="page"]'):
@@ -335,16 +338,16 @@ class LianJia(object):
     def __get_subregion_data(self, url, region_index):
         page_num = self.__get_page_num(url)  # get page number
         for page in range(page_num):
-            print '\tscrap page: %d/%d %s:%s' % (page + 1, page_num, \
-                                                 region_index[_INDEX_REGION_KEY], \
-                                                 region_index[_INDEX_SUBREGION_KEY])
+            self.__vlog.VLOG('\tscrap page: %d/%d %s:%s' % (page + 1, page_num, \
+                                                            region_index[_INDEX_REGION_KEY], \
+                                                            region_index[_INDEX_SUBREGION_KEY]))
             data_url = tools.parse_href_url('/pg%d' % page, url)
             if not self.__get_data(data_url, region_index):
                 self.__go_on = _STOP_ALL
                 return
             self.__check_write_data()
             if self.__go_on <= _STOP_SUBREGION:
-                print 'subregion finished %s ' % region_index[_INDEX_SUBREGION_KEY]
+                self.__vlog.VLOG('subregion finished %s ' % region_index[_INDEX_SUBREGION_KEY])
                 self.__go_on = self.__stop_threshold
                 return
 
@@ -353,7 +356,7 @@ class LianJia(object):
         data_tail = self.__new_data_num % _DATA_BUFFER
         if self.__new_data_tail >= _DATA_BUFFER - _PAGE_DATA_NUM and \
            data_tail <= _PAGE_DATA_NUM:
-            print 'write data'
+            self.__vlog.VLOG('write data')
             self.__write_data_lib()
             self.__new_data_tail = data_tail
 
@@ -361,10 +364,10 @@ class LianJia(object):
     def __get_data(self, url, region_index):
         page = self.__proxy_pool.get_page(url, self.__get_page_type)
         if page == common.URL_EXIST:
-            print 'page exists: %s' % url
+            self.__vlog.VLOG('page exists: %s' % url)
             return True
         elif page == '':
-            print 'failed to get url page: ' % url
+            self.__vlog.VLOG('failed to get url page: ' % url)
             return False
         else:  # success to get page
             self.__parse_data(page, region_index)
@@ -375,23 +378,27 @@ class LianJia(object):
         soup = BeautifulSoup(page, common.HTML_PARSER)
         flag_all_date_out = True
         data_elements = soup.select('.listContent li')
-        print 'page data number %d' % len(data_elements)
+        self.__vlog.VLOG('page data number %d' % len(data_elements))
         for data_element in data_elements:
             data_element_a = data_element.a
             data_element_div = data_element.div
             lianjia_unit = dict()
             lianjia_unit[_ID_KEY] = str(re.search('(\w*).html', data_element_a[common.HREF_KEY]).group(1))
+            # filter mask
+            if len(data_element_div.select('.dealDate')) == 0:
+                self.__vlog.VLOG('masked for 1 month limit')
+                continue
             lianjia_unit[_DATE_KEY] = map(int, data_element_div.select('.dealDate')[0].get_text().split('.'))
 
             # if in search range
             if not self.__in_search_range(lianjia_unit[_DATE_KEY]):
-                print 'not in search range %s (%s ~ %s)' % (lianjia_unit[_DATE_KEY], self.__start_date, self.__end_date)
+                self.__vlog.VLOG('not in search range %s (%s ~ %s)' % (lianjia_unit[_DATE_KEY], self.__start_date, self.__end_date))
                 continue
             flag_all_date_out = False
 
             # if exists data
-            if self.__lianjia_lib.lhas_key(datalib.DATA_KEY + datalib.LIB_CONNECT+ lianjia_unit[_ID_KEY]):
-                print 'id exist'
+            if self.__lianjia_lib.lhas_key(datalib.form_lkey([datalib.DATA_KEY, lianjia_unit[_ID_KEY]])):
+                self.__vlog.VLOG('id exist')
                 continue
 
             lianjia_unit[_REGION_KEY] = region_index[_INDEX_REGION_KEY]
@@ -459,7 +466,8 @@ class LianJiaData(object):
     #   __display_region_data
     #   __write_data_lib
 
-    def __init__(self, city):
+    def __init__(self, city, vlog = 0):
+        self.__vlog = log.VLOG(vlog)
         self.__city = city
         self.__start_date = []
         self.__end_date = []
@@ -481,7 +489,7 @@ class LianJiaData(object):
         while 1:
             commond = tools.choose_commond(self.__region)
             if commond == 'cancel' or commond == 'q':
-                print 'canceled...'
+                self.__vlog.VLOG('canceled...')
                 break
             data_distribution = self.__get_data_distribution(commond)
             self.__display_region_data(data_distribution)
@@ -489,7 +497,7 @@ class LianJiaData(object):
     # calculate lianjia data lib date duration
     def __calc_data_duration(self):
         data_num = self.__lianjia_lib.data_num()
-        print 'begin to calculate date range'
+        self.__vlog.VLOG('begin to calculate date range')
         count = 0
         data = self.__lianjia_lib.get_data()
         for item in data.items():
@@ -507,7 +515,7 @@ class LianJiaData(object):
                 self.__start_date = date
             if date_compare_end == tools.LARGER or date_compare_end == tools.INCLUDE:
                 self.__end_date = date
-        print 'success! date range: %s ~ %s' % (self.__start_date, self.__end_date)
+        self.__vlog.VLOG('success! date range: %s ~ %s' % (self.__start_date, self.__end_date))
 
     # add date range in data show
     # if no month, add all target year, each year is a 12 list
@@ -530,7 +538,7 @@ class LianJiaData(object):
     # if no month, delete all target year
     def __del_date_range(self, year, month_range = None):
         if year not in self.__date_range:
-            print 'no this year'
+            self.__vlog.VLOG('no this year')
             return
         if not month_range:
             start = 1
@@ -547,6 +555,12 @@ class LianJiaData(object):
             all += self.__date_range[year][month]
         if all is 0:
             del self.__date_range[year]
+
+    # fix start date to mask days before
+    def __fix_start_date(self):
+        mask_date = tools.get_date(-self.__mask_duration)
+        if tools.date_compare(self.__start_date, mask_date) == tools.LARGER:
+            self.__start_date = mask_date
 
     # gen a region dict, include data number and each data
     def __get_region(self):
@@ -565,14 +579,13 @@ class LianJiaData(object):
                 self.__region[region][_REGION_NUM_KEY] += 1
             self.__region[region][_REGION_DATA_KEY][sdata[0]] = sdata[1]
 
-        print
         self.__region[_REGION_ALL_KEY] = dict()
         self.__region[_REGION_ALL_KEY][_REGION_NUM_KEY] = data_num
         self.__region[_REGION_ALL_KEY][_REGION_DATA_KEY] = data
         for sitem in sorted(self.__region.items(), key=lambda d:d[1][_REGION_NUM_KEY], reverse=True):
             sregion = sitem[0]
             per = int(self.__region[sregion][_REGION_NUM_KEY] / float(data_num) * 10000) / 100.0 if data_num else 0
-            print '%s: %d (%.2f%%)' % (sregion, self.__region[sregion][_REGION_NUM_KEY], per)
+            self.__vlog.VLOG('%s: %d (%.2f%%)' % (sregion, self.__region[sregion][_REGION_NUM_KEY], per))
 
     # get choose region distribution
     def __get_data_distribution(self, region):
@@ -640,12 +653,12 @@ class LianJiaData(object):
                         region_distribution_data[str(date)][_DEAL_KEY] /= region_distribution_data[str(date)][_DISTR_DEAL_NUM_KEY]
                     if region_distribution_data[str(date)][_HANG_KEY]:
                         per = region_distribution_data[str(date)][_DEAL_KEY] / region_distribution_data[str(date)][_HANG_KEY] * 100
-                    print '%s\t%10d\t%10.2f\t%10.2f\t%10.2f\t%2.2f%%' % (str(date), \
-                                                                         region_distribution_data[str(date)][_DISTR_NUM_KEY], \
-                                                                         region_distribution_data[str(date)][_UNIT_KEY], \
-                                                                         region_distribution_data[str(date)][_HANG_KEY], \
-                                                                         region_distribution_data[str(date)][_DEAL_KEY], \
-                                                                         per)
+                    self.__vlog.VLOG('%s\t%10d\t%10.2f\t%10.2f\t%10.2f\t%2.2f%%' % (str(date), \
+                                                                                    region_distribution_data[str(date)][_DISTR_NUM_KEY], \
+                                                                                    region_distribution_data[str(date)][_UNIT_KEY], \
+                                                                                    region_distribution_data[str(date)][_HANG_KEY], \
+                                                                                    region_distribution_data[str(date)][_DEAL_KEY], \
+                                                                                    per))
 
     # write data lib
     def __write_data_lib(self, config = None):

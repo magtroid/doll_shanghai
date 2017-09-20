@@ -10,6 +10,7 @@ method for proxy
 #import library
 from bs4 import BeautifulSoup
 import common
+import log
 import proxypool
 import re
 import requests
@@ -39,11 +40,13 @@ class Proxy(object):
     #   __get_proxy_domain_list
     #   __get_page_num
     #   __get_proxy_data
-    def __init__(self, proxy_pool = None):
+    def __init__(self, proxy_pool = None, vlog = 0):
+        self.__vlog = log.VLOG(vlog)
         self.__url = 'http://www.66ip.cn'
-        # self.__target_url = 'https://bj.lianjia.com/chengjiao'
-        self.__target_url = 'http://api.finance.ifeng.com/akmonthly/?code=sh603737&type=last'
-        self.__regex = '^{"record.*}$'
+        self.__target_url = 'https://bj.lianjia.com/chengjiao'
+        # self.__target_url = 'http://api.finance.ifeng.com/akmonthly/?code=sh603737&type=last'
+        # self.__regex = '^{"record.*}$'
+        self.__regex = None
         # self.__target_url = 'http://www.66ip.cn'
         self.__max_proxy_num = 20
         self.__proxy_num = 0
@@ -69,30 +72,30 @@ class Proxy(object):
     def get_proxy(self):
         proxy_domain_list = self.__get_proxy_domain_list()
         if proxy_domain_list:
-            print 'error in get target page'
+            self.__vlog.VLOG('error in get target page')
 
         domain_id = 0
         for proxy_domain in proxy_domain_list:
             domain_id += 1
             domain_url = tools.parse_href_url(proxy_domain, self.__url)
-            print 'begin to scrap target page: %s' % domain_url
+            self.__vlog.VLOG('begin to scrap target page: %s' % domain_url)
             domain_page_num = self.__get_page_num(domain_url)
             max_search_page = self.__max_search_page if domain_page_num > self.__max_search_page else domain_page_num
-            print 'domain page number is: %d, scrap first %d pages' % (domain_page_num, max_search_page)
+            self.__vlog.VLOG('domain page number is: %d, scrap first %d pages' % (domain_page_num, max_search_page))
 
             for page_num in range(max_search_page):
                 # loop proxy try times to scrap proxy
                 for loop in range(self.__proxy_try_time):
                     page_url = '%s/%d.html' % (domain_url, page_num + 1)
-                    print 'begin to scrap page: %s (loop %d/%d)' % (page_url, loop + 1, self.__proxy_try_time)
+                    self.__vlog.VLOG('begin to scrap page: %s (loop %d/%d)' % (page_url, loop + 1, self.__proxy_try_time))
                     page = self.__proxy_pool.get_page(page_url)
                     if not page:
-                        print 'failed to get page'
+                        self.__vlog.VLOG('failed to get page')
                     else:
                         self.__get_proxy_data(page)
 
                     if self.__proxy_num > self.__max_proxy_num:
-                        print 'enough proxy, finish!'
+                        self.__vlog.VLOG('enough proxy, finish!')
                         self.__proxy_pool.write_data_lib()
                         break
                 if self.__proxy_num > self.__max_proxy_num:
@@ -105,7 +108,7 @@ class Proxy(object):
         proxy_domain_list = []
         page = self.__proxy_pool.get_page(self.__url, common.URL_READ)
         if not page:
-            print 'error to scrap proxy targe page'
+            self.__vlog.VLOG('error to scrap proxy targe page')
         else:
             soup = BeautifulSoup(page, common.HTML_PARSER)
             for element in soup.select('td ul li a'):
@@ -117,7 +120,7 @@ class Proxy(object):
         page_num = 0
         page = self.__proxy_pool.get_page(url, common.URL_READ)
         if not page:
-            print 'get page number failed %s: ' % url
+            self.__vlog.VLOG('get page number failed %s: ' % url)
         else:
             soup = BeautifulSoup(page, common.HTML_PARSER)
             # last second is the last page
@@ -138,7 +141,8 @@ class Proxy(object):
             proxy_unit[_SUCC_KEY] = 0
             proxy_unit[_FAIL_KEY] = 0
 
-            if self.__proxy_pool.try_proxy(proxy_unit, self.__target_url, regex = self.__regex):
+            response = self.__proxy_pool.try_proxy(proxy_unit, self.__target_url, regex = self.__regex)
+            if response is not common.NONE:
                 proxy_unit[_CITY_KEY] = proxy_tds[2]
                 proxy_unit[_ANONY_KEY] = proxy_tds[3]
                 proxy_unit[_STATUS_KEY] = _STATUS_DEFAULT
@@ -146,6 +150,6 @@ class Proxy(object):
                 proxy_unit[_SUCC_KEY] = 0  # reset success count
                 self.__proxy_pool.insert_proxy(proxy_unit[_TYPE_KEY], proxy_unit)
                 self.__proxy_num += 1
-                print 'success insert proxy: %s' % ('add proxy: %s:%s(%d/%d)' % (proxy_unit[_IP_KEY], proxy_unit[_PORT_KEY], self.__proxy_num, self.__max_proxy_num))
+                self.__vlog.VLOG('success insert proxy: %s' % ('add proxy: %s:%s(%d/%d)' % (proxy_unit[_IP_KEY], proxy_unit[_PORT_KEY], self.__proxy_num, self.__max_proxy_num)))
                 if self.__proxy_num > self.__max_proxy_num:
                     break

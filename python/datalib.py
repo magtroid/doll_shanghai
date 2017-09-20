@@ -42,6 +42,10 @@ CONFIG_KEY = 'CONFIG'
 _DATA_NUM_KEY = 'DATA_NUM'
 _LIB_FILE_KEY = 'LIB_FILE'
 
+# common function
+def form_lkey(path_list):
+    return LIB_CONNECT.join(path_list)
+
 # main class
 class DataLib(object):
     # public:
@@ -100,11 +104,11 @@ class DataLib(object):
         if not data_file:
             data_file = self.__data_file
             self_load = True
-        print 'start to load datalib: %s' % data_file
+        self.__vlog.VLOG('start to load datalib: %s' % data_file)
         data_lib = dict()
         self.__reset_data_lib(data_lib)
         if os.path.exists(data_file):
-            print 'Loading......'
+            self.__vlog.VLOG('Loading......')
             with open(data_file) as fp_in:
                 lines = fp_in.readlines()
                 i = 0
@@ -120,7 +124,7 @@ class DataLib(object):
                     if index_segs[1] == 'dict':
                         unit = dict()
                     else:
-                        print 'error format %s\nfail to load data lib' % index_segs[1]
+                        self.__vlog.VLOG('error format %s\nfail to load data lib' % index_segs[1])
                         self.__reset_data_lib(data_lib)
                         self.__disable_controler = controler_switch
                         return
@@ -158,11 +162,11 @@ class DataLib(object):
                             unit_tmp = unit_tmp[index_segs[j]]
                         unit_tmp.update(unit)
         else:
-            print 'no data current'
+            self.__vlog.VLOG('no data current')
         self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, \
                         data_file, data_lib)
-        print 'load ok'
-        print 'all data number: %d' % self.data_num(data_lib)
+        self.__vlog.VLOG('load ok')
+        self.__vlog.VLOG('all data number: %d' % self.data_num(data_lib))
 
         if self_load:
             self.__reset_data_lib()
@@ -188,7 +192,7 @@ class DataLib(object):
     def insert_data(self, lkey, data, id_feature):
         if isinstance(data, dict):
             if id_feature not in data:
-                print 'failed to insert data, no id features: ' % id_feature
+                self.__vlog.VLOG('failed to insert data, no id features: ' % id_feature)
                 return False
             else:
                 data_key = data[id_feature]
@@ -222,11 +226,11 @@ class DataLib(object):
         cdata = self.get_data()
         for i in range(len(key_segs)-1):
             if key_segs[i] not in cdata:
-                print 'no %s key to delete' % key_segs[i]
+                self.__vlog.VLOG('no %s key to delete' % key_segs[i])
                 return False
             cdata = cdata[key_segs[i]]
         if key_segs[-1] not in cdata:
-            print 'no such data: %s' % key_segs[-1]
+            self.__vlog.VLOG('no such data: %s' % key_segs[-1])
             return False
         else:
             del cdata[key_segs[-1]]
@@ -241,13 +245,13 @@ class DataLib(object):
                     cdata = cdata[key_segs[j]]
                 if len(cdata[key_segs[i]]) is 0:
                     del cdata[key_segs[i]]
-            print 'success delete data: %s' % lkey
+            self.__vlog.VLOG('success delete data: %s' % lkey)
             return True
 
     # insert config
     def insert_config(self, lkey, config, id_feature):
         if id_feature not in config:
-            print 'failed to insert config, no id features: ' % id_feature
+            self.__vlog.VLOG('failed to insert config, no id features: ' % id_feature)
             return False
         key_segs = lkey.split(LIB_CONNECT)
         cconfig = self.get_data(CONFIG_KEY)
@@ -264,7 +268,7 @@ class DataLib(object):
             cconfig[key] = config.copy()
             return True
         else:
-            print 'error to insert config: exists in id: %s' % key 
+            self.__vlog.VLOG('error to insert config: exists in id: %s' % key)
             return False
 
     # get DATA in data lib
@@ -284,8 +288,8 @@ class DataLib(object):
             if isinstance(cdata, dict) and key in cdata:
                 cdata = cdata[key]
             else:
-                print key
-                print 'no such data %s' % lkey
+                self.__vlog.VLOG(key)
+                self.__vlog.VLOG('no such data %s' % lkey)
                 return None
         return cdata
 
@@ -365,9 +369,9 @@ class DataLib(object):
         if not data_file:
             data_file = self.lib_file() if self.lib_file() else self.__data_file
         self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, data_file)
-        print 'start to write data %s...' % data_file
+        self.__vlog.VLOG('start to write data %s...' % data_file)
         if not isinstance(data_lib, dict):
-            print 'error data lib type'
+            self.__vlog.VLOG('error data lib type')
             return
         if os.path.isfile(data_file) and backup == True:
             os.system ('cp %s %s' % (data_file, '%s_backup' % data_file))

@@ -54,6 +54,7 @@ class StockMarket(object):
             self.__proxy_pool = proxypool.ProxyPool()
         else:
             self.__proxy_pool = proxy_pool
+        self.__proxy_pool.set_threshold(15000)
         self.__data_lib_file = './datalib/stock_list.lib'
         self.__disable_controler = True  # TODO
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
@@ -67,7 +68,7 @@ class StockMarket(object):
     def get_stock_market_data(self):
         self.__scrap_stock_market_data()
         self.__write_data_lib()
-        print 'done stock market'
+        self.__vlog.VLOG('done stock market')
 
     # get stock list from the page
     # switch to control this function work
@@ -79,7 +80,7 @@ class StockMarket(object):
                 self.__parse_class_stock_list(sclass, self.__tape_set)
             else:
                 self.__parse_class_stock_list(sclass)
-        print 'all stock number %d' % self.__stock_market_lib.data_num()
+        self.__vlog.VLOG('all stock number %d' % self.__stock_market_lib.data_num())
 
     # parse stocks from urls
     # index is a set to choose which stock to get, empty for all
@@ -87,7 +88,7 @@ class StockMarket(object):
         class_url = '%s?type=stock_a&class=%s' % (self.__stock_market_url, sclass)
         page = self.__proxy_pool.get_page(class_url, self.__get_page_type)
         if not page:
-            print 'failed to scrap class page'
+            self.__vlog.VLOG('failed to scrap class page')
             return
 
         soup = BeautifulSoup(page, common.HTML_PARSER)
@@ -112,8 +113,9 @@ class StockMarket(object):
         data = self.__stock_market_lib.get_data()
         for tape_item in data[_ZS_CLASS].items():
             stock_code = tape_item[1][_HREF_KEY].split('/')[-2]  # stock/sh000001/index.shtml
-            print 'scrap tape: {stock_code} ({stock_name})'.format(stock_code = stock_code, \
-                                                                   stock_name = tape_item[1][_NAME_KEY])
+            self.__vlog.VLOG('scrap tape: {stock_code} ({stock_name})'.format( \
+                                                                       stock_code = stock_code, \
+                                                                       stock_name = tape_item[1][_NAME_KEY]))
             # get link new lib
             if datalib.LINK_FEATURE not in tape_item[1]:
                 stock_data = stock.Stock(stock_code, proxy_pool = self.__proxy_pool)
@@ -129,11 +131,11 @@ class StockMarket(object):
             for stock_item in class_data.items():
                 stock_num += 1
                 stock_code = stock_item[1][_HREF_KEY].split('/')[-2]  # stock/sh000001/index.shtml
-                print 'scrap stock: {stock_code} ({stock_name}) ({num}/{all_num})'.format( \
-                                                                                   stock_code = stock_code, \
-                                                                                   stock_name = stock_item[1][_NAME_KEY], \
-                                                                                   num = stock_num, \
-                                                                                   all_num = len(class_data))
+                self.__vlog.VLOG('scrap stock: {stock_code} ({stock_name}) ({num}/{all_num})'.format( \
+                                                                                              stock_code = stock_code, \
+                                                                                              stock_name = stock_item[1][_NAME_KEY], \
+                                                                                              num = stock_num, \
+                                                                                              all_num = len(class_data)))
                 # get link new lib
                 if datalib.LINK_FEATURE not in stock_item[1] or \
                    stock_item[1][datalib.LINK_FEATURE] == None:
@@ -149,3 +151,33 @@ class StockMarket(object):
     def __write_data_lib(self, config = None):
         self.__stock_market_lib.write_data_lib()
         self.__proxy_pool.write_data_lib()
+
+# data process class
+class StockMarketData(object):
+    # public
+    #   process_market_data  # main function
+    # private
+
+    def __init__(self, vlog = 0):
+        self.__vlog = log.VLOG(vlog)
+        self.__data_lib_file = './datalib/stock_list.lib'
+        self.__stock_market_lib = datalib.DataLib(self.__data_lib_file)
+        self.__stock_market_lib.load_data_lib()
+        self.__stock_market_class = [_ZS_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+
+    # main function
+    def process_market_data(self):
+        data = self.__stock_market_lib.get_data()
+        for stock_class in self.__stock_market_class:
+            class_data = data[stock_class]
+            for stock_item in class_data.items():
+                self.__vlog.VLOG('process {} data'.format(stock_item[0]))
+                if datalib.LINK_FEATURE not in stock_item[1] or \
+                   stock_item[1][datalib.LINK_FEATURE] == None:
+                    self.__vlog.VLOG('data empty, try next one')
+                else:
+                    lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
+                    stock_data = stock.StockData(lstock_code)
+                stock_data.display_data()
+                break
+            break

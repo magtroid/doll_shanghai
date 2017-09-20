@@ -7,13 +7,14 @@ import sys
 import lianjia
 import proxypool
 import stock
+import stock_market
 import log
 
 sys.path.append('./gflags')
 import gflags
 
 FLAGS = gflags.FLAGS
-gflags.DEFINE_string('target', 'stock', 'lianjia | proxy | stock')
+gflags.DEFINE_string('target', 'stock', 'lianjia | proxy | stock_market | stock')
 gflags.DEFINE_string('city', '', 'bj | sz | gz | hz | nj | cs | wh')
 gflags.DEFINE_string('stock_id', '', '')
 gflags.DEFINE_string('v', '0', 'vlog')
@@ -29,11 +30,14 @@ def main(argv):
         if not FLAGS.city:
             vlog.VLOG('choose a city')
             return
-        lianjia_data = lianjia.LianJiaData(FLAGS.city)
+        lianjia_data = lianjia.LianJiaData(FLAGS.city, vlog = int(FLAGS.v))
         lianjia_data.display_data()
     elif FLAGS.target == 'proxy':
         proxy_data = proxypool.ProxyPoolData()
         proxy_data.display_data()
+    elif FLAGS.target == 'stock_market':
+        stock_market_data = stock_market.StockMarketData(vlog = int(FLAGS.v))
+        stock_market_data.process_market_data()
     elif FLAGS.target == 'stock':
         if not FLAGS.stock_id:
             vlog.VLOG('choose a stock')

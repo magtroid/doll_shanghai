@@ -9,5 +9,6 @@ import select
 from datetime import datetime, timedelta
 
 a = ['12', '13', '14']
-b = ','
-print b.join(a)
+for number, b in enumerate(a):
+    print number
+    print b
