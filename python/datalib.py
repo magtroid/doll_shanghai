@@ -178,7 +178,7 @@ class DataLib(object):
 
     # load file data and merge into self.__data_lib
     def update_data_lib(self, file):
-        prev_data = self.__data_lib.copy()
+        prev_data = copy.deepcopy(self.__data_lib)
         self.load_data_lib(file)
         self.__merge_data_lib(prev_data, self.__data_lib)
         self.__data_lib = prev_data
@@ -210,7 +210,7 @@ class DataLib(object):
         # insert data and insert ID key
         if data_key not in cdata:
             if isinstance(data, dict):
-                cdata[data_key] = data.copy()
+                cdata[data_key] = copy.deepcopy(data)
                 cdata[data_key][DATA_FEATURE] = data_key  # insert ID key
             else:
                 cdata[data_key] = data
@@ -241,7 +241,7 @@ class DataLib(object):
             # recursive check parent dict
             for i in range(len(key_segs)-2, -1, -1):
                 cdata = self.get_data()
-                for j in range(i-1):
+                for j in range(i):
                     cdata = cdata[key_segs[j]]
                 if len(cdata[key_segs[i]]) is 0:
                     del cdata[key_segs[i]]
@@ -265,7 +265,7 @@ class DataLib(object):
         # insert config
         key = config[id_feature]
         if key not in cconfig:
-            cconfig[key] = config.copy()
+            cconfig[key] = copy.deepcopy(config)
             return True
         else:
             self.__vlog.VLOG('error to insert config: exists in id: %s' % key)

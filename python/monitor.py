@@ -9,10 +9,12 @@ monitor stock and process
 # import library
 import controler
 import common
+import copy
 import datalib
 import log
 import proxypool
 import re
+import stock_market
 import tools
 
 # const define
@@ -24,10 +26,12 @@ _STATUS_DEAD = 'dead'
 _LAST_TIME = 'last_time'
 _LAST_TRANS = 'last_trans'
 
+_DATE_KEY = 'date'
 _CASH_KEY = 'cash'
 _PROPERTY_KEY = 'property'
-
 _STOCK_KEY = 'stock'
+_ACTION_KEY = 'action'
+
 _STOCK_ID_KEY = 'ID'
 _STOCK_NUM_KEY = 'number'
 _STOCK_PRICE_KEY = 'price'
@@ -41,8 +45,9 @@ class StockMonitor(object):
     # public
     #   stock_monitor  # main function
     # private
-    #   __init_property_lib
     #   __init_stock_list
+    #   __update_property_lib
+    #   __get_lib_date_range
     #   __commond_control
     #   __process_system_commond
     #   __change_cash
@@ -68,13 +73,19 @@ class StockMonitor(object):
         self.__disable_controler = False
         self.__property_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler, vlog = vlog)
         self.__property_lib.load_data_lib()
-        self.__init_property_lib()
+        self.__today = tools.date_list_to_str(tools.get_date())
+        self.__start_date = ''
+        self.__end_date = ''
+        self.__get_lib_date_range()
+        self.__update_property_lib()
         self.__get_page_type = common.URL_WRITE
         self.__url = 'http://api.finance.ifeng.com/amin/?code='
         self.__type = '&type=now'
         self.__max_stock_monitor = 4
         self.__system_commond = ['quit', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'show']
-        self.__property = self.__property_lib.get_data()[_PROPERTY_KEY]
+        self.__property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
+        self.__stock_map_list = dict()
+        self.__init_stock_map_list()
 
         self.__stock_list = dict()  # TODO load stock list from datalib
         self.__init_stock_list()
@@ -90,28 +101,60 @@ class StockMonitor(object):
 
     # stock list initial
     def __init_stock_list(self):
-        property_data = self.__property_lib.get_data()
+        property_data = self.__property_lib.get_data()[self.__today]
         if _STOCK_KEY in property_data:
             stocks = property_data[_STOCK_KEY]
             for item in stocks.items():
                 stock = self.__new_stock(item[0])
                 self.__stock_list[item[0]] = stock
 
-    # init lib
-    def __init_property_lib(self):
-        self.__property_lib.insert_data(common.EMPTY_KEY, 0, _CASH_KEY)
-        self.__property_lib.insert_data(common.EMPTY_KEY, 0, _PROPERTY_KEY)
+    # make a stock map list between name and id
+    def __init_stock_map_list(self):
+        stock_market_lib = stock_market.StockMarket()
+        self.__stock_map_list = stock_market_lib.get_stock_map_list()
+
+    # add today lib if a new day, copy last day to new day
+    def __update_property_lib(self):
+        data = self.__property_lib.get_data()
+        if self.__today not in data:
+            property_unit = dict()
+            if self.__end_date == '':
+                property_unit[_CASH_KEY] = 0
+                property_unit[_PROPERTY_KEY] = 0
+            else:
+                property_unit = copy.deepcopy(data[self.__end_date])
+            property_unit[_DATE_KEY] = self.__today
+            self.__property_lib.insert_data(common.EMPTY_KEY, property_unit, _DATE_KEY)
+
+    # get date lib range to get last day
+    def __get_lib_date_range(self):
+        for key in self.__property_lib.get_data().keys():
+            if key == self.__today:
+                continue
+            if self.__start_date == '':
+                self.__start_date = key
+            if self.__end_date == '':
+                self.__end_date = key
+            if tools.date_compare(key, self.__end_date) == tools.LARGER:
+                self.__end_date = key
+            if tools.date_compare(key, self.__start_date) == tools.LESS:
+                self.__start_date = key
 
     # receive commond and control
     def __commond_control(self):
         commond = tools.kbhit()
         if commond:
+            print commond
             if commond in self.__system_commond:
                 self.__process_system_commond(commond)
             elif commond in self.__stock_list:
                 del self.__stock_list[commond]
             elif len(self.__stock_list) >= self.__max_stock_monitor:
                 self.__vlog.VLOG("full stocks")
+            elif commond in self.__stock_map_list:
+                stock_id = self.__stock_map_list[commond]
+                stock = self.__new_stock(stock_id)
+                self.__stock_list[stock_id] = stock
             else:
                 stock = self.__new_stock(commond)
                 if self.__proxy_pool.get_page(stock[_URL_KEY]):
@@ -134,12 +177,12 @@ class StockMonitor(object):
 
     # change cash by number of positive and negative
     def __change_cash(self, number):
-        cash_lkey = datalib.form_lkey([datalib.DATA_KEY, _CASH_KEY])
+        cash_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY])
         self.__property_lib.increase_data(cash_lkey, float(number))
 
     # change cash by number of positive and negative
     def __change_property(self, number):
-        property_lkey = datalib.form_lkey([datalib.DATA_KEY, _PROPERTY_KEY])
+        property_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY])
         self.__property_lib.increase_data(property_lkey, float(number))
 
     # in cash and add property
@@ -159,7 +202,7 @@ class StockMonitor(object):
             while not re.match('^\d+(\.\d+)?$', number):
                 self.__vlog.VLOG('insert your in number')
                 number = tools.stdin()
-        if self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _CASH_KEY])) < float(number):
+        if self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY])) < float(number):
             self.__vlog.VLOG('not enough cash to out')
         else:
             self.__change_cash(-float(number))
@@ -172,14 +215,17 @@ class StockMonitor(object):
         if len(stock_list) != 3:
             self.__vlog.VLOG('error format')
             return
-        url = self.__url + stock_list[0] + self.__type
-        if not self.__proxy_pool.get_page(url):
-            self.__vlog.VLOG('error stock id {0}'.format(stock_list[0]))
-            return
+        if stock_list[0] in self.__stock_map_list:
+            stock_list[0] = self.__stock_map_list[stock_list[0]]
+        else:
+            url = self.__url + stock_list[0] + self.__type
+            if not self.__proxy_pool.get_page(url):
+                self.__vlog.VLOG('error stock id {0}'.format(stock_list[0]))
+                return
         if re.match('^\d+\.\d+$', stock_list[1]) and re.match('^\d+$', stock_list[2]):
             price = float(stock_list[1])
             number = int(stock_list[2])
-            property_status = self.__property_lib.get_data()
+            property_status = self.__property_lib.get_data()[self.__today]
             if property_status[_CASH_KEY] < price * number:
                 self.__vlog.VLOG('not enough money')
                 return
@@ -191,8 +237,8 @@ class StockMonitor(object):
                     pnumber = cstock[_STOCK_NUM_KEY] + number
                     pcost += price * number
                     pcost = pcost / pnumber
-                    pcost_lkey = datalib.form_lkey([datalib.DATA_KEY, _STOCK_KEY, stock_list[0], _STOCK_PCOST_KEY])
-                    num_lkey = datalib.form_lkey([datalib.DATA_KEY, _STOCK_KEY, stock_list[0], _STOCK_NUM_KEY])
+                    pcost_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, stock_list[0], _STOCK_PCOST_KEY])
+                    num_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, stock_list[0], _STOCK_NUM_KEY])
                     self.__property_lib.set_data(pcost_lkey, pcost)
                     self.__property_lib.increase_data(num_lkey, number)
                 else:
@@ -200,7 +246,8 @@ class StockMonitor(object):
                     stock[_STOCK_ID_KEY] = stock_list[0]
                     stock[_STOCK_PCOST_KEY] = price
                     stock[_STOCK_NUM_KEY] = number
-                    self.__property_lib.insert_data(_STOCK_KEY, stock, _STOCK_ID_KEY)
+                    stock_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, stock[_STOCK_ID_KEY]])
+                    self.__property_lib.set_data(stock_lkey, stock)
                     self.__stock_list[stock_list[0]] = self.__new_stock(stock_list[0])
                 value = price * number
                 service_charge = value * _SERVICE_CHARGE_BUY / 1000
@@ -217,6 +264,8 @@ class StockMonitor(object):
         if len(stock_list) != 3:
             self.__vlog.VLOG('error format')
             return
+        if stock_list[0] in self.__stock_map_list:
+            stock_list[0] = self.__stock_map_list[stock_list[0]]
         stock_data = self.__get_property_stock()
         if stock_list[0] in stock_data:
             cstock = stock_data[stock_list[0]]
@@ -227,9 +276,9 @@ class StockMonitor(object):
                     self.__vlog.VLOG('not enough number (has {0})'.format(cstock[_STOCK_NUM_KEY]))
                     return
                 if cstock[_STOCK_NUM_KEY] == number:
-                    self.__property_lib.delete_data(datalib.form_lkey([_STOCK_KEY, stock_list[0]]))
+                    self.__property_lib.delete_data(datalib.form_lkey([self.__today, _STOCK_KEY, stock_list[0]]))
                 else:
-                    self.__property_lib.decrease_data(datalib.form_lkey([datalib.DATA_KEY, _STOCK_KEY, stock_list[0], _STOCK_NUM_KEY]), number)
+                    self.__property_lib.decrease_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, stock_list[0], _STOCK_NUM_KEY]), number)
                 value = number * price
                 service_charge = value * _SERVICE_CHARGE_SELL / 1000
                 self.__change_cash(value)
@@ -248,7 +297,7 @@ class StockMonitor(object):
 
     # get property stock list
     def __get_property_stock(self):
-        property_data = self.__property_lib.get_data()
+        property_data = self.__property_lib.get_data()[self.__today]
         if _STOCK_KEY in property_data:
             return property_data[_STOCK_KEY]
         else:
@@ -256,20 +305,26 @@ class StockMonitor(object):
 
     # display property
     def __property_display(self):
-        self.__vlog.VLOG('property: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _PROPERTY_KEY]))))
-        self.__vlog.VLOG('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _CASH_KEY]))))
+        current_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
+        if self.__end_date == '':
+            last_property = current_property
+        else:
+            last_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__end_date, _PROPERTY_KEY]))
+        self.__vlog.VLOG('property: {0:9.2f} profit_today: {1:8.2f} ratio: {2:-6.2f}%'.format(current_property, current_property - last_property, \
+                                                                                              (current_property - last_property) / last_property * 100))
+        self.__vlog.VLOG('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))))
         stock_data = self.__get_property_stock()
         for stock in stock_data.items():
             self.__vlog.VLOG('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format( \
-                    stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
-                    stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
-                    stock[1][_STOCK_PCOST_KEY], \
-                    (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100))
+                             stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
+                             stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
+                             stock[1][_STOCK_PCOST_KEY], \
+                             (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100))
 
     # display each stock price
     def __display_price(self):
         stocks_price = tools.get_time_str(tools.TIME_HOUR, tools.TIME_SECOND, ':')
-        property_status = self.__property_lib.get_data()
+        property_status = self.__property_lib.get_data()[self.__today]
         total_property = property_status[_CASH_KEY]
         stock_lib = dict()
         if _STOCK_KEY in property_status:
@@ -291,9 +346,10 @@ class StockMonitor(object):
 
             if stock_item[0] in stock_lib:
                 total_property += float(price[2]) * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
-                self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, _STOCK_KEY, stock_item[0], _STOCK_PRICE_KEY]), float(price[2]))
+                self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, \
+                                                                stock_item[0], _STOCK_PRICE_KEY]), float(price[2]))
 
-        self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, _PROPERTY_KEY]), total_property)
+        self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]), total_property)
         self.__vlog.VLOG(stocks_price)
         tools.sleep(3.2)
 

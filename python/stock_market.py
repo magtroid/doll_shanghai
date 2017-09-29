@@ -39,6 +39,7 @@ _CY_TAPE_ID = '399006'
 class StockMarket(object):
     # public:
     #   get_stock_market_data  # main function
+    #   get_stock_map_list
     # private:
     #   __get_stock_list
     #   __parse_class_stock_list
@@ -69,6 +70,18 @@ class StockMarket(object):
         self.__scrap_stock_market_data()
         self.__write_data_lib()
         self.__vlog.VLOG('done stock market')
+
+    def get_stock_map_list(self):
+        map_list = dict()
+        data = self.__stock_market_lib.get_data()
+        stock_map_list_tape = [_SH_CLASS, _SZ_CLASS, _CY_CLASS]
+        for tape in stock_map_list_tape:
+            tape_stocks = data[tape]
+            for stock_item in tape_stocks.items():
+                stock_name = stock_item[1][_NAME_KEY]
+                if len(stock_name) != 0 and stock_name not in map_list:
+                    map_list[stock_name] = stock.parse_stock_code(stock_item[0])
+        return map_list
 
     # get stock list from the page
     # switch to control this function work
@@ -152,6 +165,10 @@ class StockMarket(object):
         self.__stock_market_lib.write_data_lib()
         self.__proxy_pool.write_data_lib()
 
+# training file
+_TRAINING_DIR = './datalib/crf/'
+_DEFAULT_FILE = 'crf_train_'
+
 # data process class
 class StockMarketData(object):
     # public
@@ -164,20 +181,22 @@ class StockMarketData(object):
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file)
         self.__stock_market_lib.load_data_lib()
         self.__stock_market_class = [_ZS_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+        self.__crf_file = _TRAINING_DIR + _DEFAULT_FILE + 'all.train'
 
     # main function
     def process_market_data(self):
         data = self.__stock_market_lib.get_data()
-        for stock_class in self.__stock_market_class:
-            class_data = data[stock_class]
-            for stock_item in class_data.items():
-                self.__vlog.VLOG('process {} data'.format(stock_item[0]))
-                if datalib.LINK_FEATURE not in stock_item[1] or \
-                   stock_item[1][datalib.LINK_FEATURE] == None:
-                    self.__vlog.VLOG('data empty, try next one')
-                else:
-                    lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
-                    stock_data = stock.StockData(lstock_code)
-                stock_data.display_data()
-                break
-            break
+        with tools.open_file(self.__crf_file) as fp:
+            for stock_class in self.__stock_market_class:
+                class_data = data[stock_class]
+                for stock_item in class_data.items():
+                    self.__vlog.VLOG('process {} data'.format(stock_item[0]))
+                    if datalib.LINK_FEATURE not in stock_item[1] or \
+                       stock_item[1][datalib.LINK_FEATURE] == None:
+                        self.__vlog.VLOG('data empty, try next one')
+                    else:
+                        lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
+                        stock_data = stock.StockData(lstock_code, fp = fp)
+                    stock_data.display_data()
+                    fp.writelines('\n')
+                break  # TODO

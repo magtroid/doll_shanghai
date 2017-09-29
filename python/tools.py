@@ -51,7 +51,6 @@ TIME_SECOND = 5
 #   ultra_encode
 #   schedule
 #   open_file
-#   fetch_stock_data
 #   kbhit
 #   sleep
 
@@ -135,6 +134,10 @@ def date_valid(date):
 #  1: larger than
 #  2: include
 def date_compare(date1, date2):
+    if isinstance(date1, str) and re.match('^\d+\.\d+(\.\d+)?$', date1):
+        date1 = map(int, date1.split('.'))
+    if isinstance(date2, str) and re.match('^\d+\.\d+(\.\d+)?$', date2):
+        date2 = map(int, date2.split('.'))
     diff = [0] * 3
     diff[0] = cmp(date1[0], date2[0])
     diff[1] = cmp(date1[1], date2[1]) if len(date1) > 1 and len(date2) > 1 else \

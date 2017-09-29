@@ -35,6 +35,7 @@ _FAIL_KEY = 'fail'
 _IP_KEY = 'ip'
 _PORT_KEY = 'port'
 _STATUS_KEY = 'status'
+_HISTOYR_KEY = 'history'
 
 _CITY_KEY = 'city'
 _ANONY_KEY = 'anony'
@@ -54,6 +55,7 @@ class ProxyPool(object):
     #   write_data_lib
 
     # private:
+    #   __init_proxy_history
     #   __switch_proxy
     #   __update_proxy
     #   __reset_proxy
@@ -69,6 +71,7 @@ class ProxyPool(object):
                         'https':''}
         self.__test_url = {'http': 'http://example.org',
                            'https': 'https://example.org',}
+        self.__today = tools.date_list_to_str(tools.get_date())
         self.__request_num = 0
         self.__request_threshold = 150  # set to control proxy
         self.__time_out = 10
@@ -107,6 +110,7 @@ class ProxyPool(object):
         else:
             url_list.append(url)
         proxy_tmp = self.__proxy.copy()
+        self.__init_proxy_history(proxy)
         # iterate try each type of url
         for surl in url_list:
             proxy[_TYPE_KEY] = tools.get_url_type(surl)
@@ -120,11 +124,13 @@ class ProxyPool(object):
                     if not re.search(regex, response.text):
                         continue
                 proxy[_SUCC_KEY] += 1
+                proxy[_HISTORY_KEY][self.__today][_SUCC_KEY] += 1
                 return response.text
             except requests.exceptions.RequestException:
                 pass
 
         proxy[_FAIL_KEY] += 1
+        proxy[_HISTORY_KEY][self.__today][_FAIL_KEY] += 1
         try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
         per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
         self.__vlog.VLOG('bad proxy: %s:%s, change one (s/f : %d/%d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
@@ -204,6 +210,15 @@ class ProxyPool(object):
     # write data lib
     def write_data_lib(self):
         self.__proxy_lib.write_data_lib()
+
+    # initial proxy history
+    def __init_proxy_history(self, proxy):
+        if _HISTORY_KEY not in proxy:
+            proxy[_HISTORY_KEY] = dict()
+        if self.__today not in proxy[_HISTORY_KEY]:
+            proxy[_HISTORY_KEY][self.__today] = dict()
+            proxy[_HISTORY_KEY][self.__today][_SUCC_KEY] = 0
+            proxy[_HISTORY_KEY][self.__today][_FAIL_KEY] = 0
 
     # switch to next available proxy
     # and return the page
@@ -331,7 +346,8 @@ class ProxyPoolData(object):
     # private:
     #   __overview_data
     #   __display_detail_data
-    def __init__(self):
+    def __init__(self, vlog = 0):
+        self.__vlog = log.VLOG(vlog)
         self.__data_lib_file = './datalib/proxy.lib'
         self.__disable_controler = True
         self.__proxy_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
@@ -368,7 +384,7 @@ class ProxyPoolData(object):
                     proxy = type_items[1][commond]
                     try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                     per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-                    self.__vlog,VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+                    self.__vlog.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
                                                                                proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
                                                                                per))
                     self.__vlog.VLOG('\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY], \
