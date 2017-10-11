@@ -37,13 +37,15 @@ def main(argv):
         proxy_data.display_data()
     elif FLAGS.target == 'stock_market':
         stock_market_data = stock_market.StockMarketData(vlog = int(FLAGS.v))
-        stock_market_data.process_market_data()
+        # stock_market_data.process_market_data()  # TODO
+        stock_market_data.get_ad_ratios()
     elif FLAGS.target == 'stock':
         if not FLAGS.stock_id:
             vlog.VLOG('choose a stock')
             return 
         stock_data = stock.StockData(FLAGS.stock_id, vlog = int(FLAGS.v))
-        stock_data.display_data()
+        # stock_data.display_data()  # TODO
+        print stock_data.get_ad_ratio('2017.07.07')
     else:
         vlog.VLOG(FLAGS.target)
         vlog.VLOG('error')

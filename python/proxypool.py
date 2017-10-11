@@ -35,7 +35,7 @@ _FAIL_KEY = 'fail'
 _IP_KEY = 'ip'
 _PORT_KEY = 'port'
 _STATUS_KEY = 'status'
-_HISTOYR_KEY = 'history'
+_HISTORY_KEY = 'history'
 
 _CITY_KEY = 'city'
 _ANONY_KEY = 'anony'
@@ -390,3 +390,11 @@ class ProxyPoolData(object):
                     self.__vlog.VLOG('\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY], \
                                                                                 proxy[_CITY_KEY], \
                                                                                 proxy[_ANONY_KEY]))
+                    if _HISTORY_KEY in proxy:
+                        history = proxy[_HISTORY_KEY]
+                        for history_item in history.items():
+                            self.__vlog.VLOG('\t\t{0:>12s} s:f {1:3d}/{2:<3d}'.format(history_item[0], \
+                                                                                      history_item[1][_SUCC_KEY], \
+                                                                                      history_item[1][_FAIL_KEY]))
+                    else:
+                        self.__vlog.VLOG('new proxy, no history yet')

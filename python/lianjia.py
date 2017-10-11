@@ -69,6 +69,9 @@ _HISTORY_UPDATE_NUM = 'update'
 _HISTORY_FINISH = 'finished'
 _HISTORY_INTERRUPT = 'interrupt'
 
+# filter domain
+_DOMAIN_FILTER = ['燕郊', '香河']
+
 # main class
 class LianJia(object):
     # public:
@@ -184,6 +187,9 @@ class LianJia(object):
         for item in data.items():
             count += 1
             tools.schedule(count, data_num)
+            # filter non bj domains
+            if item[1][_REGION_KEY] in _DOMAIN_FILTER:
+                continue
             date = item[1][_DATE_KEY]
             if len(self.__start_date) is 0:
                 self.__start_date = date
@@ -272,6 +278,12 @@ class LianJia(object):
             self.__fix_start_date()
             self.__vlog.VLOG('start to get data in time duration: %s to %s' % (' '.join(map(str, self.__start_date)), ' '.join(map(str, self.__end_date))))
             return True
+
+    # fix start date to mask days before
+    def __fix_start_date(self):
+        mask_date = tools.get_date(-self.__mask_duration)
+        if tools.date_compare(self.__start_date, mask_date) == tools.LARGER:
+            self.__start_date = mask_date
 
     # get region and subregion of lianjia
     def __get_region(self):
@@ -555,12 +567,6 @@ class LianJiaData(object):
             all += self.__date_range[year][month]
         if all is 0:
             del self.__date_range[year]
-
-    # fix start date to mask days before
-    def __fix_start_date(self):
-        mask_date = tools.get_date(-self.__mask_duration)
-        if tools.date_compare(self.__start_date, mask_date) == tools.LARGER:
-            self.__start_date = mask_date
 
     # gen a region dict, include data number and each data
     def __get_region(self):

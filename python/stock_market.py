@@ -173,12 +173,14 @@ _DEFAULT_FILE = 'crf_train_'
 class StockMarketData(object):
     # public
     #   process_market_data  # main function
+    #   get_ad_ratios
     # private
 
     def __init__(self, vlog = 0):
         self.__vlog = log.VLOG(vlog)
         self.__data_lib_file = './datalib/stock_list.lib'
-        self.__stock_market_lib = datalib.DataLib(self.__data_lib_file)
+        self.__disable_controler = True
+        self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
         self.__stock_market_lib.load_data_lib()
         self.__stock_market_class = [_ZS_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
         self.__crf_file = _TRAINING_DIR + _DEFAULT_FILE + 'all.train'
@@ -200,3 +202,37 @@ class StockMarketData(object):
                     stock_data.display_data()
                     fp.writelines('\n')
                 break  # TODO
+
+    # get ad ratios of all stock and sort
+    def get_ad_ratios(self):
+        stock_ad_ratio = dict()
+        stock_market_class = [_SH_CLASS, _SZ_CLASS, _CY_CLASS]
+        data = self.__stock_market_lib.get_data()
+        for stock_class in stock_market_class:
+            class_data = data[stock_class]
+            num = 0
+            for stock_item in class_data.items():
+                num += 1
+                self.__vlog.VLOG('process {0} data {1}/{2}'.format(stock_item[0], num, len(class_data)))
+                if datalib.LINK_FEATURE not in stock_item[1] or \
+                   stock_item[1][datalib.LINK_FEATURE] == None:
+                    self.__vlog.VLOG('data empty, try next one')
+                else:
+                    lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
+                    stock_data = stock.StockData(lstock_code)
+                    stock_ad_ratio[lstock_code] = dict()
+                    stock_ad_ratio[lstock_code]['6'] = stock_data.get_ad_ratio('2012.01.01')
+                    stock_ad_ratio[lstock_code]['5'] = stock_data.get_ad_ratio('2013.01.01')
+                    stock_ad_ratio[lstock_code]['4'] = stock_data.get_ad_ratio('2014.01.01')
+                    stock_ad_ratio[lstock_code]['3'] = stock_data.get_ad_ratio('2015.01.01')
+                    stock_ad_ratio[lstock_code]['2'] = stock_data.get_ad_ratio('2016.01.01')
+                    stock_ad_ratio[lstock_code]['1'] = stock_data.get_ad_ratio('2017.01.01')
+                    stock_ad_ratio[lstock_code]['3m'] = stock_data.get_ad_ratio('2017.06.01')
+
+        with open('ads', 'w') as fp:
+            range_list = ['3m', '1', '2', '3', '4', '5', '6']
+            for stock_id in stock_ad_ratio.items():
+                strs = stock_id[0]
+                for ranges in range_list:
+                    strs += '\t%f' % stock_id[1][ranges]
+                fp.writelines('%s\n' % strs)

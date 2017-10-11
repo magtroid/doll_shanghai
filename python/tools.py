@@ -53,6 +53,7 @@ TIME_SECOND = 5
 #   open_file
 #   kbhit
 #   sleep
+#   clear
 
 # return stdin
 def stdin():
@@ -261,3 +262,7 @@ def kbhit():
 # sleep time
 def sleep(t):
     time.sleep(t)
+
+# clear screan
+def clear():
+    os.system('clear')
