@@ -88,16 +88,21 @@ def get_time_str(start, end, spliter):
 # if targe date is empty, return current date offset
 # if delta date is empty, return current date
 def get_date(delta_date = None, current_date = None):
-    date = []
+    str_format = False
     if not delta_date:
         delta_date = 0
     if not current_date:
         current_date = datetime.now()
     else:
+        if isinstance(current_date, str) and re.match('^\d+\.\d+(\.\d+)?$', current_date):
+            str_format = True
+            current_date = map(int, current_date.split('.'))
         current_date = datetime(*current_date)
 
     date_target = current_date + timedelta(days = delta_date)
     date = map(int, str(date_target).split()[0].split('-'))
+    if str_format:
+        date = '.'.join(map(str, date))
     return date
 
 # return weekday of a day(str): xxxx.xx.xx

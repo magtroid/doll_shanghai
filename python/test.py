@@ -1,13 +1,7 @@
-#!/usr/bin/env python
-# coding=utf-8
-import re
-import copy
-import signal
-import sys
-import tools
-import select
-from datetime import datetime, timedelta
+def tes(lis):
+    del lis[0]
 
-import os
-while(1):
-    os.system('clear')
+a = [12, 13, 14]
+print a
+tes(a)
+print a

@@ -7,6 +7,7 @@ monitor stock and process
 '''
 
 # import library
+import canvas
 import controler
 import common
 import copy
@@ -24,13 +25,23 @@ _STATUS_ALIVE = 'alive'
 _STATUS_DEAD = 'dead'
 
 _LAST_TIME = 'last_time'
+_LAST_PRICE = 'last_price'
 _LAST_TRANS = 'last_trans'
+_STOCK_HISTORY_MAX = 5
 
 _DATE_KEY = 'date'
 _CASH_KEY = 'cash'
 _PROPERTY_KEY = 'property'
 _STOCK_KEY = 'stock'
 _ACTION_KEY = 'action'
+
+_ACTION_BUY = 'buy'
+_ACTION_SELL = 'sell'
+_ACTION_ACTION_KEY = 'action'
+_ACTION_STOCK_KEY = 'stock'
+_ACTION_PRICE_KEY = 'price'
+_ACTION_NUMBER_KEY = 'number'
+_ACTION_SERVICE_KEY = 'number'
 
 _STOCK_ID_KEY = 'ID'
 _STOCK_NUM_KEY = 'number'
@@ -63,8 +74,11 @@ class StockMonitor(object):
     #   __set_detail_list
     #   __show_detail
     #   __new_stock
+    #   __new_action
+    #   __stock_history_append
     #   __get_property_stock
     #   __get_virtual_property
+    #   __get_last_virtual_property
     #   __property_display
     #   __display_price
     #   __display_market
@@ -82,6 +96,7 @@ class StockMonitor(object):
         self.__property_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler, vlog = vlog)
         self.__property_lib.load_data_lib()
         self.__today = tools.date_list_to_str(tools.get_date())
+        self.__canvas = canvas.CANVAS(vlog = vlog)
         self.__start_date = ''
         self.__end_date = ''
         self.__get_lib_date_range()
@@ -94,7 +109,7 @@ class StockMonitor(object):
         self.__property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         self.__stock_map_list = dict()
         self.__init_stock_map_list()
-        self.__display_feat = [False, '']
+        self.__display_feat = [False, '']  # 1:property 2:detail_stock
         self.__display_feat_len = 58
 
         self.__stock_list = dict()  # TODO load stock list from datalib
@@ -162,17 +177,20 @@ class StockMonitor(object):
                 argv = []
             if commond in self.__system_commond:
                 self.__process_system_commond(commond, argv)
+            elif commond in self.__stock_map_list:
+                commond = self.__stock_map_list[commond]
+                if commond in self.__stock_list:
+                    del self.__stock_list[commond]
+                else:
+                    stock = self.__new_stock(commond)
+                    if len(self.__stock_list) < self.__max_stock_monitor:
+                        self.__stock_list[commond] = stock
             elif commond in self.__stock_list:
                 del self.__stock_list[commond]
-            elif len(self.__stock_list) >= self.__max_stock_monitor:
-                self.__vlog.VLOG("full stocks")
-            elif commond in self.__stock_map_list:
-                stock_id = self.__stock_map_list[commond]
-                stock = self.__new_stock(stock_id)
-                self.__stock_list[stock_id] = stock
             else:
                 stock = self.__new_stock(commond)
-                if self.__proxy_pool.get_page(stock[_URL_KEY]):
+                if len(self.__stock_list) < self.__max_stock_monitor and \
+                   self.__proxy_pool.get_page(stock[_URL_KEY]):
                     self.__stock_list[commond] = stock
 
     # process commond in system_commond
@@ -271,6 +289,9 @@ class StockMonitor(object):
                     self.__stock_list[stock_list[0]] = self.__new_stock(stock_list[0])
                 value = price * number
                 service_charge = value * _SERVICE_CHARGE_BUY / 1000
+                action = self.__new_action(_ACTION_BUY, stock_list[0], price, number, service_charge)
+                action_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _ACTION_KEY, tools.get_time_str(tools.TIME_HOUR, tools.TIME_SECOND, '.')])
+                self.__property_lib.set_data(action_lkey, action)
                 self.__change_cash(-value)
                 self.__change_cash(-service_charge)
                 self.__vlog.VLOG('service charge: {0}'.format(service_charge))
@@ -304,6 +325,10 @@ class StockMonitor(object):
                 self.__change_cash(value)
                 self.__change_cash(-service_charge)
                 self.__vlog.VLOG('service charge: {0}'.format(service_charge))
+
+                action = self.__new_action(_ACTION_SELL, stock_list[0], price, number, service_charge)
+                action_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _ACTION_KEY, tools.get_time_str(tools.TIME_HOUR, tools.TIME_SECOND, '.')])
+                self.__property_lib.set_data(action_lkey, action)
         else:
             self.__vlog.VLOG('no such stock {0}'.format(stock_list[0]))
 
@@ -328,29 +353,53 @@ class StockMonitor(object):
 
     # show five range detail of target stock
     def __show_detail(self, stock_id):
-        self.__vlog.VLOG('-' * self.__display_feat_len)
+        self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
+        history_len = len(self.__stock_list[stock_id][_LAST_TIME])
+        for history in range(history_len):
+            his_info = '{0:5s}:   {1:.2f} {2:10d}'.format(self.__stock_list[stock_id][_LAST_TIME][history], \
+                                                          self.__stock_list[stock_id][_LAST_PRICE][history], \
+                                                          self.__stock_list[stock_id][_LAST_TRANS][history])
+            self.__canvas.paint(his_info, canvas.BACKSPACE)
+        self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
 
         detail_url = ''.join(['https://hq.finance.ifeng.com/q.php?l=', stock_id, ',&f=json;&r=0.9134400947969383&_=1507612356174'])
         response = self.__proxy_pool.get_page(detail_url)
         if len(response) == 0:
-            self.__vlog.VLOG('failed to get detail of stock')
+            self.__canvas.paint('failed to get detail of stock', canvas.BACKSPACE)
             return
         detail = response.split(',')
         buy_list = detail[11:21]
         sell_list = detail[21:31]
         for stage in range(5):
-            self.__vlog.VLOG('{0:6s}: {1:8d}'.format(sell_list[4 - stage], int(float(sell_list[9 - stage])) / 100))
-        self.__vlog.VLOG('-' * 16)
+            self.__canvas.paint('{0:6s}: {1:8d}'.format(sell_list[4 - stage], int(float(sell_list[9 - stage])) / 100), canvas.BACKSPACE)
+        self.__canvas.paint('-' * 16, canvas.BACKSPACE)
         for stage in range(5):
-            self.__vlog.VLOG('{0:6s}: {1:8d}'.format(buy_list[stage], int(float(buy_list[5 + stage])) / 100))
+            self.__canvas.paint('{0:6s}: {1:8d}'.format(buy_list[stage], int(float(buy_list[5 + stage])) / 100), canvas.BACKSPACE)
 
     # create a new stock to monitor
     def __new_stock(self, stock_id):
         stock = dict()
         stock[_URL_KEY] = self.__url + stock_id + self.__type
-        stock[_LAST_TIME] = ''
-        stock[_LAST_TRANS] = ''
+        stock[_LAST_TIME] = []
+        stock[_LAST_PRICE] = []
+        stock[_LAST_TRANS] = []
         return stock
+
+    # create a new action
+    def __new_action(self, bs, stock_id, price, number, service_charge):
+        action = dict()
+        action[_ACTION_ACTION_KEY] = bs
+        action[_ACTION_STOCK_KEY] = stock_id
+        action[_ACTION_PRICE_KEY] = price
+        action[_ACTION_NUMBER_KEY] = number
+        action[_ACTION_SERVICE_KEY] = service_charge
+        return action
+
+    # append story history, del first one if exceed
+    def __stock_history_append(self, stock_feat, value):
+        stock_feat.append(value)
+        if len(stock_feat) > _STOCK_HISTORY_MAX:
+            del stock_feat[0]
 
     # get property stock list
     def __get_property_stock(self):
@@ -377,32 +426,44 @@ class StockMonitor(object):
                     virtual_property += float(price[2]) * stock_item[1][_STOCK_NUM_KEY]
         return virtual_property
 
+    # get last action property
+    def __get_last_virtual_property(self):
+        last_virtual_property = 0
+        if len(self.__end_date) == 0:
+            return last_virtual_property
+        last_action_date = self.__end_date
+        while tools.date_compare(last_action_date, self.__start_date) != tools.LESS:
+            if self.__property_lib.lhas_key(datalib.form_lkey([datalib.DATA_KEY, last_action_date, _ACTION_KEY])):
+                last_virtual_property = self.__get_virtual_property(last_action_date)
+            last_action_date = tools.get_date(-1, last_action_date)
+        return last_virtual_property
+
     # display property
     def __property_display(self):
-        self.__vlog.VLOG('-' * self.__display_feat_len)
+        self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
         current_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         if self.__end_date == '':
-            last_property = current_property
+            ast_property = current_property
         else:
             last_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__end_date, _PROPERTY_KEY]))
-        last_virtual_property = self.__get_virtual_property(self.__end_date)
-        self.__vlog.VLOG('property: {0:9.2f}  profit_today: {1:8.2f} ratio: {2:-6.2f}%'.format(current_property, current_property - last_property, \
-                                                                                              (current_property - last_property) / last_property * 100))
+        last_virtual_property = self.__get_last_virtual_property()
+        self.__canvas.paint('property: {0:9.2f}  profit_today: {1:8.2f} ratio: {2:-6.2f}%'.format(current_property, current_property - last_property, \
+                                                                                              (current_property - last_property) / last_property * 100), canvas.BACKSPACE)
         if last_virtual_property:
-            self.__vlog.VLOG(' virtual: {0:9.2f} action_profit: {1:8.2f} ratio: {2:-6.2f}%'.format(last_virtual_property, current_property - last_virtual_property, \
-                                                                                                   (current_property - last_virtual_property) / last_property * 100))
-        self.__vlog.VLOG('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))))
+            self.__canvas.paint(' virtual: {0:9.2f} action_profit: {1:8.2f} ratio: {2:-6.2f}%'.format(last_virtual_property, current_property - last_virtual_property, \
+                                                                                                   (current_property - last_virtual_property) / last_property * 100), canvas.BACKSPACE)
+        self.__canvas.paint('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))), canvas.BACKSPACE)
         stock_data = self.__get_property_stock()
         for stock in stock_data.items():
-            self.__vlog.VLOG('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format( \
+            self.__canvas.paint('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format( \
                              stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
                              stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
                              stock[1][_STOCK_PCOST_KEY], \
-                             (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100))
+                             (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), canvas.BACKSPACE)
 
     # display each stock price
     def __display_price(self):
-        self.__vlog.VLOG('-' * self.__display_feat_len)
+        self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
         stocks_price = tools.get_time_str(tools.TIME_HOUR, tools.TIME_SECOND, ':')
         property_status = self.__property_lib.get_data()[self.__today]
         total_property = property_status[_CASH_KEY]
@@ -419,35 +480,38 @@ class StockMonitor(object):
                 continue
             price = re.sub('"', '', response[1:-1].encode('utf-8')).split(',')
             ctime = re.sub(':\d\d$', '', price[0].split()[1])
-            if not stock_item[1][_LAST_TIME] or stock_item[1][_LAST_TIME] != ctime:
+            if len(stock_item[1][_LAST_TIME]) == 0 or stock_item[1][_LAST_TIME][-1] != ctime:
                 transaction = int(price[6])
+                self.__stock_history_append(stock_item[1][_LAST_TIME], ctime)
+                self.__stock_history_append(stock_item[1][_LAST_PRICE], float(price[2]))
+                self.__stock_history_append(stock_item[1][_LAST_TRANS], int(price[6]))
             else:
-                transaction = int(price[6]) - stock_item[1][_LAST_TRANS]
+                transaction = int(price[6]) - stock_item[1][_LAST_TRANS][-1]
+                stock_item[1][_LAST_PRICE][-1] = float(price[2])
+                stock_item[1][_LAST_TRANS][-1] = int(price[6])
             stocks_price += '  |  {stock_id} {price:7s} {rate:7s} {trans:7d}'.format(stock_id = stock_item[0], \
                                                                                      price = price[2], \
                                                                                      rate = price[3], \
                                                                                      trans = transaction)
-            stock_item[1][_LAST_TIME] = ctime
-            stock_item[1][_LAST_TRANS] = int(price[6])
-
             if stock_item[0] in stock_lib:
                 total_property += float(price[2]) * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
                 self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, \
                                                                 stock_item[0], _STOCK_PRICE_KEY]), float(price[2]))
 
         if market_suspended:
-            self.__vlog.VLOG('stock market suspended')
+            self.__canvas.paint('stock market suspended', canvas.BACKSPACE)
         self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]), total_property)
-        self.__vlog.VLOG(stocks_price)
+        self.__canvas.paint(stocks_price, canvas.BACKSPACE)
 
     # display all stock markets
     def __display_market(self):
-        tools.clear()
+        self.__canvas.clear()
         if self.__display_feat[_PROPERTY_INDEX]:
             self.__property_display()
         self.__display_price()
         if self.__display_feat[_DETAIL_INDEX] != '':
             self.__show_detail(self.__display_feat[_DETAIL_INDEX])
+        self.__canvas.display()
         tools.sleep(3.2)
 
     # write data lib

@@ -26,6 +26,8 @@ NONE = '__none__'
 
 # empty key
 EMPTY_KEY = ''
+# backspace key
+BACKSPACE_KEY = '\n'
 
 # enum month
 class Month(Enum):
