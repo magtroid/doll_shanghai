@@ -21,6 +21,8 @@ import tools
 # const define
 _URL_KEY = 'url'
 
+_SLEEP_TIME = 3.2
+
 _STATUS_ALIVE = 'alive'
 _STATUS_DEAD = 'dead'
 
@@ -180,12 +182,16 @@ class StockMonitor(object):
             elif commond in self.__stock_map_list:
                 commond = self.__stock_map_list[commond]
                 if commond in self.__stock_list:
+                    if commond == self.__display_feat[_DETAIL_INDEX]:
+                        self.__display_feat[_DETAIL_INDEX] = ''
                     del self.__stock_list[commond]
                 else:
                     stock = self.__new_stock(commond)
                     if len(self.__stock_list) < self.__max_stock_monitor:
                         self.__stock_list[commond] = stock
             elif commond in self.__stock_list:
+                if commond == self.__display_feat[_DETAIL_INDEX]:
+                    self.__display_feat[_DETAIL_INDEX] = ''
                 del self.__stock_list[commond]
             else:
                 stock = self.__new_stock(commond)
@@ -341,7 +347,7 @@ class StockMonitor(object):
             stock_id = self.__stock_map_list[stock_id]
         elif re.match('\d', stock_id):
             stock_id = int(stock_id) - 1
-            if stock_id < len(self.__stock_list):
+            if stock_id >= 0 and stock_id < len(self.__stock_list):
                 stock_id = self.__stock_list.keys()[stock_id]
         if stock_id in self.__stock_list:
             if self.__display_feat[_DETAIL_INDEX] == stock_id:
@@ -353,6 +359,8 @@ class StockMonitor(object):
 
     # show five range detail of target stock
     def __show_detail(self, stock_id):
+        if stock_id not in self.__stock_list:
+            return
         self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
         history_len = len(self.__stock_list[stock_id][_LAST_TIME])
         for history in range(history_len):
@@ -512,7 +520,7 @@ class StockMonitor(object):
         if self.__display_feat[_DETAIL_INDEX] != '':
             self.__show_detail(self.__display_feat[_DETAIL_INDEX])
         self.__canvas.display()
-        tools.sleep(3.2)
+        tools.sleep(_SLEEP_TIME)
 
     # write data lib
     def __write_data_lib(self):
