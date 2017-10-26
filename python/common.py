@@ -23,7 +23,8 @@ HREF_KEY = 'href'
 FIND_NONE = -1
 # None string
 NONE = '__none__'
-
+# dubug test
+MAIN = '__main__'
 # empty key
 EMPTY_KEY = ''
 # backspace key
@@ -43,6 +44,14 @@ class Month(Enum):
     Oct = 10
     Nov = 11
     Dec = 12
+
+MON = 0
+TUE = 1
+WED = 2
+THU = 3
+FRI = 4
+SAT = 5
+SUN = 6
 
 # month day
 WEEK_DAY = 7

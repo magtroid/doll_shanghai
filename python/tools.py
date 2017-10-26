@@ -7,11 +7,13 @@ Magtroid @ 2017-06-26 15:58
 
 # import library
 from datetime import datetime, timedelta
+import math_tool
 import os
 import re
 import select
 import sys
 import time
+import tty
 
 # const define
 _SCHEDULE_LEN = 50
@@ -37,7 +39,9 @@ TIME_MINUTE = 4
 TIME_SECOND = 5
 
 # function
+#   flush
 #   stdin
+#   get_terminal_size
 #   is_leap_year
 #   get_time_str
 #   get_date
@@ -45,6 +49,8 @@ TIME_SECOND = 5
 #   date_valid
 #   date_compare
 #   date_list_to_str
+#   form_chart_list
+#   print_list
 #   choose_commond
 #   get_url_type
 #   parse_href_url
@@ -55,9 +61,109 @@ TIME_SECOND = 5
 #   sleep
 #   clear
 
+# flush current line
+def flush():
+    terminal_width = get_terminal_size()[1]
+    print '\r{}'.format(' ' * (terminal_width - 1)),
+
 # return stdin
-def stdin():
-    return sys.stdin.readline().strip()
+def stdin(search_list = None, block = True):
+    if search_list is None:
+        return sys.stdin.readline().strip()
+    tty.setcbreak(sys.stdin.fileno())
+    rstr = ''
+    switch = 0
+    while True:
+        if select.select([sys.stdin], [], [], 0.01):
+            c = sys.stdin.read(1)
+            if not block:
+                if c == '\x1b':
+                    c = sys.stdin.read(2)
+                    if c == '[A':
+                        return 'up'
+                    if c == '[B':
+                        return 'down'
+                    if c == '[C':
+                        return 'right'
+                    if c == '[D':
+                        return 'left'
+                else:
+                    return c
+            if c == '\t':
+                if switch == 0:
+                    switch = 1
+                    fill_coordinate = [0, 0]
+                    fill_list = []
+                    for seg in search_list:
+                        seg = str(seg)
+                        if re.search('^{}'.format(rstr), seg):
+                            fill_list.append(seg)
+                    fill_chart, segs_len = form_chart_list(fill_list, offset = len(rstr) + 4)
+                    if len(fill_chart) != 0:
+                        pstr = '\r{} :'.format(rstr)
+                        for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
+                            if len(seg) > segs_len:
+                                seg = ''.join([seg[:segs_len - 3], '...'])
+                            if n == fill_coordinate[1]:
+                                pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
+                            else:
+                                pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
+                        flush()
+                        print pstr,
+                    else:
+                        switch = 0
+                        fill_coordinate = [-1, -1]
+                        flush()
+                        print '\r{0}'.format(rstr),
+                else:
+                    fill_coordinate[1] += 1
+                    if fill_coordinate[1] >= len(fill_chart[fill_coordinate[0]]):
+                        fill_coordinate[0] += 1
+                        fill_coordinate[1] = 0
+                        if fill_coordinate[0] >= len(fill_chart):
+                            fill_coordinate[0] = 0
+                    pstr = '\r{} :'.format(rstr)
+                    for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
+                        if len(seg) > segs_len:
+                            seg = ''.join([seg[:segs_len - 3], '...'])
+                        if n == fill_coordinate[1]:
+                            pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
+                        else:
+                            pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
+                    flush()
+                    print pstr,
+            elif c == '\n':
+                if switch == 1:
+                    switch = 0
+                    fill_coordinate = [-1, -1]
+                    rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
+                    flush()
+                    print rstr,
+                else:
+                    return rstr
+            elif c == '\x1b':  # arrow
+                c = sys.stdin.read(2)
+                switch = 0
+                fill_coordinate = [-1, -1]
+                flush()
+                print '\r{0}'.format(rstr),
+            elif c == '\x7f':  # backspace
+                switch = 0
+                fill_coordinate = [-1, -1]
+                rstr = rstr[:-1]
+                flush()
+                print '\r{0}'.format(rstr),
+            else:
+                switch = 0
+                fill_coordinate = [-1, -1]
+                rstr += c
+                flush()
+                print '\r{0}'.format(rstr),
+
+# return terminal width and height
+def get_terminal_size():
+    height, width = os.popen('stty size', 'r').read().split()
+    return [int(height), int(width)]
 
 # check if a year is leap year
 def is_leap_year(year):
@@ -87,10 +193,9 @@ def get_time_str(start, end, spliter):
 # return target date offset delta date
 # if targe date is empty, return current date offset
 # if delta date is empty, return current date
-def get_date(delta_date = None, current_date = None):
+# filter is list to filter target weekday 0~6 
+def get_date(delta_date = 0, current_date = None, filt = None):
     str_format = False
-    if not delta_date:
-        delta_date = 0
     if not current_date:
         current_date = datetime.now()
     else:
@@ -99,10 +204,18 @@ def get_date(delta_date = None, current_date = None):
             current_date = map(int, current_date.split('.'))
         current_date = datetime(*current_date)
 
-    date_target = current_date + timedelta(days = delta_date)
-    date = map(int, str(date_target).split()[0].split('-'))
+    finished = False
+    while not finished:
+        date_target = current_date + timedelta(days = delta_date)
+        date = map(int, str(date_target).split()[0].split('-'))
+        date_str = '.'.join(map(str, date))
+        print get_weekday(date_str)
+        if filt is not None and get_weekday(date_str) in filt:
+            delta_date = delta_date + 1 if delta_date > 0 else delta_date - 1
+        else:
+            finished = True
     if str_format:
-        date = '.'.join(map(str, date))
+        return date_str
     return date
 
 # return weekday of a day(str): xxxx.xx.xx
@@ -167,21 +280,86 @@ def date_list_to_str(date):
         date_str += '.0' + str(date[2]) if date[2] < 10 else '.' + str(date[2])
     return date_str
 
+# form list to a x * y chart
+# offset stands for print front blank, if num per line is 0, auto form
+# if list string is true return list string, else return formed list and seg_len pair
+def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0, sep_len = 4):
+    terminal_width = get_terminal_size()[1] - offset
+    thread_line_num = 10
+    max_seg_len = 24 if terminal_width > 24 else terminal_width
+    min_seg_len = max_seg_len / 2
+    if not isinstance(target_list, list) or len(target_list) == 0:
+        return '' if list_str else [], 0
+    if num_per_line == 0:
+        # get number per line
+        segs_len = int(math_tool.mean([len(x) for x in target_list]) * 2)
+        if segs_len < min_seg_len:
+            segs_len = min_seg_len 
+        if segs_len > max_seg_len:
+            segs_len = max_seg_len 
+        num_per_line = terminal_width / (segs_len + sep_len)
+        if num_per_line == 0:
+            num_per_line = 1
+        if len(target_list) / num_per_line <= thread_line_num:
+            for num in range(num_per_line - 1, 0, -1):
+                if len(target_list) % num == 0 and len(target_list) / num < 2 * thread_line_num:
+                    num_per_line = num
+                    break
+    segs_len = terminal_width / num_per_line - sep_len
+    if segs_len > max_seg_len:
+        segs_len = max_seg_len
+    chart_list = []
+    cur_line = []
+    for n, seg in enumerate(target_list):
+        if n and n % num_per_line == 0:
+            chart_list.append(cur_line)
+            cur_line = []
+        cur_line.append(seg)
+    if len(cur_line) != 0:
+        chart_list.append(cur_line)
+    if not list_str:
+        return chart_list, segs_len
+    # return list str
+    chart_str_list = []
+    for chart_line in chart_list:
+        list_str = ''
+        for seg in chart_line:
+            if len(seg) > segs_len:
+                seg = ''.join([seg[:segs_len - 3], '...'])
+            list_str += '{0:>{1}s} '.format(seg, segs_len)
+        chart_str_list.append(list_str)
+    return chart_str_list
+
+# format print lists according to elements in list
+# num_per_line if is 0, will print auto
+def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
+    chart_list = form_chart_list(target_list, list_str = True, offset = offset, num_per_line = num_per_line, sep_len = sep_len)
+    for list_line in chart_list:
+        print list_line
+
 # get commond
 # if input choose, select the key of choose
-def choose_commond(choose = None, option = None):
+def choose_commond(choose = None, option = None, block = True):
     if choose:
-        print 'choose your items: %s\n or press "cancel" or "q" to quit' % str(choose.keys()).decode('string_escape')
-        commond = sys.stdin.readline().strip()
+        if isinstance(choose, dict):
+            choose_item = str(choose.keys()).decode('string_escape')
+        elif isinstance(choose, list):
+            choose_item = choose
+        else:
+            print 'not support this format of commond {}'.format(choose)
+            return
+        print 'choose your items: \n or press "cancel" or "q" to quit'
+        print_list(choose_item)
+        commond = stdin(search_list = choose_item, block = block)
         while commond.split(':')[0] not in choose:
             if commond == 'cancel' or commond == 'q':
                 return commond
             else:
                 print 'error items, type again'
-                commond = sys.stdin.readline().strip()
+                commond = stdin(search_list = choose_item, block = block)
     else:
         print 'type your items or press "cancel" or "q" to quit'
-        commond = sys.stdin.readline().strip()
+        commond = stdin()
     return commond
 
 # return type of a url
@@ -261,7 +439,7 @@ def kbhit():
     r = select.select([sys.stdin], [], [], 0.01)
     rstr = ''
     if len(r[0]) > 0:
-        rstr = sys.stdin.readline().strip()
+        rstr = stdin()
     return rstr
 
 # sleep time

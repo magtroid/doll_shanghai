@@ -7,6 +7,8 @@ methods for datas
 '''
 
 # import library
+import canvas
+import common
 import copy
 import controler
 import os
@@ -275,7 +277,7 @@ class DataLib(object):
     # lkey represent lib path key
     # data_lib is target data lib
     def get_data(self, lkey = None, data_lib = None):
-        if not lkey:
+        if lkey is None:
             lkey = DATA_KEY
         if not data_lib:
             cdata = self.__data_lib
@@ -464,3 +466,92 @@ class DataLib(object):
             data_deep = data[key]
             if isinstance(data_deep, dict):
                 self.__write_data(data_deep, id_prefix_deep, fp_out)
+
+# datalib manager
+class DataLibManager(object):
+    # public
+    #   manage  # main function
+    # private
+    #   __init_lib_list
+    #   __list_libs
+    #   __display_lib_tree
+
+    def __init__(self, vlog = 0):
+        self.__datalib_dir = './datalib/'
+        self.__vlog = log.VLOG(vlog)
+        self.__disable_controler = True
+        self.__target_lib = dict()
+        self.__lib_list = []
+        self.__init_lib_list()
+        self.__canvas = canvas.CANVAS(vlog = vlog)
+
+    # process data library
+    def manage(self):
+        self.__vlog.VLOG('please choose libs')
+        commond = tools.choose_commond(self.__lib_list)
+        if commond == 'cancel' or commond == 'q':
+            self.__vlog.VLOG('\ncanceled...')
+        else:
+            self.__target_lib = DataLib('{0}{1}'.format(self.__datalib_dir, commond), self.__disable_controler)
+            self.__target_lib.load_data_lib()
+            self.__display_lib_tree()
+
+    # get all libs in target dir
+    def __init_lib_list(self, target_dir = None):
+        if target_dir is None:
+            target_dir = self.__datalib_dir
+        for filen in os.listdir(target_dir):
+            if re.search('\.lib$', filen):
+                self.__lib_list.append(filen)
+
+    # list all libs
+    def __list_libs(self):
+        tools.print_list(self.__lib_list)
+
+    # use commond to display tree structure of lib
+    def __display_lib_tree(self, target_lib = None):
+        commond_list = ['s', 'up', 'down', 'left', 'right']
+        if target_lib is None:
+            target_lib = self.__target_lib
+        stop = False
+        lkey_path = []
+        offs_path = [0]
+        cur_lib = target_lib.get_data(form_lkey(lkey_path))
+        for n, keys in enumerate(cur_lib.keys()):
+            if n == offs_path[-1]:
+                self.__canvas.paint('{}  <--'.format(keys), canvas.BACKSPACE)
+            else:
+                self.__canvas.paint(keys, canvas.BACKSPACE)
+        self.__canvas.display()
+        while not stop:
+            commond = tools.choose_commond(commond_list, block = False)
+            cur_target_key = cur_lib.keys()[offs_path[-1]]
+            if commond == 'up' and offs_path[-1] > 0:
+                offs_path[-1] -= 1
+            elif commond == 'down' and offs_path[-1] < len(cur_lib) - 1:
+                offs_path[-1] += 1
+            elif commond == 'right' and isinstance(cur_lib[cur_target_key], dict):
+                lkey_path.append(cur_target_key)
+                offs_path.append(0)
+            elif commond == 'left' and len(offs_path) > 1:
+                lkey_path.pop()
+                offs_path.pop()
+            elif commond == 's':
+                self.__target_lib.write_data_lib()
+                break
+            elif commond == 'q':
+                break
+            self.__canvas.clear()
+            cur_lib = target_lib.get_data(form_lkey(lkey_path))
+            for n, keys in enumerate(cur_lib.keys()):
+                if n == offs_path[-1]:
+                    self.__canvas.paint('{}  <--'.format(keys), canvas.BACKSPACE)
+                else:
+                    self.__canvas.paint(keys, canvas.BACKSPACE)
+            self.__canvas.display()
+
+if __name__ == common.MAIN:
+    datalib_manager = DataLibManager()
+    datalib_manager.manage()
+
+    print 'done'

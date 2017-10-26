@@ -673,4 +673,3 @@ class LianJiaData(object):
             self.insert_lianjia_config(_HISTORY_KEY, lib_history)
         self.__lianjia_lib.write_data_lib()
         self.__proxy_pool.write_data_lib()
-

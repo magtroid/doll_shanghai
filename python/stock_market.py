@@ -201,7 +201,6 @@ class StockMarketData(object):
                         stock_data = stock.StockData(lstock_code, fp = fp)
                     stock_data.display_data()
                     fp.writelines('\n')
-                break  # TODO
 
     # get ad ratios of all stock and sort
     def get_ad_ratios(self):

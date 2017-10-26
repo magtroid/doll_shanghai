@@ -28,8 +28,9 @@ _STATUS_DEAD = 'dead'
 
 _LAST_TIME = 'last_time'
 _LAST_PRICE = 'last_price'
+_LAST_ADR = 'last_adr'
 _LAST_TRANS = 'last_trans'
-_STOCK_HISTORY_MAX = 5
+_STOCK_HISTORY_MAX = 15
 
 _DATE_KEY = 'date'
 _CASH_KEY = 'cash'
@@ -53,6 +54,7 @@ _STOCK_PCOST_KEY = 'pcost'
 _SERVICE_CHARGE_SELL = 1.75
 _SERVICE_CHARGE_BUY = 0.75
 
+_DISPLAY_NUM_PER_LINE = 4
 # display const index
 _PROPERTY_INDEX = 0
 _DETAIL_INDEX = 1
@@ -106,7 +108,7 @@ class StockMonitor(object):
         self.__get_page_type = common.URL_WRITE
         self.__url = 'http://api.finance.ifeng.com/amin/?code='
         self.__type = '&type=now'
-        self.__max_stock_monitor = 4
+        self.__max_stock_monitor = 8
         self.__system_commond = ['quit', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
         self.__property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         self.__stock_map_list = dict()
@@ -150,6 +152,8 @@ class StockMonitor(object):
                 property_unit[_PROPERTY_KEY] = 0
             else:
                 property_unit = copy.deepcopy(data[self.__end_date])
+            if _ACTION_KEY in property_unit:
+                del property_unit[_ACTION_KEY]
             property_unit[_DATE_KEY] = self.__today
             self.__property_lib.insert_data(common.EMPTY_KEY, property_unit, _DATE_KEY)
 
@@ -364,9 +368,10 @@ class StockMonitor(object):
         self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
         history_len = len(self.__stock_list[stock_id][_LAST_TIME])
         for history in range(history_len):
-            his_info = '{0:5s}:   {1:.2f} {2:10d}'.format(self.__stock_list[stock_id][_LAST_TIME][history], \
-                                                          self.__stock_list[stock_id][_LAST_PRICE][history], \
-                                                          self.__stock_list[stock_id][_LAST_TRANS][history])
+            his_info = '{0:5s}:   {1:3.2f}  {2:>6.2f} {3:10d}'.format(self.__stock_list[stock_id][_LAST_TIME][history], \
+                                                                      self.__stock_list[stock_id][_LAST_PRICE][history], \
+                                                                      self.__stock_list[stock_id][_LAST_ADR][history], \
+                                                                      self.__stock_list[stock_id][_LAST_TRANS][history])
             self.__canvas.paint(his_info, canvas.BACKSPACE)
         self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
 
@@ -390,6 +395,7 @@ class StockMonitor(object):
         stock[_URL_KEY] = self.__url + stock_id + self.__type
         stock[_LAST_TIME] = []
         stock[_LAST_PRICE] = []
+        stock[_LAST_ADR] = []
         stock[_LAST_TRANS] = []
         return stock
 
@@ -442,7 +448,11 @@ class StockMonitor(object):
         last_action_date = self.__end_date
         while tools.date_compare(last_action_date, self.__start_date) != tools.LESS:
             if self.__property_lib.lhas_key(datalib.form_lkey([datalib.DATA_KEY, last_action_date, _ACTION_KEY])):
-                last_virtual_property = self.__get_virtual_property(last_action_date)
+                last_property_date = tools.get_date(-1, last_action_date, [common.SAT, common.SUN])
+                last_virtual_property = self.__get_virtual_property(last_property_date)
+                self.__canvas.paint(last_property_date, canvas.BACKSPACE)  # TODO
+                self.__canvas.paint(last_virtual_property, canvas.BACKSPACE)  # TODO
+                break
             last_action_date = tools.get_date(-1, last_action_date)
         return last_virtual_property
 
@@ -451,15 +461,15 @@ class StockMonitor(object):
         self.__canvas.paint('-' * self.__display_feat_len, canvas.BACKSPACE)
         current_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         if self.__end_date == '':
-            ast_property = current_property
+            last_property = current_property
         else:
             last_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__end_date, _PROPERTY_KEY]))
         last_virtual_property = self.__get_last_virtual_property()
         self.__canvas.paint('property: {0:9.2f}  profit_today: {1:8.2f} ratio: {2:-6.2f}%'.format(current_property, current_property - last_property, \
-                                                                                              (current_property - last_property) / last_property * 100), canvas.BACKSPACE)
+                                                                                                  (current_property - last_property) / last_property * 100), canvas.BACKSPACE)
         if last_virtual_property:
             self.__canvas.paint(' virtual: {0:9.2f} action_profit: {1:8.2f} ratio: {2:-6.2f}%'.format(last_virtual_property, current_property - last_virtual_property, \
-                                                                                                   (current_property - last_virtual_property) / last_property * 100), canvas.BACKSPACE)
+                                                                                                      (current_property - last_virtual_property) / last_property * 100), canvas.BACKSPACE)
         self.__canvas.paint('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))), canvas.BACKSPACE)
         stock_data = self.__get_property_stock()
         for stock in stock_data.items():
@@ -479,7 +489,9 @@ class StockMonitor(object):
         stock_lib = dict()
         if _STOCK_KEY in property_status:
             stock_lib = property_status[_STOCK_KEY]
+        stock_number = 0
         for stock_item in self.__stock_list.items():
+            stock_number += 1
             response = self.__proxy_pool.get_page(stock_item[1][_URL_KEY])
             if len(response) == 0:
                 market_suspended = True
@@ -492,15 +504,19 @@ class StockMonitor(object):
                 transaction = int(price[6])
                 self.__stock_history_append(stock_item[1][_LAST_TIME], ctime)
                 self.__stock_history_append(stock_item[1][_LAST_PRICE], float(price[2]))
+                self.__stock_history_append(stock_item[1][_LAST_ADR], float(price[3]))
                 self.__stock_history_append(stock_item[1][_LAST_TRANS], int(price[6]))
             else:
                 transaction = int(price[6]) - stock_item[1][_LAST_TRANS][-1]
                 stock_item[1][_LAST_PRICE][-1] = float(price[2])
+                stock_item[1][_LAST_ADR][-1] = float(price[3])
                 stock_item[1][_LAST_TRANS][-1] = int(price[6])
-            stocks_price += '  |  {stock_id} {price:7s} {rate:7s} {trans:7d}'.format(stock_id = stock_item[0], \
-                                                                                     price = price[2], \
-                                                                                     rate = price[3], \
-                                                                                     trans = transaction)
+            if stock_number != 1 and stock_number % _DISPLAY_NUM_PER_LINE == 1:
+                stocks_price += '\n        '
+            stocks_price += '  |  {stock_id} {price:7.2f} {rate:7.2f} {trans:7d}'.format(stock_id = stock_item[0], \
+                                                                                         price = float(price[2]), \
+                                                                                         rate = float(price[3]), \
+                                                                                         trans = transaction)
             if stock_item[0] in stock_lib:
                 total_property += float(price[2]) * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
                 self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, \
@@ -508,6 +524,7 @@ class StockMonitor(object):
 
         if market_suspended:
             self.__canvas.paint('stock market suspended', canvas.BACKSPACE)
+            return
         self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]), total_property)
         self.__canvas.paint(stocks_price, canvas.BACKSPACE)
 
