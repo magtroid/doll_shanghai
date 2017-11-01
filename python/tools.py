@@ -40,6 +40,8 @@ TIME_SECOND = 5
 # function
 #   flush
 #   lclear
+#   refresh_line
+#   stdout
 #   stdin
 #   get_stair_format
 #   get_terminal_size
@@ -70,6 +72,11 @@ def lclear():
     terminal_width = get_terminal_size()[1]
     print '\r{}\r'.format(' ' * (terminal_width - 1)),
 
+def refresh_line(pstr):
+    lclear()
+    print pstr,
+    flush()
+
 # return stdin
 def stdin(block = True, search_list = None):
     rstr = ''
@@ -95,41 +102,46 @@ def stdin(block = True, search_list = None):
     while True:
         command = mio.kbhit(block = False)
         if command:
-            if command == '\t':
+            if command == '\t' or command == '\x1b[Z':
                 if not switch_model:
-                    switch_model = True
-                    fill_coordinate = [0, 0]
-                    fill_list = []
-                    for seg in search_list:
-                        seg = str(seg)
-                        if re.search('^{}'.format(rstr), seg):
-                            fill_list.append(seg)
-                    fill_chart, segs_len = form_chart_list(fill_list, offset = len(rstr) + 4)
-                    if len(fill_chart) != 0:
-                        pstr = '{} :'.format(rstr)
-                        for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
-                            if len(seg) > segs_len:
-                                seg = ''.join([seg[:segs_len - 3], '...'])
-                            if n == fill_coordinate[1]:
-                                pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
-                            else:
-                                pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
-                        lclear()
-                        print pstr,
-                        flush()
-                    else:
-                        switch_model = False
-                        fill_coordinate = [-1, -1]
-                        lclear()
-                        print rstr,
-                        flush()
+                    if command == '\t':
+                        switch_model = True
+                        fill_coordinate = [0, 0]
+                        fill_list = []
+                        for seg in search_list:
+                            seg = str(seg)
+                            if re.search('^{}'.format(rstr), seg):
+                                fill_list.append(seg)
+                        fill_chart, segs_len = form_chart_list(fill_list, offset = len(rstr) + 4)
+                        if len(fill_chart) != 0:
+                            pstr = '{} :'.format(rstr)
+                            for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
+                                if len(seg) > segs_len:
+                                    seg = ''.join([seg[:segs_len - 3], '...'])
+                                if n == fill_coordinate[1]:
+                                    pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
+                                else:
+                                    pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
+                            refresh_line(pstr)
+                        else:
+                            switch_model = False
+                            fill_coordinate = [-1, -1]
+                            refresh_line(rstr)
                 else:
-                    fill_coordinate[1] += 1
-                    if fill_coordinate[1] >= len(fill_chart[fill_coordinate[0]]):
-                        fill_coordinate[0] += 1
-                        fill_coordinate[1] = 0
-                        if fill_coordinate[0] >= len(fill_chart):
-                            fill_coordinate[0] = 0
+                    if command == '\t':
+                        fill_coordinate[1] += 1
+                        if fill_coordinate[1] >= len(fill_chart[fill_coordinate[0]]):
+                            fill_coordinate[0] += 1
+                            fill_coordinate[1] = 0
+                            if fill_coordinate[0] >= len(fill_chart):
+                                fill_coordinate[0] = 0
+                    else:  # \x1b[Z
+                        fill_coordinate[1] -= 1
+                        if fill_coordinate[1] < 0:
+                            fill_coordinate[0] -= 1
+                            if fill_coordinate[0] < 0:
+                                fill_coordinate[0] = len(fill_chart) - 1
+                            fill_coordinate[1] = len(fill_chart[fill_coordinate[0]]) - 1
                     pstr = '{} :'.format(rstr)
                     for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
                         if len(seg) > segs_len:
@@ -138,39 +150,29 @@ def stdin(block = True, search_list = None):
                             pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
                         else:
                             pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
-                    lclear()
-                    print pstr,
-                    flush()
+                    refresh_line(pstr)
             elif command == '\n':
                 if switch_model:
                     switch_model = False
                     fill_coordinate = [-1, -1]
                     rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
-                    lclear()
-                    print rstr,
-                    flush()
+                    refresh_line(rstr)
                 else:
                     return rstr
             elif command in ['esc', 'up', 'down', 'left', 'right']:  # arrow
                 switch_model = False
                 fill_coordinate = [-1, -1]
-                lclear()
-                print rstr,
-                flush()
+                refresh_line(rstr)
             elif command == '\x7f':  # backspace
                 switch_model = False
                 fill_coordinate = [-1, -1]
                 rstr = rstr[:-1]
-                lclear()
-                print rstr,
-                flush()
+                refresh_line(rstr)
             else:
                 switch_model = False
                 fill_coordinate = [-1, -1]
                 rstr += command
-                lclear()
-                print rstr,
-                flush()
+                refresh_line(rstr)
 
 # return stair format string,
 # is_tail stands for one stair last one
