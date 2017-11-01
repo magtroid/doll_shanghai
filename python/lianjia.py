@@ -231,7 +231,7 @@ class LianJia(object):
         while not finished:
             self.__vlog.VLOG('insert date_range duration (1 day/1 week/1 month/xxxx.xx.xx~yyyy.yy.yy/update/all)')
             self.__vlog.VLOG('\tor insert "n/N" to cancel')
-            date_range = sys.stdin.readline().strip()
+            date_range = tools.stdin()
             if date_range == _CMD_ALL:
                 self.__get_page_type = common.URL_READ
                 self.__start_date = tools.get_date(-_VERY_BEGINING)

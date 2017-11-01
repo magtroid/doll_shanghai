@@ -13,9 +13,6 @@ import copy
 import controler
 import os
 import re
-import signal
-import sys
-import time
 import tools
 import log
 
@@ -467,6 +464,10 @@ class DataLib(object):
             if isinstance(data_deep, dict):
                 self.__write_data(data_deep, id_prefix_deep, fp_out)
 
+# const define
+_COMMOND_MODEL = '__command__'
+_FILTER_MODEL  = '__filter__'
+
 # datalib manager
 class DataLibManager(object):
     # public
@@ -474,6 +475,8 @@ class DataLibManager(object):
     # private
     #   __init_lib_list
     #   __list_libs
+    #   __update_skip_off
+    #   __level_display
     #   __display_lib_tree
 
     def __init__(self, vlog = 0):
@@ -487,12 +490,12 @@ class DataLibManager(object):
 
     # process data library
     def manage(self):
-        self.__vlog.VLOG('please choose libs')
-        commond = tools.choose_commond(self.__lib_list)
-        if commond == 'cancel' or commond == 'q':
+        # self.__vlog.VLOG('please choose libs')
+        command = tools.choose_command(self.__lib_list)
+        if command == 'cancel' or command == 'q':
             self.__vlog.VLOG('\ncanceled...')
         else:
-            self.__target_lib = DataLib('{0}{1}'.format(self.__datalib_dir, commond), self.__disable_controler)
+            self.__target_lib = DataLib('{0}{1}'.format(self.__datalib_dir, command), self.__disable_controler)
             self.__target_lib.load_data_lib()
             self.__display_lib_tree()
 
@@ -508,47 +511,141 @@ class DataLibManager(object):
     def __list_libs(self):
         tools.print_list(self.__lib_list)
 
-    # use commond to display tree structure of lib
-    def __display_lib_tree(self, target_lib = None):
-        commond_list = ['s', 'up', 'down', 'left', 'right']
+    def __update_skip_off(self, offs_path, skip_off):
+        head_len = 3
+        sum_off = sum(offs_path) + len(offs_path) + 1
+        terminal_h = tools.get_terminal_size()[0]
+        while sum_off > skip_off + terminal_h - head_len:
+            skip_off += 1
+        while sum_off < skip_off + head_len:
+            skip_off -= 1
+        return skip_off
+
+    def __level_display(self, skip_offset = 0, target_lib = None, lkey_path = None, offs_path = None, level = None, filter_str = None):
+        stair_len = 4
         if target_lib is None:
             target_lib = self.__target_lib
-        stop = False
+        if lkey_path is None:
+            lkey_path = []
+        if offs_path is None:
+            offs_path = [0]
+        if filter_str is None:
+            filter_str = ''
+        if level is None:
+            level = []
+        n = 0
+        off = 0
+        cur_node = target_lib.get_data('')
+        terminal_h = tools.get_terminal_size()[0]
+        if skip_offset > 0:
+            skip_offset -= 1
+        else:
+            self.__canvas.paint('│', canvas.BACKSPACE)
+        while True:
+            filter_num = 0
+            is_tail = True if off == len(cur_node) - 1 else False
+            stair = tools.get_stair_format(level, is_tail, stair_len)
+            cur_key = cur_node.keys()[off]
+            cur_str = '{0}{1}'.format(stair, cur_key)
+            if not isinstance(cur_node[cur_key], dict):
+                cur_str = '{0}: {1}'.format(cur_str, cur_node[cur_key])
+            if n == len(offs_path) - 1 and off - filter_num == offs_path[n]:
+                cur_str = '{}  <--'.format(cur_str)
+            if skip_offset > 0:
+                skip_offset -= 1
+            else:
+                if n == len(offs_path) - 1 and not re.search('^{}'.format(filter_str), cur_key):
+                    filter_num += 1
+                else:
+                    self.__canvas.paint(cur_str, canvas.BACKSPACE)
+            if self.__canvas.coordinate()[0] > terminal_h - 2:
+                break
+            if n < len(offs_path) - 1 and off == offs_path[n] and isinstance(cur_node[cur_key], dict):
+                cur_node = cur_node[cur_key]
+                n += 1
+                off = 0
+                if is_tail:
+                    level.append(0)
+                else:
+                    level.append(1)
+            else:
+                off += 1
+                while len(cur_node.keys()) <= off:
+                    if n == 0:
+                        break
+                    else:
+                        n -= 1
+                        level.pop()
+                        cur_node = target_lib.get_data(form_lkey(lkey_path[:n]))
+                        off = offs_path[n] + 1
+                else:
+                    continue
+                break
+        self.__canvas.display()
+
+    # use command to display tree structure of lib
+    def __display_lib_tree(self, target_lib = None):
+        command_list = ['s', 'e', 'd', 'up', 'f', 'down', 'left', 'right', 'esc']
+        if target_lib is None:
+            target_lib = self.__target_lib
         lkey_path = []
         offs_path = [0]
         cur_lib = target_lib.get_data(form_lkey(lkey_path))
-        for n, keys in enumerate(cur_lib.keys()):
-            if n == offs_path[-1]:
-                self.__canvas.paint('{}  <--'.format(keys), canvas.BACKSPACE)
-            else:
-                self.__canvas.paint(keys, canvas.BACKSPACE)
-        self.__canvas.display()
-        while not stop:
-            commond = tools.choose_commond(commond_list, block = False)
-            cur_target_key = cur_lib.keys()[offs_path[-1]]
-            if commond == 'up' and offs_path[-1] > 0:
-                offs_path[-1] -= 1
-            elif commond == 'down' and offs_path[-1] < len(cur_lib) - 1:
-                offs_path[-1] += 1
-            elif commond == 'right' and isinstance(cur_lib[cur_target_key], dict):
-                lkey_path.append(cur_target_key)
-                offs_path.append(0)
-            elif commond == 'left' and len(offs_path) > 1:
-                lkey_path.pop()
-                offs_path.pop()
-            elif commond == 's':
-                self.__target_lib.write_data_lib()
-                break
-            elif commond == 'q':
-                break
-            self.__canvas.clear()
-            cur_lib = target_lib.get_data(form_lkey(lkey_path))
-            for n, keys in enumerate(cur_lib.keys()):
-                if n == offs_path[-1]:
-                    self.__canvas.paint('{}  <--'.format(keys), canvas.BACKSPACE)
+        skip_off = 0
+        self.__level_display()
+        model = _COMMOND_MODEL
+        filter_str = ''
+        while True:
+            if model == _COMMOND_MODEL:
+                command = tools.choose_command(command_list, block = False, log = False)
+                cur_target_key = cur_lib.keys()[offs_path[-1]]
+                if command == 'up' and offs_path[-1] > 0:
+                    offs_path[-1] -= 1
+                elif command == 'down' and offs_path[-1] < len(cur_lib) - 1:
+                    offs_path[-1] += 1
+                elif command == 'right' and isinstance(cur_lib[cur_target_key], dict):
+                    lkey_path.append(cur_target_key)
+                    offs_path.append(0)
+                elif command == 'left' and len(offs_path) > 1:
+                    lkey_path.pop()
+                    offs_path.pop()
+                elif command == 'f':
+                    model = _FILTER_MODEL
+                    continue
+                elif command == 'esc':
+                    filter_str = ''
+                    model = _COMMOND_MODEL
+                elif command == 'e' and not isinstance(cur_lib[cur_target_key], dict):
+                    p_type = type(cur_lib[cur_target_key])
+                    self.__vlog.VLOG('insert new data ({})'.format(p_type))
+                    new = tools.stdin()
+                    try:
+                        new = p_type(new)
+                    except:
+                        self.__vlog.VLOG('error format')
+                    self.__target_lib.set_data(form_lkey(lkey_path + [cur_target_key]), new)
+                elif command == 'd' and len(lkey_path) > 0 and lkey_path[0] == DATA_KEY:
+                    self.__target_lib.delete_data(form_lkey(lkey_path[1:] + [cur_target_key]))
+                # elif command == 'u':  # TODO
+                #     break
+                elif command == 's':
+                    self.__target_lib.write_data_lib()
+                    break
+                elif command == 'q':
+                    break
+            elif model == _FILTER_MODEL:
+                command = tools.stdin(block = False)
+                if command == 'esc':
+                    offs_path[-1] = 0
+                    filter_str = ''
+                    model = _COMMOND_MODEL
                 else:
-                    self.__canvas.paint(keys, canvas.BACKSPACE)
-            self.__canvas.display()
+                    offs_path[-1] = 0
+                    filter_str += command
+            skip_off = self.__update_skip_off(offs_path, skip_off)
+            self.__canvas.clear()
+            self.__level_display(skip_offset = skip_off, lkey_path = lkey_path, offs_path = offs_path, filter_str = filter_str)
+            cur_lib = target_lib.get_data(form_lkey(lkey_path))
 
 if __name__ == common.MAIN:
     datalib_manager = DataLibManager()

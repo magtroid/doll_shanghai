@@ -20,6 +20,7 @@ class CANVAS(object):
     # public:
     #   new_area
     #   display_area
+    #   coordinate
     #   paint
     #   display
     #   clear
@@ -44,6 +45,9 @@ class CANVAS(object):
         for area in self.__area_list:
             area.display_struct()
 
+    def coordinate(self):
+        return self.__coordinate
+
     # add context into canvas
     def paint(self, context, backspace = False, coordinate = None):
         if not isinstance(context, str):
@@ -66,7 +70,7 @@ class CANVAS(object):
 
     # clear screan and display canvas
     def display(self):
-        tools.clear()  # TODO
+        tools.clear()
         for area in self.__area_list:
             self.__cover(area)
 

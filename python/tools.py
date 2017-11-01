@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # coding=utf-8
-'''tools for scrap methods
+'''tools for common tools
 
 Magtroid @ 2017-06-26 15:58
 '''
 
 # import library
 from datetime import datetime, timedelta
-import math_tool
+import mmath
+import mio
 import os
 import re
-import select
 import sys
 import time
-import tty
 
 # const define
 _SCHEDULE_LEN = 50
@@ -40,7 +39,9 @@ TIME_SECOND = 5
 
 # function
 #   flush
+#   lclear
 #   stdin
+#   get_stair_format
 #   get_terminal_size
 #   is_leap_year
 #   get_time_str
@@ -51,47 +52,52 @@ TIME_SECOND = 5
 #   date_list_to_str
 #   form_chart_list
 #   print_list
-#   choose_commond
+#   choose_command
 #   get_url_type
 #   parse_href_url
 #   ultra_encode
 #   schedule
 #   open_file
-#   kbhit
 #   sleep
 #   clear
 
-# flush current line
+# clear stdout
 def flush():
+    sys.stdout.flush()
+
+# clear current line
+def lclear():
     terminal_width = get_terminal_size()[1]
-    print '\r{}'.format(' ' * (terminal_width - 1)),
+    print '\r{}\r'.format(' ' * (terminal_width - 1)),
 
 # return stdin
-def stdin(search_list = None, block = True):
-    if search_list is None:
-        return sys.stdin.readline().strip()
-    tty.setcbreak(sys.stdin.fileno())
+def stdin(block = True, search_list = None):
     rstr = ''
-    switch = 0
+    if not block:
+        command = mio.kbhit(block = False)
+        if command == '\x1b':
+            rstr = 'esc'
+        elif command == '\x1b[A':
+            rstr = 'up'
+        elif command == '\x1b[B':
+            rstr = 'down'
+        elif command == '\x1b[C':
+            rstr = 'right'
+        elif command == '\x1b[D':
+            rstr = 'left'
+        else:
+            rstr = command
+        return rstr
+
+    if search_list is None:
+        search_list = []
+    switch_model = False
     while True:
-        if select.select([sys.stdin], [], [], 0.01):
-            c = sys.stdin.read(1)
-            if not block:
-                if c == '\x1b':
-                    c = sys.stdin.read(2)
-                    if c == '[A':
-                        return 'up'
-                    if c == '[B':
-                        return 'down'
-                    if c == '[C':
-                        return 'right'
-                    if c == '[D':
-                        return 'left'
-                else:
-                    return c
-            if c == '\t':
-                if switch == 0:
-                    switch = 1
+        command = mio.kbhit(block = False)
+        if command:
+            if command == '\t':
+                if not switch_model:
+                    switch_model = True
                     fill_coordinate = [0, 0]
                     fill_list = []
                     for seg in search_list:
@@ -100,7 +106,7 @@ def stdin(search_list = None, block = True):
                             fill_list.append(seg)
                     fill_chart, segs_len = form_chart_list(fill_list, offset = len(rstr) + 4)
                     if len(fill_chart) != 0:
-                        pstr = '\r{} :'.format(rstr)
+                        pstr = '{} :'.format(rstr)
                         for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
                             if len(seg) > segs_len:
                                 seg = ''.join([seg[:segs_len - 3], '...'])
@@ -108,13 +114,15 @@ def stdin(search_list = None, block = True):
                                 pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
                             else:
                                 pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
-                        flush()
+                        lclear()
                         print pstr,
-                    else:
-                        switch = 0
-                        fill_coordinate = [-1, -1]
                         flush()
-                        print '\r{0}'.format(rstr),
+                    else:
+                        switch_model = False
+                        fill_coordinate = [-1, -1]
+                        lclear()
+                        print rstr,
+                        flush()
                 else:
                     fill_coordinate[1] += 1
                     if fill_coordinate[1] >= len(fill_chart[fill_coordinate[0]]):
@@ -122,7 +130,7 @@ def stdin(search_list = None, block = True):
                         fill_coordinate[1] = 0
                         if fill_coordinate[0] >= len(fill_chart):
                             fill_coordinate[0] = 0
-                    pstr = '\r{} :'.format(rstr)
+                    pstr = '{} :'.format(rstr)
                     for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
                         if len(seg) > segs_len:
                             seg = ''.join([seg[:segs_len - 3], '...'])
@@ -130,35 +138,56 @@ def stdin(search_list = None, block = True):
                             pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
                         else:
                             pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
-                    flush()
+                    lclear()
                     print pstr,
-            elif c == '\n':
-                if switch == 1:
-                    switch = 0
+                    flush()
+            elif command == '\n':
+                if switch_model:
+                    switch_model = False
                     fill_coordinate = [-1, -1]
                     rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
-                    flush()
+                    lclear()
                     print rstr,
+                    flush()
                 else:
                     return rstr
-            elif c == '\x1b':  # arrow
-                c = sys.stdin.read(2)
-                switch = 0
+            elif command in ['esc', 'up', 'down', 'left', 'right']:  # arrow
+                switch_model = False
                 fill_coordinate = [-1, -1]
+                lclear()
+                print rstr,
                 flush()
-                print '\r{0}'.format(rstr),
-            elif c == '\x7f':  # backspace
-                switch = 0
+            elif command == '\x7f':  # backspace
+                switch_model = False
                 fill_coordinate = [-1, -1]
                 rstr = rstr[:-1]
+                lclear()
+                print rstr,
                 flush()
-                print '\r{0}'.format(rstr),
             else:
-                switch = 0
+                switch_model = False
                 fill_coordinate = [-1, -1]
-                rstr += c
+                rstr += command
+                lclear()
+                print rstr,
                 flush()
-                print '\r{0}'.format(rstr),
+
+# return stair format string,
+# is_tail stands for one stair last one
+# level is a list stands for which level for stair
+# stair_len is for stair charactor number
+def get_stair_format(level, is_tail, stair_len = 4):
+    rstr = ''
+    for clevel in level:
+        if clevel == 0:
+            rstr = '{0}{1}'.format(rstr, ' ' * stair_len)
+        else:
+            rstr = '{0}{1}{2}'.format(rstr, '│', ' ' * (stair_len - 1))
+    if is_tail:
+        rstr = '{0}{1} '.format(rstr, '└─')
+    else:
+        rstr = '{0}{1} '.format(rstr, '├─')
+    return rstr
 
 # return terminal width and height
 def get_terminal_size():
@@ -209,7 +238,6 @@ def get_date(delta_date = 0, current_date = None, filt = None):
         date_target = current_date + timedelta(days = delta_date)
         date = map(int, str(date_target).split()[0].split('-'))
         date_str = '.'.join(map(str, date))
-        print get_weekday(date_str)
         if filt is not None and get_weekday(date_str) in filt:
             delta_date = delta_date + 1 if delta_date > 0 else delta_date - 1
         else:
@@ -292,7 +320,7 @@ def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0,
         return '' if list_str else [], 0
     if num_per_line == 0:
         # get number per line
-        segs_len = int(math_tool.mean([len(x) for x in target_list]) * 2)
+        segs_len = int(mmath.mean([len(x) for x in target_list]) * 2)
         if segs_len < min_seg_len:
             segs_len = min_seg_len 
         if segs_len > max_seg_len:
@@ -337,30 +365,32 @@ def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
     for list_line in chart_list:
         print list_line
 
-# get commond
+# get command
 # if input choose, select the key of choose
-def choose_commond(choose = None, option = None, block = True):
+# if not blocked, receive only one character
+def choose_command(choose = None, option = None, block = True, log = True):
     if choose:
         if isinstance(choose, dict):
             choose_item = str(choose.keys()).decode('string_escape')
         elif isinstance(choose, list):
             choose_item = choose
         else:
-            print 'not support this format of commond {}'.format(choose)
+            print 'not support this format of command {}'.format(choose)
             return
-        print 'choose your items: \n or press "cancel" or "q" to quit'
-        print_list(choose_item)
-        commond = stdin(search_list = choose_item, block = block)
-        while commond.split(':')[0] not in choose:
-            if commond == 'cancel' or commond == 'q':
-                return commond
+        if log:
+            print 'choose your items: \n or press "cancel" or "q" to quit'
+            print_list(choose_item)
+        command = stdin(search_list = choose_item, block = block)
+        while command.split(':')[0] not in choose:
+            if command == 'cancel' or command == 'q':
+                return command
             else:
                 print 'error items, type again'
-                commond = stdin(search_list = choose_item, block = block)
+                command = stdin(search_list = choose_item, block = block)
     else:
         print 'type your items or press "cancel" or "q" to quit'
-        commond = stdin()
-    return commond
+        command = stdin()
+    return command
 
 # return type of a url
 def get_url_type(url):
@@ -420,9 +450,10 @@ def ultra_encode(text_in):
 def schedule(num, total):
     if int(num / float(total) * 10000) > int((num - 1) / float(total) * 10000):
         percent = int(num / float(total) * 10000) / 100.0
-        # print '\r%s %.2f%% (%d/%d)' % (('%%-%ds' % _SCHEDULE_LEN) % (int(_SCHEDULE_LEN * percent / 99) * '='), percent, num, total),
-        print '\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
-        sys.stdout.flush()
+        lclear()
+        # print '%s %.2f%% (%d/%d)' % (('%%-%ds' % _SCHEDULE_LEN) % (int(_SCHEDULE_LEN * percent / 99) * '='), percent, num, total),
+        print '%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
+        flush()
 
 # open file for write
 # if not exist, create one
@@ -433,14 +464,6 @@ def open_file(file_name):
             os.makedirs(file_dir)
     fp = open(file_name, 'w')
     return fp
-
-# monitor keyboard hit in runing program
-def kbhit():
-    r = select.select([sys.stdin], [], [], 0.01)
-    rstr = ''
-    if len(r[0]) > 0:
-        rstr = stdin()
-    return rstr
 
 # sleep time
 def sleep(t):

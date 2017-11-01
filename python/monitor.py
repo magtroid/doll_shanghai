@@ -13,6 +13,7 @@ import common
 import copy
 import datalib
 import log
+import mio
 import proxypool
 import re
 import stock_market
@@ -67,8 +68,8 @@ class StockMonitor(object):
     #   __init_stock_list
     #   __update_property_lib
     #   __get_lib_date_range
-    #   __commond_control
-    #   __process_system_commond
+    #   __command_control
+    #   __process_system_command
     #   __change_cash
     #   __change_property
     #   __in_cash
@@ -109,7 +110,7 @@ class StockMonitor(object):
         self.__url = 'http://api.finance.ifeng.com/amin/?code='
         self.__type = '&type=now'
         self.__max_stock_monitor = 8
-        self.__system_commond = ['quit', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
+        self.__system_command = ['quit', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
         self.__property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         self.__stock_map_list = dict()
         self.__init_stock_map_list()
@@ -123,7 +124,7 @@ class StockMonitor(object):
     # monitor stock and property
     def stock_monitor(self):
         while self.__status == _STATUS_ALIVE:
-            self.__commond_control()
+            self.__command_control()
             self.__display_market()
         self.__write_data_lib()
         self.__vlog.VLOG('done monitor')
@@ -171,56 +172,56 @@ class StockMonitor(object):
             if tools.date_compare(key, self.__start_date) == tools.LESS:
                 self.__start_date = key
 
-    # receive commond and control
-    def __commond_control(self):
-        commond = tools.kbhit()
-        if commond:
-            commond_list = commond.split()
-            if len(commond_list) != 1:
-                commond = commond_list[0]
-                argv = commond_list[1:]
+    # receive command and control
+    def __command_control(self):
+        command = mio.kbhit()
+        if command:
+            command_list = command.split()
+            if len(command_list) != 1:
+                command = command_list[0]
+                argv = command_list[1:]
             else:
                 argv = []
-            if commond in self.__system_commond:
-                self.__process_system_commond(commond, argv)
-            elif commond in self.__stock_map_list:
-                commond = self.__stock_map_list[commond]
-                if commond in self.__stock_list:
-                    if commond == self.__display_feat[_DETAIL_INDEX]:
+            if command in self.__system_command:
+                self.__process_system_command(command, argv)
+            elif command in self.__stock_map_list:
+                command = self.__stock_map_list[command]
+                if command in self.__stock_list:
+                    if command == self.__display_feat[_DETAIL_INDEX]:
                         self.__display_feat[_DETAIL_INDEX] = ''
-                    del self.__stock_list[commond]
+                    del self.__stock_list[command]
                 else:
-                    stock = self.__new_stock(commond)
+                    stock = self.__new_stock(command)
                     if len(self.__stock_list) < self.__max_stock_monitor:
-                        self.__stock_list[commond] = stock
-            elif commond in self.__stock_list:
-                if commond == self.__display_feat[_DETAIL_INDEX]:
+                        self.__stock_list[command] = stock
+            elif command in self.__stock_list:
+                if command == self.__display_feat[_DETAIL_INDEX]:
                     self.__display_feat[_DETAIL_INDEX] = ''
-                del self.__stock_list[commond]
+                del self.__stock_list[command]
             else:
-                stock = self.__new_stock(commond)
+                stock = self.__new_stock(command)
                 if len(self.__stock_list) < self.__max_stock_monitor and \
                    self.__proxy_pool.get_page(stock[_URL_KEY]):
-                    self.__stock_list[commond] = stock
+                    self.__stock_list[command] = stock
 
-    # process commond in system_commond
-    def __process_system_commond(self, commond, argv = None):
-        if commond == 'q' or commond == 'Q' or commond == 'quit':
+    # process command in system_command
+    def __process_system_command(self, command, argv = None):
+        if command == 'q' or command == 'Q' or command == 'quit':
             self.__status = _STATUS_DEAD
-        elif commond == 'in':
+        elif command == 'in':
             for money in argv:
                 self.__in_cash(money)
-        elif commond == 'out':
+        elif command == 'out':
             for money in argv:
                 self.__out_cash(money)
-        elif commond == 'buy':
+        elif command == 'buy':
             self.__buy_stock()
-        elif commond == 'sell':
+        elif command == 'sell':
             self.__sell_stock()
-        elif commond == 'detail' or commond == 'd':
+        elif command == 'detail' or command == 'd':
             stock_id = None if len(argv) == 0 else argv[0]
             self.__set_detail_list(stock_id)
-        elif commond == 'show':
+        elif command == 'show':
             self.__display_feat[_PROPERTY_INDEX] ^= True
 
     # change cash by number of positive and negative
@@ -384,10 +385,10 @@ class StockMonitor(object):
         buy_list = detail[11:21]
         sell_list = detail[21:31]
         for stage in range(5):
-            self.__canvas.paint('{0:6s}: {1:8d}'.format(sell_list[4 - stage], int(float(sell_list[9 - stage])) / 100), canvas.BACKSPACE)
+            self.__canvas.paint('{0:6.2f}: {1:8d}'.format(float(sell_list[4 - stage]), int(float(sell_list[9 - stage])) / 100), canvas.BACKSPACE)
         self.__canvas.paint('-' * 16, canvas.BACKSPACE)
         for stage in range(5):
-            self.__canvas.paint('{0:6s}: {1:8d}'.format(buy_list[stage], int(float(buy_list[5 + stage])) / 100), canvas.BACKSPACE)
+            self.__canvas.paint('{0:6.2f}: {1:8d}'.format(float(buy_list[stage]), int(float(buy_list[5 + stage])) / 100), canvas.BACKSPACE)
 
     # create a new stock to monitor
     def __new_stock(self, stock_id):
@@ -450,8 +451,6 @@ class StockMonitor(object):
             if self.__property_lib.lhas_key(datalib.form_lkey([datalib.DATA_KEY, last_action_date, _ACTION_KEY])):
                 last_property_date = tools.get_date(-1, last_action_date, [common.SAT, common.SUN])
                 last_virtual_property = self.__get_virtual_property(last_property_date)
-                self.__canvas.paint(last_property_date, canvas.BACKSPACE)  # TODO
-                self.__canvas.paint(last_virtual_property, canvas.BACKSPACE)  # TODO
                 break
             last_action_date = tools.get_date(-1, last_action_date)
         return last_virtual_property
@@ -473,11 +472,12 @@ class StockMonitor(object):
         self.__canvas.paint('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))), canvas.BACKSPACE)
         stock_data = self.__get_property_stock()
         for stock in stock_data.items():
-            self.__canvas.paint('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format( \
-                             stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
-                             stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
-                             stock[1][_STOCK_PCOST_KEY], \
-                             (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), canvas.BACKSPACE)
+            if _STOCK_PRICE_KEY in stock[1]:
+                self.__canvas.paint('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format( \
+                                     stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
+                                     stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
+                                     stock[1][_STOCK_PCOST_KEY], \
+                                     (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), canvas.BACKSPACE)
 
     # display each stock price
     def __display_price(self):
@@ -500,27 +500,33 @@ class StockMonitor(object):
                 continue
             price = re.sub('"', '', response[1:-1].encode('utf-8')).split(',')
             ctime = re.sub(':\d\d$', '', price[0].split()[1])
+            cprice = float(price[2])
+            crate = float(price[3])
+            ctransaction = int(price[6])
             if len(stock_item[1][_LAST_TIME]) == 0 or stock_item[1][_LAST_TIME][-1] != ctime:
                 transaction = int(price[6])
                 self.__stock_history_append(stock_item[1][_LAST_TIME], ctime)
-                self.__stock_history_append(stock_item[1][_LAST_PRICE], float(price[2]))
-                self.__stock_history_append(stock_item[1][_LAST_ADR], float(price[3]))
-                self.__stock_history_append(stock_item[1][_LAST_TRANS], int(price[6]))
+                self.__stock_history_append(stock_item[1][_LAST_PRICE], cprice)
+                self.__stock_history_append(stock_item[1][_LAST_ADR], crate)
+                self.__stock_history_append(stock_item[1][_LAST_TRANS], ctransaction)
             else:
                 transaction = int(price[6]) - stock_item[1][_LAST_TRANS][-1]
-                stock_item[1][_LAST_PRICE][-1] = float(price[2])
-                stock_item[1][_LAST_ADR][-1] = float(price[3])
-                stock_item[1][_LAST_TRANS][-1] = int(price[6])
+                stock_item[1][_LAST_PRICE][-1] = cprice
+                stock_item[1][_LAST_ADR][-1] = crate
+                stock_item[1][_LAST_TRANS][-1] = ctransaction
             if stock_number != 1 and stock_number % _DISPLAY_NUM_PER_LINE == 1:
                 stocks_price += '\n        '
             stocks_price += '  |  {stock_id} {price:7.2f} {rate:7.2f} {trans:7d}'.format(stock_id = stock_item[0], \
-                                                                                         price = float(price[2]), \
-                                                                                         rate = float(price[3]), \
+                                                                                         price = cprice, \
+                                                                                         rate = crate, \
                                                                                          trans = transaction)
             if stock_item[0] in stock_lib:
-                total_property += float(price[2]) * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
-                self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, \
-                                                                stock_item[0], _STOCK_PRICE_KEY]), float(price[2]))
+                price_lkey = datalib.form_lkey([datalib.DATA_KEY, self.__today, _STOCK_KEY, stock_item[0], _STOCK_PRICE_KEY])
+                if cprice != 0:
+                    total_property += cprice * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
+                    self.__property_lib.set_data(price_lkey, cprice)
+                else:
+                    total_property += self.__property_lib.get_data(price_lkey) * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
 
         if market_suspended:
             self.__canvas.paint('stock market suspended', canvas.BACKSPACE)
