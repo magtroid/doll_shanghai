@@ -450,9 +450,8 @@ def ultra_encode(text_in):
 def schedule(num, total):
     if int(num / float(total) * 10000) > int((num - 1) / float(total) * 10000):
         percent = int(num / float(total) * 10000) / 100.0
-        lclear()
         # print '%s %.2f%% (%d/%d)' % (('%%-%ds' % _SCHEDULE_LEN) % (int(_SCHEDULE_LEN * percent / 99) * '='), percent, num, total),
-        print '%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
+        print '\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
         flush()
 
 # open file for write

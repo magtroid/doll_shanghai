@@ -476,6 +476,7 @@ class DataLibManager(object):
     #   __init_lib_list
     #   __list_libs
     #   __update_skip_off
+    #   __update_filter_dict
     #   __level_display
     #   __display_lib_tree
 
@@ -521,7 +522,15 @@ class DataLibManager(object):
             skip_off -= 1
         return skip_off
 
-    def __level_display(self, skip_offset = 0, target_lib = None, lkey_path = None, offs_path = None, level = None, filter_str = None):
+    def __update_filter_dict(self, filter_dict, filter_str):
+        update_dict = dict()
+        for key in filter_dict.keys():
+            if re.search('^{}'.format(filter_str), key):
+                update_dict[key] = filter_dict[key]
+        return update_dict
+
+    def __level_display(self, skip_offset = 0, target_lib = None, lkey_path = None, offs_path = None, level = None, filter_dict = None):
+        origin_skip = skip_offset
         stair_len = 4
         if target_lib is None:
             target_lib = self.__target_lib
@@ -529,12 +538,11 @@ class DataLibManager(object):
             lkey_path = []
         if offs_path is None:
             offs_path = [0]
-        if filter_str is None:
-            filter_str = ''
         if level is None:
             level = []
         n = 0
         off = 0
+        filter_num = 0
         cur_node = target_lib.get_data('')
         terminal_h = tools.get_terminal_size()[0]
         if skip_offset > 0:
@@ -542,21 +550,22 @@ class DataLibManager(object):
         else:
             self.__canvas.paint('│', canvas.BACKSPACE)
         while True:
-            filter_num = 0
             is_tail = True if off == len(cur_node) - 1 else False
-            stair = tools.get_stair_format(level, is_tail, stair_len)
             cur_key = cur_node.keys()[off]
-            cur_str = '{0}{1}'.format(stair, cur_key)
-            if not isinstance(cur_node[cur_key], dict):
-                cur_str = '{0}: {1}'.format(cur_str, cur_node[cur_key])
-            if n == len(offs_path) - 1 and off - filter_num == offs_path[n]:
-                cur_str = '{}  <--'.format(cur_str)
+            filtered = False
+            if n == len(offs_path) - 1 and filter_dict is not None and cur_key not in filter_dict:
+                filter_num += 1
+                filtered = True
             if skip_offset > 0:
                 skip_offset -= 1
             else:
-                if n == len(offs_path) - 1 and not re.search('^{}'.format(filter_str), cur_key):
-                    filter_num += 1
-                else:
+                if not filtered:
+                    stair = tools.get_stair_format(level, is_tail, stair_len)
+                    cur_str = '{0}{1}'.format(stair, cur_key)
+                    if not isinstance(cur_node[cur_key], dict):
+                        cur_str = '{0}: {1}'.format(cur_str, cur_node[cur_key])
+                    if n == len(offs_path) - 1 and off - filter_num == offs_path[n]:
+                        cur_str = '{}  <--'.format(cur_str)
                     self.__canvas.paint(cur_str, canvas.BACKSPACE)
             if self.__canvas.coordinate()[0] > terminal_h - 2:
                 break
@@ -594,38 +603,48 @@ class DataLibManager(object):
         skip_off = 0
         self.__level_display()
         model = _COMMOND_MODEL
-        filter_str = ''
+        filter_dict = None
         while True:
             if model == _COMMOND_MODEL:
                 command = tools.choose_command(command_list, block = False, log = False)
                 cur_target_key = cur_lib.keys()[offs_path[-1]]
-                if command == 'up' and offs_path[-1] > 0:
-                    offs_path[-1] -= 1
-                elif command == 'down' and offs_path[-1] < len(cur_lib) - 1:
-                    offs_path[-1] += 1
-                elif command == 'right' and isinstance(cur_lib[cur_target_key], dict):
-                    lkey_path.append(cur_target_key)
-                    offs_path.append(0)
-                elif command == 'left' and len(offs_path) > 1:
-                    lkey_path.pop()
-                    offs_path.pop()
+                if command == 'up':
+                    if offs_path[-1] > 0:
+                        offs_path[-1] -= 1
+                elif command == 'down':
+                    if offs_path[-1] < len(cur_lib) - 1:
+                        offs_path[-1] += 1
+                elif command == 'right' or command == '\n':
+                    if isinstance(cur_lib[cur_target_key], dict):
+                        lkey_path.append(cur_target_key)
+                        offs_path.append(0)
+                elif command == 'left':
+                    if len(offs_path) > 1:
+                        lkey_path.pop()
+                        offs_path.pop()
                 elif command == 'f':
                     model = _FILTER_MODEL
+                    filter_str = ''
+                    filter_dict = dict()
+                    for n, key in enumerate(cur_lib.keys()):
+                        filter_dict[key] = n
                     continue
                 elif command == 'esc':
                     filter_str = ''
                     model = _COMMOND_MODEL
-                elif command == 'e' and not isinstance(cur_lib[cur_target_key], dict):
-                    p_type = type(cur_lib[cur_target_key])
-                    self.__vlog.VLOG('insert new data ({})'.format(p_type))
-                    new = tools.stdin()
-                    try:
-                        new = p_type(new)
-                    except:
-                        self.__vlog.VLOG('error format')
-                    self.__target_lib.set_data(form_lkey(lkey_path + [cur_target_key]), new)
-                elif command == 'd' and len(lkey_path) > 0 and lkey_path[0] == DATA_KEY:
-                    self.__target_lib.delete_data(form_lkey(lkey_path[1:] + [cur_target_key]))
+                elif command == 'e':
+                    if not isinstance(cur_lib[cur_target_key], dict):
+                        p_type = type(cur_lib[cur_target_key])
+                        self.__vlog.VLOG('insert new data ({})'.format(p_type))
+                        new = tools.stdin()
+                        try:
+                            new = p_type(new)
+                        except:
+                            self.__vlog.VLOG('error format')
+                        self.__target_lib.set_data(form_lkey(lkey_path + [cur_target_key]), new)
+                elif command == 'd':
+                    if len(lkey_path) > 0 and lkey_path[0] == DATA_KEY:
+                        self.__target_lib.delete_data(form_lkey(lkey_path[1:] + [cur_target_key]))
                 # elif command == 'u':  # TODO
                 #     break
                 elif command == 's':
@@ -635,16 +654,42 @@ class DataLibManager(object):
                     break
             elif model == _FILTER_MODEL:
                 command = tools.stdin(block = False)
+                cur_sort_item = sorted(filter_dict.items(), key = lambda d:d[1])
+                cur_target_off = cur_sort_item[offs_path[-1]][1] if len(cur_sort_item) != 0 else None
+                cur_target_key = cur_sort_item[offs_path[-1]][0] if len(cur_sort_item) != 0 else None
                 if command == 'esc':
                     offs_path[-1] = 0
                     filter_str = ''
+                    filter_dict = None
                     model = _COMMOND_MODEL
+                elif command == 'up':
+                    if offs_path[-1] > 0:
+                        offs_path[-1] -= 1
+                elif command == 'down':
+                    if offs_path[-1] < len(filter_dict) - 1:
+                        offs_path[-1] += 1
+                elif command == 'right' or command == '\n':
+                    if cur_target_key is not None and isinstance(cur_lib[cur_target_key], dict):
+                        filter_str = ''
+                        filter_dict = None
+                        model = _COMMOND_MODEL
+                        offs_path[-1] = cur_target_off
+                        lkey_path.append(cur_target_key)
+                        offs_path.append(0)
+                elif command == 'left':
+                    if len(offs_path) > 1:
+                        filter_str = ''
+                        filter_dict = None
+                        model = _COMMOND_MODEL
+                        lkey_path.pop()
+                        offs_path.pop()
                 else:
                     offs_path[-1] = 0
                     filter_str += command
+                    filter_dict = self.__update_filter_dict(filter_dict, filter_str)
             skip_off = self.__update_skip_off(offs_path, skip_off)
             self.__canvas.clear()
-            self.__level_display(skip_offset = skip_off, lkey_path = lkey_path, offs_path = offs_path, filter_str = filter_str)
+            self.__level_display(skip_offset = skip_off, lkey_path = lkey_path, offs_path = offs_path, filter_dict = filter_dict)
             cur_lib = target_lib.get_data(form_lkey(lkey_path))
 
 if __name__ == common.MAIN:
