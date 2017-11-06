@@ -4,25 +4,28 @@
 import numpy as np
 from numpy import random
 import time
+import canvas
 
-person = [100] * 100
+p_num = 40
+person = [100] * p_num
 round = 1
+scanvas = canvas.CANVAS()
 while(True):
     money_range = [0] * 8
-    print 'round:%d' % round
+    # print 'round:%d' % round
     time.sleep(0)
 
-    for i in range(100):
+    for i in range(p_num):
         if person[i] is 0:
             continue
         person[i] -= 1
-        a = int(random.random() * 99)
+        a = int(random.random() * (p_num - 1))
         if a < i:
             person[a] += 1
         else:
             person[a+1] += 1
 
-    for i in range(100):
+    for i in range(p_num):
         if person[i] < 50:
             money_range[0] += 1
         elif person[i] < 75:
@@ -39,7 +42,9 @@ while(True):
             money_range[6] += 1
         else:
             money_range[7] += 1
-
-    print sorted(person)[:10]
-    print sorted(person)[-10:]
+    if round % 1000 == 0:
+        scanvas.clear()
+        for p in sorted(person, reverse=True):
+            scanvas.paint('{:>3d}: {}'.format(p, '*' * int(p / 2.8)), canvas.BACKSPACE)
+        scanvas.display()
     round += 1

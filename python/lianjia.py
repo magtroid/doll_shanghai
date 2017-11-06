@@ -108,6 +108,7 @@ class LianJia(object):
             self.__proxy_pool = proxypool.ProxyPool(vlog = vlog)
         else:
             self.__proxy_pool = proxy_pool
+        self.__proxy_pool.set_threshold(150)
         self.__data_lib_file = './datalib/' + self.__city + '_lianjia.lib'
         self.__disable_controler = False
         self.__lianjia_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler, vlog = 1)
@@ -195,7 +196,7 @@ class LianJia(object):
                 self.__start_date = date
             if len(self.__end_date) is 0:
                 self.__end_date = date
-            date_compare_start = tools.date_compare(date, self.__start_date) # TODO
+            date_compare_start = tools.date_compare(date, self.__start_date)
             date_compare_end = tools.date_compare(date, self.__end_date)
             if date_compare_start == tools.LESS or date_compare_start == tools.INCLUDE:
                 self.__start_date = date
@@ -495,15 +496,15 @@ class LianJiaData(object):
         self.__add_date_range(2017, [1, 12])
 
     # display data
-    # commond to choose region
+    # command to choose region
     def display_data(self):
         self.__get_region()
         while 1:
-            commond = tools.choose_commond(self.__region)
-            if commond == 'cancel' or commond == 'q':
+            command = tools.choose_command(self.__region)
+            if command == 'cancel' or command == 'q':
                 self.__vlog.VLOG('canceled...')
                 break
-            data_distribution = self.__get_data_distribution(commond)
+            data_distribution = self.__get_data_distribution(command)
             self.__display_region_data(data_distribution)
 
     # calculate lianjia data lib date duration
@@ -521,7 +522,7 @@ class LianJiaData(object):
             if len(self.__end_date) is 0:
                 self.__end_date = date
             # update data duration
-            date_compare_start = tools.date_compare(date, self.__start_date) # TODO
+            date_compare_start = tools.date_compare(date, self.__start_date)
             date_compare_end = tools.date_compare(date, self.__end_date)
             if date_compare_start == tools.LESS or date_compare_start == tools.INCLUDE:
                 self.__start_date = date

@@ -194,7 +194,7 @@ def get_stair_format(level, is_tail, stair_len = 4):
 # return terminal width and height
 def get_terminal_size():
     height, width = os.popen('stty size', 'r').read().split()
-    return [int(height), int(width)]
+    return int(height), int(width)
 
 # check if a year is leap year
 def is_leap_year(year):
@@ -331,7 +331,7 @@ def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0,
         if num_per_line == 0:
             num_per_line = 1
         if len(target_list) / num_per_line <= thread_line_num:
-            for num in range(num_per_line - 1, 0, -1):
+            for num in range(num_per_line - 1, (num_per_line / 2), -1):
                 if len(target_list) % num == 0 and len(target_list) / num < 2 * thread_line_num:
                     num_per_line = num
                     break
@@ -373,7 +373,7 @@ def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
 def choose_command(choose = None, option = None, block = True, log = True):
     if choose:
         if isinstance(choose, dict):
-            choose_item = str(choose.keys()).decode('string_escape')
+            choose_item = map(str, choose.keys())
         elif isinstance(choose, list):
             choose_item = choose
         else:
