@@ -61,12 +61,17 @@ _DISPLAY_NUM_PER_LINE = 4
 _PROPERTY_INDEX = 0
 _DETAIL_INDEX = 1
 
+# canvas area list
+_PROPERTY = 'property'
+_DETAIL = 'detail'
+
 # main class
 class StockMonitor(object):
     # public
     #   stock_monitor  # main function
     # private
     #   __init_stock_list
+    #   __init_canvas_area
     #   __update_property_lib
     #   __get_lib_date_range
     #   __command_control
@@ -103,6 +108,7 @@ class StockMonitor(object):
         self.__property_lib.load_data_lib()
         self.__today = tools.date_list_to_str(tools.get_date())
         self.__canvas = canvas.CANVAS(vlog = vlog)
+        self.__init_canvas_area()
         self.__start_date = ''
         self.__end_date = ''
         self.__get_lib_date_range()
@@ -115,7 +121,11 @@ class StockMonitor(object):
         self.__property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         self.__stock_map_list = dict()
         self.__init_stock_map_list()
-        self.__display_feat = [False, '']  # 1:property 2:detail_stock
+        self.__display_feat = [False, dict()]  # 1:property 2:detail_stock
+        self.__detail_struct = {1 : [15,   0, 30, 50], # offy, offx, y, x
+                                2 : [15,  50, 30, 50],
+                                3 : [15, 100, 30, 50],
+                                } 
         self.__display_feat_len = 58
 
         self.__stock_list = dict()  # TODO load stock list from datalib
@@ -138,6 +148,9 @@ class StockMonitor(object):
             for item in stocks.items():
                 stock = self.__new_stock(item[0])
                 self.__stock_list[item[0]] = stock
+
+    def __init_canvas_area(self):
+        self.__canvas.new_area([[0, 10, 100]], line = 4, name = _PROPERTY)
 
     # make a stock map list between name and id
     def __init_stock_map_list(self):
@@ -188,16 +201,18 @@ class StockMonitor(object):
             elif command in self.__stock_map_list:
                 command = self.__stock_map_list[command]
                 if command in self.__stock_list:
-                    if command == self.__display_feat[_DETAIL_INDEX]:
-                        self.__display_feat[_DETAIL_INDEX] = ''
+                    if command in self.__display_feat[_DETAIL_INDEX]:
+                        del self.__display_feat[_DETAIL_INDEX][command]
+                        self.__canvas.del_area(command)
                     del self.__stock_list[command]
                 else:
                     stock = self.__new_stock(command)
                     if len(self.__stock_list) < self.__max_stock_monitor:
                         self.__stock_list[command] = stock
             elif command in self.__stock_list:
-                if command == self.__display_feat[_DETAIL_INDEX]:
-                    self.__display_feat[_DETAIL_INDEX] = ''
+                if command in self.__display_feat[_DETAIL_INDEX]:
+                    del self.__display_feat[_DETAIL_INDEX][command]
+                    self.__canvas.del_area(command)
                 del self.__stock_list[command]
             else:
                 stock = self.__new_stock(command)
@@ -356,10 +371,17 @@ class StockMonitor(object):
             if stock_id >= 0 and stock_id < len(self.__stock_list):
                 stock_id = self.__stock_list.keys()[stock_id]
         if stock_id in self.__stock_list:
-            if self.__display_feat[_DETAIL_INDEX] == stock_id:
-                self.__display_feat[_DETAIL_INDEX] = ''
+            if stock_id in self.__display_feat[_DETAIL_INDEX]:
+                del self.__display_feat[_DETAIL_INDEX][stock_id]
+                self.__canvas.del_area(stock_id)
             else:
-                self.__display_feat[_DETAIL_INDEX] = stock_id
+                for detail_key, detail_struct in self.__detail_struct.items():
+                    if detail_key not in self.__display_feat[_DETAIL_INDEX].values():
+                        self.__display_feat[_DETAIL_INDEX][stock_id] = detail_key
+                        self.__canvas.new_area([detail_struct[1:]], line = detail_struct[0], name = stock_id)
+                        break
+                else:
+                    self.__vlog.VLOG('full detail list')
         else:
             self.__vlog.VLOG('no such stock {0}'.format(stock_id))
 
@@ -367,20 +389,20 @@ class StockMonitor(object):
     def __show_detail(self, stock_id):
         if stock_id not in self.__stock_list:
             return
-        self.__canvas.paint('-' * self.__display_feat_len)
+        self.__canvas.paint('-' * self.__display_feat_len, name = stock_id)
         history_len = len(self.__stock_list[stock_id][_LAST_TIME])
         for history in range(history_len):
-            his_info = '{0:5s}:   {1:3.2f}  {2:>6.2f} {3:10d}'.format(self.__stock_list[stock_id][_LAST_TIME][history], \
+            his_info = '{0:5s}:   {1:6.2f}  {2:>6.2f} {3:10d}'.format(self.__stock_list[stock_id][_LAST_TIME][history], \
                                                                       self.__stock_list[stock_id][_LAST_PRICE][history], \
                                                                       self.__stock_list[stock_id][_LAST_ADR][history], \
                                                                       self.__stock_list[stock_id][_LAST_TRANS][history])
-            self.__canvas.paint(his_info)
-        self.__canvas.paint('-' * self.__display_feat_len)
+            self.__canvas.paint(his_info, name = stock_id)
+        self.__canvas.paint('-' * self.__display_feat_len, name = stock_id)
 
         detail_url = ''.join(['https://hq.finance.ifeng.com/q.php?l=', stock_id, ',&f=json;&r=0.9134400947969383&_=1507612356174'])
         response = self.__proxy_pool.get_page(detail_url)
         if len(response) == 0:
-            self.__canvas.paint('failed to get detail of stock')
+            self.__canvas.paint('failed to get detail of stock', name = stock_id)
             return
         detail = response.split(',')
         buy_list = detail[11:21]
@@ -391,18 +413,18 @@ class StockMonitor(object):
             transaction = int(float(sell_list[9 - stage])) / 100
             color = canvas.GREEN if price < last_close else canvas.RED if price > last_close else canvas.WHITE
             if price:
-                self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), color = color)
+                self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), color = color, name = stock_id)
             else:
-                self.__canvas.paint('{0:>6s}: {1:8d}'.format('--.--', transaction))
-        self.__canvas.paint('-' * 16)
+                self.__canvas.paint('{0:>6s}: {1:8d}'.format('--.--', transaction), name = stock_id)
+        self.__canvas.paint('-' * 16, name = stock_id)
         for stage in range(5):
             price = float(buy_list[stage])
             transaction = int(float(buy_list[5 + stage])) / 100
             color = canvas.GREEN if price < last_close else canvas.RED if price > last_close else canvas.WHITE
             if price:
-                self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), color = color)
+                self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), color = color, name = stock_id)
             else:
-                self.__canvas.paint('{0:>6s}: {1:8d}'.format('--.--', transaction))
+                self.__canvas.paint('{0:>6s}: {1:8d}'.format('--.--', transaction), name = stock_id)
 
     # create a new stock to monitor
     def __new_stock(self, stock_id):
@@ -475,7 +497,7 @@ class StockMonitor(object):
 
     # display property
     def __property_display(self):
-        self.__canvas.paint('-' * self.__display_feat_len)
+        self.__canvas.paint('-' * self.__display_feat_len, name = _PROPERTY)
         current_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]))
         if self.__end_date == '':
             last_property = current_property
@@ -483,11 +505,11 @@ class StockMonitor(object):
             last_property = self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__end_date, _PROPERTY_KEY]))
         last_virtual_property = self.__get_last_virtual_property()
         self.__canvas.paint('property: {0:9.2f}  profit_today: {1:8.2f} ratio: {2:-6.2f}%'.format(current_property, current_property - last_property, \
-                                                                                                  (current_property - last_property) / last_property * 100))
+                                                                                                  (current_property - last_property) / last_property * 100), name = _PROPERTY)
         if last_virtual_property:
             self.__canvas.paint(' virtual: {0:9.2f} action_profit: {1:8.2f} ratio: {2:-6.2f}%'.format(last_virtual_property, current_property - last_virtual_property, \
-                                                                                                      (current_property - last_virtual_property) / last_property * 100))
-        self.__canvas.paint('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))))
+                                                                                                      (current_property - last_virtual_property) / last_property * 100), name = _PROPERTY)
+        self.__canvas.paint('    cash: {:9.2f}'.format(self.__property_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _CASH_KEY]))), name = _PROPERTY)
         stock_data = self.__get_property_stock()
         for stock in stock_data.items():
             if _STOCK_PRICE_KEY in stock[1]:
@@ -495,11 +517,12 @@ class StockMonitor(object):
                                      stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
                                      stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
                                      stock[1][_STOCK_PCOST_KEY], \
-                                     (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100))
+                                     (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), name = _PROPERTY)
 
     # display each stock price
     def __display_price(self):
         self.__canvas.paint('-' * self.__display_feat_len)
+        stocks_price_list = []
         stocks_price = tools.get_time_str(tools.TIME_HOUR, tools.TIME_SECOND, ':')
         property_status = self.__property_lib.get_data()[self.__today]
         total_property = property_status[_CASH_KEY]
@@ -533,7 +556,8 @@ class StockMonitor(object):
                 stock_item[1][_LAST_ADR][-1] = crate
                 stock_item[1][_LAST_TRANS][-1] = ctransaction
             if stock_number != 1 and stock_number % _DISPLAY_NUM_PER_LINE == 1:
-                stocks_price += '\n        '
+                stocks_price_list.append(stocks_price)
+                stocks_price = '        '
             stocks_price += '  |  {stock_id} {price:7.2f} {rate:7.2f} {trans:7d}'.format(stock_id = stock_item[0], \
                                                                                          price = cprice, \
                                                                                          rate = crate, \
@@ -546,12 +570,13 @@ class StockMonitor(object):
                     self.__property_lib.set_data(price_lkey, cprice)
                 else:
                     total_property += self.__property_lib.get_data(price_lkey) * stock_lib[stock_item[0]][_STOCK_NUM_KEY]
-
+        stocks_price_list.append(stocks_price)
         if market_suspended:
             self.__canvas.paint('stock market suspended')
             return
         self.__property_lib.set_data(datalib.form_lkey([datalib.DATA_KEY, self.__today, _PROPERTY_KEY]), total_property)
-        self.__canvas.paint(stocks_price)
+        for stocks_price in stocks_price_list:
+            self.__canvas.paint(stocks_price)
 
     # display all stock markets
     def __display_market(self):
@@ -560,8 +585,8 @@ class StockMonitor(object):
         if self.__display_feat[_PROPERTY_INDEX]:
             self.__property_display()
         self.__display_price()
-        if self.__display_feat[_DETAIL_INDEX] != '':
-            self.__show_detail(self.__display_feat[_DETAIL_INDEX])
+        for stock_id in self.__display_feat[_DETAIL_INDEX]:
+            self.__show_detail(stock_id)
         self.__canvas.display()
         tools.sleep(_SLEEP_TIME)
 

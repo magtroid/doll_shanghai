@@ -60,8 +60,8 @@ class StockMarket(object):
         self.__disable_controler = True  # TODO
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
         self.__stock_market_lib.load_data_lib()
-        self.__get_page_type = common.URL_READ
-        self.__stock_market_class = [_CY_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+        self.__get_page_type = common.URL_WRITE
+        self.__stock_market_class = [_SH_CLASS, _SZ_CLASS, _CY_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
         self.__tape_set = {_SH_TAPE_ID, _SZ_TAPE_ID, _CY_TAPE_ID}
         self.__get_stock_list(_PROCESS_STOCK_LIST)
 
@@ -235,3 +235,6 @@ class StockMarketData(object):
                 for ranges in range_list:
                     strs += '\t%f' % stock_id[1][ranges]
                 fp.writelines('%s\n' % strs)
+
+if __name__ == common.MAIN:
+    stock_market = StockMarket()

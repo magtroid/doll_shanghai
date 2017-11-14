@@ -8,6 +8,10 @@ method for log manager
 
 # import library
 
+# static function
+def LOG(log = None):
+    print '' if log is None else log
+
 # main class
 class VLOG(object):
     # public:

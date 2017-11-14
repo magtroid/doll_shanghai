@@ -548,7 +548,7 @@ class DataLibManager(object):
         if skip_offset > 0:
             skip_offset -= 1
         else:
-            self.__canvas.paint('│', canvas.BACKSPACE)
+            self.__canvas.paint('│')
         while True:
             is_tail = True if off == len(cur_node) - 1 else False
             cur_key = cur_node.keys()[off]
@@ -566,7 +566,7 @@ class DataLibManager(object):
                         cur_str = '{0}: {1}'.format(cur_str, cur_node[cur_key])
                     if n == len(offs_path) - 1 and off - filter_num == offs_path[n]:
                         cur_str = '{}  <--'.format(cur_str)
-                    self.__canvas.paint(cur_str, canvas.BACKSPACE)
+                    self.__canvas.paint(cur_str)
             if self.__canvas.coordinate()[0] > terminal_h - 2:
                 break
             if n < len(offs_path) - 1 and off == offs_path[n] and isinstance(cur_node[cur_key], dict):
@@ -601,7 +601,7 @@ class DataLibManager(object):
         offs_path = [0]
         cur_lib = target_lib.get_data(form_lkey(lkey_path))
         skip_off = 0
-        self.__level_display()
+        self.__level_display(target_lib = target_lib)
         model = _COMMOND_MODEL
         filter_dict = None
         while True:
@@ -618,6 +618,10 @@ class DataLibManager(object):
                     if isinstance(cur_lib[cur_target_key], dict):
                         lkey_path.append(cur_target_key)
                         offs_path.append(0)
+                    elif cur_target_key == LINK_FEATURE:
+                        sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
+                        sub_lib.load_data_lib()
+                        self.__display_lib_tree(sub_lib)
                 elif command == 'left':
                     if len(offs_path) > 1:
                         lkey_path.pop()
@@ -676,6 +680,14 @@ class DataLibManager(object):
                         offs_path[-1] = cur_target_off
                         lkey_path.append(cur_target_key)
                         offs_path.append(0)
+                    elif cur_target_key == LINK_FEATURE:
+                        filter_str = ''
+                        filter_dict = None
+                        model = _COMMOND_MODEL
+                        offs_path[-1] = cur_target_off
+                        sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
+                        sub_lib.load_data_lib()
+                        self.__display_lib_tree(sub_lib)
                 elif command == 'left':
                     if len(offs_path) > 1:
                         filter_str = ''
@@ -688,12 +700,12 @@ class DataLibManager(object):
                     filter_str += command
                     filter_dict = self.__update_filter_dict(filter_dict, filter_str)
             skip_off = self.__update_skip_off(offs_path, skip_off)
-            self.__canvas.clear()
-            self.__level_display(skip_offset = skip_off, lkey_path = lkey_path, offs_path = offs_path, filter_dict = filter_dict)
+            self.__canvas.erase()
+            self.__canvas.clear_area()
+            self.__level_display(skip_offset = skip_off, target_lib = target_lib, lkey_path = lkey_path, offs_path = offs_path, filter_dict = filter_dict)
             cur_lib = target_lib.get_data(form_lkey(lkey_path))
 
 if __name__ == common.MAIN:
     datalib_manager = DataLibManager()
     datalib_manager.manage()
-
     print 'done'

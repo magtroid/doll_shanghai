@@ -54,6 +54,7 @@ TIME_SECOND = 5
 #   date_list_to_str
 #   form_chart_list
 #   print_list
+#   choose_file_from_dir
 #   choose_command
 #   get_url_type
 #   parse_href_url
@@ -153,9 +154,9 @@ def stdin(block = True, search_list = None):
                     refresh_line(pstr)
             elif command == '\n':
                 if switch_model:
+                    rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
                     switch_model = False
                     fill_coordinate = [-1, -1]
-                    rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
                     refresh_line(rstr)
                 else:
                     return rstr
@@ -239,7 +240,7 @@ def get_date(delta_date = 0, current_date = None, filt = None):
     while not finished:
         date_target = current_date + timedelta(days = delta_date)
         date = map(int, str(date_target).split()[0].split('-'))
-        date_str = '.'.join(map(str, date))
+        date_str = '.'.join(['0' + str(x) if x < 10 else str(x) for x in date])
         if filt is not None and get_weekday(date_str) in filt:
             delta_date = delta_date + 1 if delta_date > 0 else delta_date - 1
         else:
@@ -367,6 +368,10 @@ def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
     for list_line in chart_list:
         print list_line
 
+def choose_file_from_dir(target_dir, log = True):
+    files = os.listdir(target_dir)
+    return choose_command(files, log = log)
+
 # get command
 # if input choose, select the key of choose
 # if not blocked, receive only one character
@@ -390,8 +395,9 @@ def choose_command(choose = None, option = None, block = True, log = True):
                 print 'error items, type again'
                 command = stdin(search_list = choose_item, block = block)
     else:
-        print 'type your items or press "cancel" or "q" to quit'
-        command = stdin()
+        if log:
+            print 'type your items or press "cancel" or "q" to quit'
+        command = stdin(block = block)
     return command
 
 # return type of a url

@@ -7,6 +7,7 @@ method for stock'''
 
 # import library
 from bs4 import BeautifulSoup
+import canvas
 import common
 import datalib
 import proxypool
@@ -135,7 +136,7 @@ class Stock(object):
     # update stock data
     def update_stock_data(self, lkey, stock_data):
         for item in stock_data.items():
-            lkey_feature = datalib.form_lkey([datalib.DATA_KEY, lkey, datalib.DATA_FEATURE, item[0]])
+            lkey_feature = datalib.form_lkey([datalib.DATA_KEY, lkey, stock_data[_DATE_KEY], item[0]])
             if self.__stock_lib.lhas_key(lkey_feature):
                 self.__stock_lib.set_data(lkey_feature, item[1])
 
@@ -209,8 +210,8 @@ class Stock(object):
 
             period_data_unit[_WEEKDAY_KEY] = tools.get_weekday(data_date)
             period_data_unit[_OPEN_KEY] = float(data_segs[1])
-            period_data_unit[_CLOSE_KEY] = float(data_segs[2])
-            period_data_unit[_HIGH_KEY] = float(data_segs[3])
+            period_data_unit[_HIGH_KEY] = float(data_segs[2])
+            period_data_unit[_CLOSE_KEY] = float(data_segs[3])
             period_data_unit[_LOW_KEY] = float(data_segs[4])
             period_data_unit[_TRANSACTION_KEY] = float(data_segs[5])
             period_data_unit[_ADVANCE_DECLINE_KEY] = float(data_segs[6])
@@ -250,14 +251,37 @@ _SERVICE_CHARGE = -0.7
 # training file
 _DEFAULT_FILE = 'crf_train_'
 
+# k_line_model
+_INDEX_MODEL = '__index__'
+_KLINES_MODEL = '__klines__'
+# k_line_list
+_DATE_OFF = 0
+_OPEN_OFF = 1
+_CLOSE_OFF = 2
+_HIGH_OFF = 3
+_LOW_OFF = 4
+_KLINE_REDUNT = 0.05
+_KLINE_MIN_INDENSE = 40
+_KLINE_MAX_INDENSE = 120
+_KLINE_INDENSE_STEP = 20
+_KLINE_SPARSE = 2
+_KLINE_DETAIL = 'kline_detail'
+
 # data process class
 class StockData(object):
     # public
     #   display_data  # main function
     #   get_ad_ratio
+    #   k_line
     # private
     #   __get_date_duration
     #   __get_weekday_strategy
+    #   __form_kline_list
+    #   __get_kline_range
+    #   __update_skip_off
+    #   __draw_kline
+    #   __display_kline
+    #   __kline_detail
     #   __apply_strategy
     #   __gen_crf_data
     #   __fetch_stock_data
@@ -279,6 +303,7 @@ class StockData(object):
                 self.__fp = fp
         else:
             self.__status = _INVALID
+        self.__canvas = canvas.CANVAS(vlog = vlog)
 
     # data process with strategy or generate training data
     def display_data(self):
@@ -298,6 +323,44 @@ class StockData(object):
                 ratio *= (100 + data[date_str][_ADVANCE_DECLINE_RATIO_KEY]) / 100
             cdate = tools.get_date(1, cdate)
         return ratio
+
+    # draw k lines of target stock
+    def k_line(self):
+        datas = self.__stock_lib.get_data()
+        model = _INDEX_MODEL
+        while True:
+            if model == _INDEX_MODEL:
+                command = tools.choose_command(datas.keys())
+                if command == 'q':
+                    break
+                else:
+                    offs = 0
+                    cursor = 0
+                    max_kline = _KLINE_MIN_INDENSE
+                    cdata = datas[command]
+                    model = _KLINES_MODEL
+                    kline_list = self.__form_kline_list(cdata)
+                    self.__canvas.new_area([[0, 6, 20]], name = _KLINE_DETAIL)
+            else:  # model == _KLINES_MODEL:
+                self.__display_kline(kline_list, [offs, cursor, max_kline])
+                command = tools.choose_command(block = False, log = False)
+                if command == 'left':
+                    if cursor < len(kline_list) - 1:
+                        cursor += 1
+                elif command == 'right':
+                    if cursor > 0:
+                        cursor -= 1
+                elif command == '-':
+                    if max_kline < _KLINE_MAX_INDENSE:
+                        max_kline += _KLINE_INDENSE_STEP
+                elif command == '+':
+                    if max_kline > _KLINE_MIN_INDENSE:
+                        max_kline -= _KLINE_INDENSE_STEP
+                elif command in ['q', 'esc']:
+                    model = _INDEX_MODEL
+                else:
+                    pass
+                offs = self.__update_skip_off(cursor, offs, max_kline, len(kline_list))
 
     # get strategy duration
     def __get_date_duration(self):
@@ -360,6 +423,102 @@ class StockData(object):
                               weekday_in = weekday_in, \
                               weekday_out = weekday_out))
         return [weekday_in, weekday_out]
+
+    # form kline list contain date, open close high low pair
+    def __form_kline_list(self, datas):
+        kline_list = []
+        cdate = tools.get_time_str(tools.TIME_YEAR, tools.TIME_DAY, '.')
+        while len(kline_list) < len(datas):
+            if cdate in datas:
+                cdata = datas[cdate]
+                ikline = [cdate, cdata[_OPEN_KEY], cdata[_CLOSE_KEY], cdata[_HIGH_KEY], cdata[_LOW_KEY]]
+                kline_list.append(ikline)
+            cdate = tools.get_date(-1, cdate)
+        kline_list.reverse()
+        return kline_list
+
+    def __get_kline_range(self, kline_list, begin, end):
+        top = 0
+        bottom = 99999.99
+        step = 0
+        for idata in kline_list[begin : end]:
+            top = max(idata[_HIGH_OFF], top)
+            bottom = min(idata[_LOW_OFF], bottom)
+        amp = top - bottom
+        top += amp * _KLINE_REDUNT
+        bottom -= amp * _KLINE_REDUNT
+        return top, bottom
+
+    def __update_skip_off(self, cursor, skip_off, width, data_num):
+        head_len = 3
+        while cursor > skip_off + width - head_len:
+            if cursor > data_num - head_len:
+                break
+            skip_off += 1
+        while cursor < skip_off + head_len - 1:
+            if cursor < head_len - 1:
+                break
+            skip_off -= 1
+        return skip_off
+
+    def __draw_kline(self, data, n, highlight = False):
+        x = _KLINE_SPARSE * n
+        color = ''
+        # color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
+        line_up, line_down = [_OPEN_OFF, _CLOSE_OFF] if data[_OPEN_OFF] < data[_CLOSE_OFF] else [_CLOSE_OFF, _OPEN_OFF]
+        for i in range(data[_HIGH_OFF], data[line_up]):
+            self.__canvas.paint('│', coordinate = [i, x], color = color)
+            if highlight:
+                self.__canvas.insert_format([i, x, 1], other = canvas.HIGHLIGHT)
+        if data[line_up] == data[line_down]:
+            self.__canvas.insert_format([data[line_up] - 1, x, 1], other = canvas.UNDERLINE)
+            self.__canvas.insert_format([data[line_up] - 1, x, 1], front = color)
+            if highlight:
+                self.__canvas.insert_format([data[line_up] - 1, x, 1], other = canvas.HIGHLIGHT)
+        else:
+            for i in range(data[line_up], data[line_down]):
+                if color != '':
+                    self.__canvas.insert_format([i, x, 1], back = color)
+                else:
+                    self.__canvas.insert_format([i, x, 1], other = canvas.INVERSE)
+                if highlight:
+                    self.__canvas.insert_format([i, x, 1], other = canvas.HIGHLIGHT)
+        for i in range(data[line_down], data[_LOW_OFF]):
+            self.__canvas.paint('│', coordinate = [i, x], color = color)
+            if highlight:
+                self.__canvas.insert_format([i, x, 1], other = canvas.HIGHLIGHT)
+
+    # param is [offset, cursor, max_data_number] which means move to left offset and intensive of kline
+    def __display_kline(self, kline_list, param):
+        offset, cursor, max_kline_num = param
+        cstruct = self.__canvas.get_area_struct()[1]
+        height, width = len(cstruct), cstruct[0][1]
+        data_num = min(len(kline_list), width, max_kline_num)
+        begin = max(len(kline_list) - data_num - offset, 0)
+        end = begin + data_num
+        top, bottom = self.__get_kline_range(kline_list, begin, end)
+        step = (top - bottom) / height
+        display_list = [[x[_DATE_OFF]] + [int((top - y) / step) for y in x[_OPEN_OFF:]] for x in kline_list[begin : end]]
+        icursor = data_num - cursor + offset - 1
+        coord = [0, 0] if icursor > data_num / 2 else [0, width / 2]
+        self.__canvas.move_area(_KLINE_DETAIL, coord, module = canvas.MOVE_MODULE_TO)
+        self.__canvas.erase()
+        self.__canvas.clear_area()
+        # for n, ikline in enumerate(display_list):
+        #     if n == icursor:
+        #         self.__draw_kline(ikline, n, True)
+        #     else:
+        #         self.__draw_kline(ikline, n)
+        self.__kline_detail(kline_list[-(cursor + 1)])
+        self.__canvas.display()
+
+    def __kline_detail(self, data):
+        self.__canvas.paint('_' * 20, name = _KLINE_DETAIL)
+        self.__canvas.paint('DATE : {}:'.format(data[_DATE_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('OPEN : {:6.2f}:'.format(data[_OPEN_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('CLOSE: {:6.2f}:'.format(data[_CLOSE_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('HIGH : {:6.2f}:'.format(data[_HIGH_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('LOW  : {:6.2f}:'.format(data[_LOW_OFF]), name = _KLINE_DETAIL)
 
     # use strategy for specific day in and out
     def __apply_strategy(self, data):
@@ -496,3 +655,12 @@ class StockData(object):
         for vector in train_list:
             str_line = ('{str}\n').format(str = '\t'.join(map(str, vector)))
             fp.writelines(str_line)
+
+if __name__ == common.MAIN:
+    log.LOG('choose a stock id:')
+    stock_id = tools.choose_file_from_dir(STOCK_DIR, log = False)
+    log.LOG()
+    if stock_id:
+        stock_data = StockData(re.sub('\.lib$', '', stock_id))
+        stock_data.k_line()
+    log.LOG('done')
