@@ -7,6 +7,7 @@ Magtroid @ 2017-06-26 15:58
 
 # import library
 from datetime import datetime, timedelta
+import log
 import mmath
 import mio
 import os
@@ -38,11 +39,8 @@ TIME_MINUTE = 4
 TIME_SECOND = 5
 
 # function
-#   flush
-#   lclear
-#   refresh_line
-#   stdout
-#   stdin
+#   test_function
+#   is_function
 #   get_stair_format
 #   get_terminal_size
 #   is_leap_year
@@ -55,7 +53,6 @@ TIME_SECOND = 5
 #   form_chart_list
 #   print_list
 #   choose_file_from_dir
-#   choose_command
 #   get_url_type
 #   parse_href_url
 #   ultra_encode
@@ -64,116 +61,14 @@ TIME_SECOND = 5
 #   sleep
 #   clear
 
-# clear stdout
-def flush():
-    sys.stdout.flush()
+# function for multithread testing
+def test_function(count = [0]):
+    print 'Hello World {}'.format(count[0])
+    count[0] += 1
+    time.sleep(1)
 
-# clear current line
-def lclear():
-    terminal_width = get_terminal_size()[1]
-    print '\r{}\r'.format(' ' * (terminal_width - 1)),
-
-def refresh_line(pstr):
-    lclear()
-    print pstr,
-    flush()
-
-# return stdin
-def stdin(block = True, search_list = None):
-    rstr = ''
-    if not block:
-        command = mio.kbhit(block = False)
-        if command == '\x1b':
-            rstr = 'esc'
-        elif command == '\x1b[A':
-            rstr = 'up'
-        elif command == '\x1b[B':
-            rstr = 'down'
-        elif command == '\x1b[C':
-            rstr = 'right'
-        elif command == '\x1b[D':
-            rstr = 'left'
-        else:
-            rstr = command
-        return rstr
-
-    if search_list is None:
-        search_list = []
-    switch_model = False
-    while True:
-        command = mio.kbhit(block = False)
-        if command:
-            if command == '\t' or command == '\x1b[Z':
-                if not switch_model:
-                    if command == '\t':
-                        switch_model = True
-                        fill_coordinate = [0, 0]
-                        fill_list = []
-                        for seg in search_list:
-                            seg = str(seg)
-                            if re.search('^{}'.format(rstr), seg):
-                                fill_list.append(seg)
-                        fill_chart, segs_len = form_chart_list(fill_list, offset = len(rstr) + 4)
-                        if len(fill_chart) != 0:
-                            pstr = '{} :'.format(rstr)
-                            for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
-                                if len(seg) > segs_len:
-                                    seg = ''.join([seg[:segs_len - 3], '...'])
-                                if n == fill_coordinate[1]:
-                                    pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
-                                else:
-                                    pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
-                            refresh_line(pstr)
-                        else:
-                            switch_model = False
-                            fill_coordinate = [-1, -1]
-                            refresh_line(rstr)
-                else:
-                    if command == '\t':
-                        fill_coordinate[1] += 1
-                        if fill_coordinate[1] >= len(fill_chart[fill_coordinate[0]]):
-                            fill_coordinate[0] += 1
-                            fill_coordinate[1] = 0
-                            if fill_coordinate[0] >= len(fill_chart):
-                                fill_coordinate[0] = 0
-                    else:  # \x1b[Z
-                        fill_coordinate[1] -= 1
-                        if fill_coordinate[1] < 0:
-                            fill_coordinate[0] -= 1
-                            if fill_coordinate[0] < 0:
-                                fill_coordinate[0] = len(fill_chart) - 1
-                            fill_coordinate[1] = len(fill_chart[fill_coordinate[0]]) - 1
-                    pstr = '{} :'.format(rstr)
-                    for n, fill_seg in enumerate(fill_chart[fill_coordinate[0]]):
-                        if len(seg) > segs_len:
-                            seg = ''.join([seg[:segs_len - 3], '...'])
-                        if n == fill_coordinate[1]:
-                            pstr += '{0:>{1}}* '.format(''.join(['*', fill_seg]), segs_len)
-                        else:
-                            pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
-                    refresh_line(pstr)
-            elif command == '\n':
-                if switch_model:
-                    rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
-                    switch_model = False
-                    fill_coordinate = [-1, -1]
-                    refresh_line(rstr)
-                else:
-                    return rstr
-            elif command in ['esc', 'up', 'down', 'left', 'right']:  # arrow
-                switch_model = False
-                fill_coordinate = [-1, -1]
-                refresh_line(rstr)
-            elif command == '\x7f':  # backspace
-                switch_model = False
-                fill_coordinate = [-1, -1]
-                rstr = rstr[:-1]
-                refresh_line(rstr)
-            else:
-                switch_model = False
-                fill_coordinate = [-1, -1]
-                rstr += command
-                refresh_line(rstr)
+def is_function(func):
+    return hasattr(func, '__call__')
 
 # return stair format string,
 # is_tail stands for one stair last one
@@ -370,35 +265,7 @@ def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
 
 def choose_file_from_dir(target_dir, log = True):
     files = os.listdir(target_dir)
-    return choose_command(files, log = log)
-
-# get command
-# if input choose, select the key of choose
-# if not blocked, receive only one character
-def choose_command(choose = None, option = None, block = True, log = True):
-    if choose:
-        if isinstance(choose, dict):
-            choose_item = map(str, choose.keys())
-        elif isinstance(choose, list):
-            choose_item = choose
-        else:
-            print 'not support this format of command {}'.format(choose)
-            return
-        if log:
-            print 'choose your items: \n or press "cancel" or "q" to quit'
-            print_list(choose_item)
-        command = stdin(search_list = choose_item, block = block)
-        while command.split(':')[0] not in choose:
-            if command == 'cancel' or command == 'q':
-                return command
-            else:
-                print 'error items, type again'
-                command = stdin(search_list = choose_item, block = block)
-    else:
-        if log:
-            print 'type your items or press "cancel" or "q" to quit'
-        command = stdin(block = block)
-    return command
+    return mio.choose_command(files, log = log)
 
 # return type of a url
 def get_url_type(url):
@@ -460,7 +327,7 @@ def schedule(num, total):
         percent = int(num / float(total) * 10000) / 100.0
         # print '%s %.2f%% (%d/%d)' % (('%%-%ds' % _SCHEDULE_LEN) % (int(_SCHEDULE_LEN * percent / 99) * '='), percent, num, total),
         print '\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
-        flush()
+        # flush()
 
 # open file for write
 # if not exist, create one

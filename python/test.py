@@ -2,9 +2,9 @@
 # coding=utf-8
 """ python non blocking input
 """
+import datalib
+import pprint
 
-import sys
-
-a = ['43', '4', '32']
-b = '0' if len(a) == 0 else ';'.join(sorted(a, key=lambda d:(len(d), d))) 
-print b
+a = datalib.DataLib('datalib/bj_lianjia.lib')
+a.load_data_lib()
+pprint.pprint(a._DataLib__data_lib)

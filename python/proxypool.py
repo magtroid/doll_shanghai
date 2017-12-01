@@ -62,8 +62,7 @@ class ProxyPool(object):
     #   __get_page_from_file
     #   __write_page_to_file
 
-    def __init__(self, vlog = 0):
-        self.__vlog = log.VLOG(vlog)
+    def __init__(self):
         self.__headers = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.37',}
         self.__session = requests.session()
         self.__url_dir = 'urls/'
@@ -88,7 +87,7 @@ class ProxyPool(object):
 
     # print current proxy set
     def current_proxy(self):
-        self.__vlog.VLOG('current proxy is %s' % self.__proxy)
+        log.VLOG('current proxy is {}'.format(self.__proxy))
 
     # set proxy set to target proxy
     def set_proxy(self, proxy):
@@ -114,7 +113,7 @@ class ProxyPool(object):
         # iterate try each type of url
         for surl in url_list:
             proxy[_TYPE_KEY] = tools.get_url_type(surl)
-            self.__vlog.VLOG('try types: %s' % proxy[_TYPE_KEY])
+            log.VLOG('try types: {}'.format(proxy[_TYPE_KEY]))
             self.set_proxy(proxy)
             try:
                 response = self.__session.get(surl, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
@@ -133,7 +132,7 @@ class ProxyPool(object):
         proxy[_HISTORY_KEY][self.__today][_FAIL_KEY] += 1
         try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
         per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-        self.__vlog.VLOG('bad proxy: %s:%s, change one (s/f : %d/%d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
+        log.VLOG('bad proxy: %s:%s, change one (s/f : %d/%d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
                                                                                 proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
                                                                                 per))
         self.__proxy.update(proxy_tmp)
@@ -172,17 +171,17 @@ class ProxyPool(object):
                     response = self.__session.get(url, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
                     response = response.text
                 except requests.exceptions.RequestException:
-                    self.__vlog.VLOG('bad proxy, switch proxy')
+                    log.VLOG('bad proxy, switch proxy')
                     response = self.__switch_proxy(url)
                     self.__request_num = 0
             else:
-                self.__vlog.VLOG('request control, switch proxy')
+                log.VLOG('request control, switch proxy')
                 response = self.__switch_proxy(url)
                 self.__request_num = 0
             self.__request_num += 1
 
             if response is common.NONE:
-                self.__vlog.VLOG('get page failed, try to reload proxy')
+                log.VLOG('get page failed, try to reload proxy')
                 time.sleep(1)
                 # self.__request_num = self.__request_threshold  # TODO
                 self.reload_proxy()
@@ -283,14 +282,14 @@ class ProxyPool(object):
                 if loop is 2:
                     break
             if response is common.NONE:
-                self.__vlog.VLOG('no proxy available')
+                log.VLOG('no proxy available')
                 self.__reset_proxy()
                 return response
             else:
-                self.__vlog.VLOG('switch proxy success, switch to %s' % self.__proxy[url_type])
+                log.VLOG('switch proxy success, switch to %s' % self.__proxy[url_type])
                 return response
         else:
-            self.__vlog.VLOG('bad url type: %s: %s' % (url_type, url))
+            log.VLOG('bad url type: %s: %s' % (url_type, url))
             self.__reset_proxy()
             return response
 
@@ -305,7 +304,7 @@ class ProxyPool(object):
     # reset proxy to empty
     # reset all proxy data status to alive
     def __reset_proxy(self):
-        self.__vlog.VLOG('reset proxy')
+        log.VLOG('reset proxy')
         for url_type in self.__proxy.keys():
             self.__proxy[url_type] = ''
         data = self.__proxy_lib.get_data()
@@ -346,8 +345,7 @@ class ProxyPoolData(object):
     # private:
     #   __overview_data
     #   __display_detail_data
-    def __init__(self, vlog = 0):
-        self.__vlog = log.VLOG(vlog)
+    def __init__(self):
         self.__data_lib_file = './datalib/proxy.lib'
         self.__disable_controler = True
         self.__proxy_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
@@ -362,21 +360,21 @@ class ProxyPoolData(object):
     def __overview_data(self):
         data = self.__proxy_lib.get_data()
         for type_items in data.items():
-            self.__vlog.VLOG('proxy type: %s' % type_items[0])
+            log.VLOG('proxy type: %s' % type_items[0])
             for proxy_item in sorted(type_items[1].items(), key = lambda d:d[1][_SUCC_KEY], reverse = True):
                 proxy = proxy_item[1]
                 try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                 per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-                self.__vlog.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
-                                                                           proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
-                                                                           per))
+                log.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY],
+                                                                   proxy[_SUCC_KEY], proxy[_FAIL_KEY],
+                                                                   per))
 
     # choose one proxy and display detail
     def __display_detail_data(self):
         while 1:
             commond = tools.choose_commond()
             if commond == 'cancel' or commond == 'q':
-                self.__vlog.VLOG('canceled...')
+                log.VLOG('canceled...')
                 break
             data = self.__proxy_lib.get_data()
             for type_items in data.items():
@@ -384,17 +382,17 @@ class ProxyPoolData(object):
                     proxy = type_items[1][commond]
                     try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                     per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
-                    self.__vlog.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY], \
-                                                                               proxy[_SUCC_KEY], proxy[_FAIL_KEY], \
-                                                                               per))
-                    self.__vlog.VLOG('\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY], \
-                                                                                proxy[_CITY_KEY], \
-                                                                                proxy[_ANONY_KEY]))
+                    log.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY],
+                                                                       proxy[_SUCC_KEY], proxy[_FAIL_KEY],
+                                                                       per))
+                    log.VLOG('\ttypes:%-6s  city:%-12s  anony:%-10s' % (proxy[_TYPE_KEY],
+                                                                        proxy[_CITY_KEY],
+                                                                        proxy[_ANONY_KEY]))
                     if _HISTORY_KEY in proxy:
                         history = proxy[_HISTORY_KEY]
                         for history_item in history.items():
-                            self.__vlog.VLOG('\t\t{0:>12s} s:f {1:3d}/{2:<3d}'.format(history_item[0], \
-                                                                                      history_item[1][_SUCC_KEY], \
-                                                                                      history_item[1][_FAIL_KEY]))
+                            log.VLOG('\t\t{0:>12s} s:f {1:3d}/{2:<3d}'.format(history_item[0],
+                                                                              history_item[1][_SUCC_KEY],
+                                                                              history_item[1][_FAIL_KEY]))
                     else:
-                        self.__vlog.VLOG('new proxy, no history yet')
+                        log.VLOG('new proxy, no history yet')

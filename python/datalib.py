@@ -11,6 +11,7 @@ import canvas
 import common
 import copy
 import controler
+import mio
 import os
 import re
 import tools
@@ -74,9 +75,8 @@ class DataLib(object):
     # resource has two types:
     #   1) string: stock id
     #   2) dict:   stock lib
-    def __init__(self, resource, disable_controler = None, vlog = 0):
+    def __init__(self, resource, disable_controler = None):
         self.__root_key = [DATA_KEY, CONFIG_KEY]
-        self.__vlog = log.VLOG(vlog)
         self.__disable_controler = False
         if isinstance(resource, str):
             self.__data_file = resource
@@ -96,39 +96,43 @@ class DataLib(object):
     # load data lib from data_file
     # return a lib dict
     # if data_file empty, load self data file and set to self
-    def load_data_lib(self, data_file = None):
+    def load_data_lib(self, data_file = None, schedule = True):
         controler_switch = self.__disable_controler
         self.__disable_controler = True
         self_load = False
         if not data_file:
             data_file = self.__data_file
             self_load = True
-        self.__vlog.VLOG('start to load datalib: %s' % data_file)
+        log.VLOG('start to load datalib: {}'.format(data_file))
         data_lib = dict()
         self.__reset_data_lib(data_lib)
         if os.path.exists(data_file):
-            self.__vlog.VLOG('Loading......')
+            log.VLOG('Loading......')
             with open(data_file) as fp_in:
                 lines = fp_in.readlines()
                 i = 0
                 data_file_len = len(lines) / 3
                 for i in range(0, data_file_len):
-                    tools.schedule(i + 1, data_file_len)
+                    if schedule:
+                        tools.schedule(i + 1, data_file_len)
                     index = lines[i * 3]
                     keys = lines[i * 3 + 1]
                     values = lines[i * 3 + 2]
 
-                    index_segs = map(str.strip, index.split(LIB_CONNECT))
+                    index_segs = index.strip().split(LIB_CONNECT)
                     # format [0] is empty
                     if index_segs[1] == 'dict':
                         unit = dict()
                     else:
-                        self.__vlog.VLOG('error format %s\nfail to load data lib' % index_segs[1])
+                        log.VLOG('error format {}\nfail to load data lib'.format(index_segs[1]))
                         self.__reset_data_lib(data_lib)
                         self.__disable_controler = controler_switch
                         return
-                    keys_segs = map(str.strip, keys.split('\t'))
-                    values_segs = map(str.strip, values.split('\t'))
+                    keys_segs = keys.strip().split('\t')
+                    values_segs = values.strip().split('\t')
+                    # process empty data
+                    if index_segs[-1] == DATA_KEY and len(keys_segs) == 1 and keys_segs[0] == '':
+                        keys_segs = []
                     for j in range(len(keys_segs)):
                         data_format, data_value = re.search('(^__[^_]+)(.*)', values_segs[j]).groups()  # split type and value
                         # dict has no value, normal has value split with a LIB_CONNECT
@@ -161,11 +165,11 @@ class DataLib(object):
                             unit_tmp = unit_tmp[index_segs[j]]
                         unit_tmp.update(unit)
         else:
-            self.__vlog.VLOG('no data current')
+            log.VLOG('no data current')
         self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, \
                         data_file, data_lib)
-        self.__vlog.VLOG('load ok')
-        self.__vlog.VLOG('all data number: %d' % self.data_num(data_lib))
+        log.VLOG('load ok')
+        log.VLOG('all data number: {}'.format(self.data_num(data_lib)))
 
         if self_load:
             self.__reset_data_lib()
@@ -191,7 +195,7 @@ class DataLib(object):
     def insert_data(self, lkey, data, id_feature):
         if isinstance(data, dict):
             if id_feature not in data:
-                self.__vlog.VLOG('failed to insert data, no id features: ' % id_feature)
+                log.VLOG('failed to insert data, no id features: {}'.format(id_feature))
                 return False
             else:
                 data_key = data[id_feature]
@@ -216,7 +220,7 @@ class DataLib(object):
             self.increase_data(CONFIG_KEY + LIB_CONNECT + _DATA_NUM_KEY)
             return True
         else:
-            self.__vlog.VLOG('error to insert data: exists in id: %s' % data_key, 1)
+            log.VLOG('error to insert data: exists in id: {}'.format(data_key), 1)
             return False
 
     # delete data
@@ -225,11 +229,11 @@ class DataLib(object):
         cdata = self.get_data()
         for i in range(len(key_segs)-1):
             if key_segs[i] not in cdata:
-                self.__vlog.VLOG('no %s key to delete' % key_segs[i])
+                log.VLOG('no {} key to delete'.format(key_segs[i]))
                 return False
             cdata = cdata[key_segs[i]]
         if key_segs[-1] not in cdata:
-            self.__vlog.VLOG('no such data: %s' % key_segs[-1])
+            log.VLOG('no such data: {}'.format(key_segs[-1]))
             return False
         else:
             del cdata[key_segs[-1]]
@@ -244,13 +248,13 @@ class DataLib(object):
                     cdata = cdata[key_segs[j]]
                 if len(cdata[key_segs[i]]) is 0:
                     del cdata[key_segs[i]]
-            self.__vlog.VLOG('success delete data: %s' % lkey)
+            log.VLOG('success delete data: {}'.format(lkey))
             return True
 
     # insert config
     def insert_config(self, lkey, config, id_feature):
         if id_feature not in config:
-            self.__vlog.VLOG('failed to insert config, no id features: ' % id_feature)
+            log.VLOG('failed to insert config, no id features: {}'.format(id_feature))
             return False
         key_segs = lkey.split(LIB_CONNECT)
         cconfig = self.get_data(CONFIG_KEY)
@@ -267,7 +271,7 @@ class DataLib(object):
             cconfig[key] = copy.deepcopy(config)
             return True
         else:
-            self.__vlog.VLOG('error to insert config: exists in id: %s' % key)
+            log.VLOG('error to insert config: exists in id: {}'.format(key))
             return False
 
     # get DATA in data lib
@@ -287,8 +291,8 @@ class DataLib(object):
             if isinstance(cdata, dict) and key in cdata:
                 cdata = cdata[key]
             else:
-                self.__vlog.VLOG(key)
-                self.__vlog.VLOG('no such data %s' % lkey)
+                log.VLOG(key)
+                log.VLOG('no such data {}'.format(lkey))
                 return None
         return cdata
 
@@ -368,9 +372,9 @@ class DataLib(object):
         if not data_file:
             data_file = self.lib_file() if self.lib_file() else self.__data_file
         self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, data_file)
-        self.__vlog.VLOG('start to write data %s...' % data_file)
+        log.VLOG('start to write data {}...'.format(data_file))
         if not isinstance(data_lib, dict):
-            self.__vlog.VLOG('error data lib type')
+            log.VLOG('error data lib type')
             return
         if os.path.isfile(data_file) and backup == True:
             os.system ('cp %s %s' % (data_file, '%s_backup' % data_file))
@@ -480,21 +484,20 @@ class DataLibManager(object):
     #   __level_display
     #   __display_lib_tree
 
-    def __init__(self, vlog = 0):
+    def __init__(self):
         self.__datalib_dir = './datalib/'
-        self.__vlog = log.VLOG(vlog)
         self.__disable_controler = True
         self.__target_lib = dict()
         self.__lib_list = []
         self.__init_lib_list()
-        self.__canvas = canvas.CANVAS(vlog = vlog)
+        self.__canvas = canvas.CANVAS()
 
     # process data library
     def manage(self):
-        # self.__vlog.VLOG('please choose libs')
-        command = tools.choose_command(self.__lib_list)
+        # log.VLOG('please choose libs')
+        command = mio.choose_command(self.__lib_list)
         if command == 'cancel' or command == 'q':
-            self.__vlog.VLOG('\ncanceled...')
+            log.VLOG('\ncanceled...')
         else:
             self.__target_lib = DataLib('{0}{1}'.format(self.__datalib_dir, command), self.__disable_controler)
             self.__target_lib.load_data_lib()
@@ -606,7 +609,7 @@ class DataLibManager(object):
         filter_dict = None
         while True:
             if model == _COMMOND_MODEL:
-                command = tools.choose_command(command_list, block = False, log = False)
+                command = mio.choose_command(command_list, block = False, log = False)
                 cur_target_key = cur_lib.keys()[offs_path[-1]]
                 if command == 'up':
                     if offs_path[-1] > 0:
@@ -615,7 +618,7 @@ class DataLibManager(object):
                     if offs_path[-1] < len(cur_lib) - 1:
                         offs_path[-1] += 1
                 elif command == 'right' or command == '\n':
-                    if isinstance(cur_lib[cur_target_key], dict):
+                    if isinstance(cur_lib[cur_target_key], dict) and len(cur_lib[cur_target_key]) > 0:
                         lkey_path.append(cur_target_key)
                         offs_path.append(0)
                     elif cur_target_key == LINK_FEATURE:
@@ -639,12 +642,12 @@ class DataLibManager(object):
                 elif command == 'e':
                     if not isinstance(cur_lib[cur_target_key], dict):
                         p_type = type(cur_lib[cur_target_key])
-                        self.__vlog.VLOG('insert new data ({})'.format(p_type))
-                        new = tools.stdin()
+                        log.VLOG('insert new data ({})'.format(p_type))
+                        new = mio.stdin()
                         try:
                             new = p_type(new)
                         except:
-                            self.__vlog.VLOG('error format')
+                            log.VLOG('error format')
                         self.__target_lib.set_data(form_lkey(lkey_path + [cur_target_key]), new)
                 elif command == 'd':
                     if len(lkey_path) > 0 and lkey_path[0] == DATA_KEY:
@@ -652,12 +655,17 @@ class DataLibManager(object):
                 # elif command == 'u':  # TODO
                 #     break
                 elif command == 's':
-                    self.__target_lib.write_data_lib()
-                    break
+                    log.VLOG('save and quit? (y/n)')
+                    command = mio.choose_command(['y', 'n'], log = False)
+                    if command == 'y':
+                        self.__target_lib.write_data_lib()
+                        break
+                    else:
+                        pass
                 elif command == 'q':
                     break
             elif model == _FILTER_MODEL:
-                command = tools.stdin(block = False)
+                command = mio.stdin(block = False)
                 cur_sort_item = sorted(filter_dict.items(), key = lambda d:d[1])
                 cur_target_off = cur_sort_item[offs_path[-1]][1] if len(cur_sort_item) != 0 else None
                 cur_target_key = cur_sort_item[offs_path[-1]][0] if len(cur_sort_item) != 0 else None
@@ -686,7 +694,7 @@ class DataLibManager(object):
                         model = _COMMOND_MODEL
                         offs_path[-1] = cur_target_off
                         sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
-                        sub_lib.load_data_lib()
+                        sub_lib.load_data_lib(schedule = False)
                         self.__display_lib_tree(sub_lib)
                 elif command == 'left':
                     if len(offs_path) > 1:

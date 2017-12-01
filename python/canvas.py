@@ -62,11 +62,7 @@ class CANVAS(object):
     #   __form_text
     #   __cover
 
-    def __init__(self, vlog = 0):
-        if isinstance(vlog, log.VLOG):
-            self.__vlog = vlog
-        else:
-            self.__vlog = log.VLOG(vlog)
+    def __init__(self):
         self.__canvas = []
         self.__format = []
         self.__area_dict = dict()
@@ -75,7 +71,7 @@ class CANVAS(object):
     # line stands for area begining line, default 0
     # struct is a list, each 3 params pair(a, x, y) stands for x * y square at point a
     def new_area(self, struct, name, line = 0):
-        self.__area_dict[name] = AREA(self.__canvas, self.__format, struct, line = line, vlog = self.__vlog)
+        self.__area_dict[name] = AREA(self.__canvas, self.__format, struct, line = line)
 
     def has_area(self, name):
         return name in self.__area_dict
@@ -120,14 +116,14 @@ class CANVAS(object):
         return self.__found.coordinate()
 
     # add context into canvas
-    def paint(self, context, backspace = True, name = None, coordinate = None, color = ''):
+    def paint(self, context, backspace = True, name = None, coordinate = None, other = '', front = '', back = ''):
         if name is None:
             target_area = self.__found
         elif name in self.__area_dict:
             target_area = self.__area_dict[name]
         else:
             return
-        target_area.paint(context, backspace, coordinate = coordinate, color = color)
+        target_area.paint(context, backspace, coordinate = coordinate, other = other, front = front, back = back)
 
     # clear screan and display canvas
     def display(self):
@@ -139,8 +135,8 @@ class CANVAS(object):
             area.display()
         self.__form_text()
         for canvas_line in self.__canvas:
-            # self.__vlog.VLOG(repr(canvas_line))  # FOR DEBUG
-            self.__vlog.VLOG(canvas_line)
+            # log.VLOG(repr(canvas_line))  # FOR DEBUG
+            log.VLOG(canvas_line)
 
     # '' is the foundation key
     # if area_list is none, clear all areas
@@ -162,7 +158,7 @@ class CANVAS(object):
     # create foundation area cover all screen
     def __foundation(self):
         height, width = tools.get_terminal_size()
-        foundation = AREA(self.__canvas, self.__format, [[0, height - 1, width]], vlog = self.__vlog)
+        foundation = AREA(self.__canvas, self.__format, [[0, height - 1, width]])
         return foundation
 
     # get canvas formed by format, if format is None, formed by self.__format
@@ -211,15 +207,12 @@ class AREA(object):
     # private:
     #   __unfold_struct
     #   __form_text
+    #   __join_form
     #   __norm_form
     #   __trim_form
     #   __paint
     #   __process_format
-    def __init__(self, canvas, cformat, struct, line = 0, vlog = 0):
-        if isinstance(vlog, log.VLOG):
-            self.__vlog = vlog
-        else:
-            self.__vlog = log.VLOG(vlog)
+    def __init__(self, canvas, cformat, struct, line = 0):
         self.__canvas = canvas
         self.__canvas_format = cformat
         self.__struct = self.__unfold_struct(struct)
@@ -228,21 +221,22 @@ class AREA(object):
         self.__coordinate = [0, 0]
         self.__frame_symbol = '*'
         self.__line = line
-        self.__pallet = {'black'       : '0',
-                         'red'         : '1',
-                         'green'       : '2',
-                         'yellow'      : '3',
-                         'blue'        : '4',
-                         'purple'      : '5',
-                         'ultramarine' : '6',
-                         'white'       : '7',
-                         'highlight'   : '1',  # format
-                         'underline'   : '4',  # format
-                         'inverse'     : '7',  # format
-                         }
+        self.__color_pallet = {'black'       : '0',
+                               'red'         : '1',
+                               'green'       : '2',
+                               'yellow'      : '3',
+                               'blue'        : '4',
+                               'purple'      : '5',
+                               'ultramarine' : '6',
+                               'white'       : '7',
+                               }
+        self.__format_pallet = {'highlight'   : '1',
+                                'underline'   : '4',
+                                'inverse'     : '7',
+                                }
 
     # coordinate is for paint position
-    def paint(self, text, backspace = True, coordinate = None, color = ''):
+    def paint(self, text, backspace = True, coordinate = None, other = '', front = '', back = ''):
         text = unicode(text)
         if coordinate is None:
             coordinate = self.__coordinate[:]
@@ -257,8 +251,9 @@ class AREA(object):
                                                                       ' ' * (coordinate[_COORD_X] - len(self.__context[coordinate[_COORD_Y]])),
                                                                       text,
                                                                       self.__context[coordinate[_COORD_Y]][(coordinate[_COORD_X] + len(text)):])
-        if color in self.__pallet:
-            self.__process_format([[coordinate[_COORD_X], coordinate[_COORD_X] + len(text), '{}{}'.format(_FRONT, self.__pallet[color])]],
+        join_form = self.__join_form(other = other, front = front, back = back)
+        if join_form:
+            self.__process_format([[coordinate[_COORD_X], coordinate[_COORD_X] + len(text), join_form]],
                                   [coordinate[_COORD_Y], 0, len(text) + coordinate[_COORD_X]])
         if coordinate[_COORD_Y] == self.__coordinate[_COORD_Y]:
             self.__coordinate[_COORD_X] = len(self.__context[self.__coordinate[_COORD_Y]])
@@ -285,15 +280,9 @@ class AREA(object):
 
     # coord [y, x, l]
     def insert_format(self, coord, other = '', front = '', back = ''):
-        form = []
-        if other in self.__pallet:
-            form.append(self.__pallet[other])
-        if front in self.__pallet:
-            form.append('{}{}'.format(_FRONT, self.__pallet[front]))
-        if back in self.__pallet:
-            form.append('{}{}'.format(_BACK, self.__pallet[back]))
-        if form:
-            tformat = [[coord[1], coord[1] + coord[2], _FORMAT_SEP.join(form)]]
+        join_form = self.__join_form(other = other, front = front, back = back)
+        if join_form:
+            tformat = [[coord[1], coord[1] + coord[2], join_form]]
             p_coord = [coord[0], self.__struct[coord[0]][_USTOFF], self.__struct[coord[0]][_USTLEN]]
             self.__process_format(tformat, p_coord, append = True)  # TODO
 
@@ -307,7 +296,7 @@ class AREA(object):
 
     # display structure
     # def display_struct(self):
-        # self.__vlog.VLOG(self.__struct)
+        # log.VLOG(self.__struct)
         # self.display()
 
     # TODO update found to single area
@@ -354,6 +343,16 @@ class AREA(object):
                                                            text[iform[_BEGIN]:iform[_END]],
                                                            text[iform[_END]:])
         return text
+
+    def __join_form(self, other = '', front = '', back = ''):
+        form = []
+        if other in self.__format_pallet:
+            form.append(self.__format_pallet[other])
+        if front in self.__color_pallet:
+            form.append('{}{}'.format(_FRONT, self.__color_pallet[front]))
+        if back in self.__color_pallet:
+            form.append('{}{}'.format(_BACK, self.__color_pallet[back]))
+        return _FORMAT_SEP.join(form)
 
     def __norm_form(self, pformat):
         format_list = pformat.split(_FORMAT_SEP)

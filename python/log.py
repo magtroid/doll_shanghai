@@ -7,22 +7,31 @@ method for log manager
 '''
 
 # import library
+import common
+
+# common define
+_LEVEL = 0
+
+def set_log_level(level):
+    _LEVEL = int(level)
 
 # static function
-def LOG(log = None):
-    print '' if log is None else log
+def INFO(log = None, end = True):
+    if log is None:
+        log = ''
+    if end:
+        print(log)
+    else:
+        print(log),
 
-# main class
-class VLOG(object):
-    # public:
-    #   VLOG
-    # private:
+def VLOG(log = None, level = 0, end = True):
+    if _LEVEL >= level:
+        INFO(log, end = end)
 
-    # __level is class log level
-    def __init__(self, log_level = 0):
-        self.__level = log_level
-
-    # level is current log level
-    def VLOG(self, log, level = 0):
-        if self.__level >= level:
-            print log
+if __name__ == common.MAIN:
+    _LEVEL = 3
+    INFO()
+    INFO('hello')
+    VLOG()
+    VLOG('Hello', 1)
+    VLOG('Hello', 2)

@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import canvas
 import common
 import datalib
+import mio
 import proxypool
 import re
 import tools
@@ -101,12 +102,11 @@ class Stock(object):
     # resource has two types:
     #   1) string: stock id
     #   2) dict:   stock lib
-    def __init__(self, resource, vlog = 0, proxy_pool = None):
+    def __init__(self, resource, proxy_pool = None):
         self.__disable_controler = True  # TODO
-        self.__vlog = log.VLOG(vlog)
         self.__stock_data_url = 'http://api.finance.ifeng.com'
         if proxy_pool == None:
-            self.__proxy_pool = proxypool.ProxyPool(vlog = vlog)
+            self.__proxy_pool = proxypool.ProxyPool()
         else:
             self.__proxy_pool = proxy_pool
         self.__status = _VALID
@@ -115,10 +115,10 @@ class Stock(object):
             if not self.__stock_code:
                 self.__status = _INVALID
             self.__data_lib_file = STOCK_DIR + self.__stock_code + '.lib'
-            self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler, vlog = 0)
-            self.__stock_lib.load_data_lib()
+            self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
+            self.__stock_lib.load_data_lib(schedule = False)
         elif isinstance(resource, dict):  # stock lib
-            self.__stock_lib = datalib.DataLib(resource, self.__disable_controler, vlog = 0)
+            self.__stock_lib = datalib.DataLib(resource, self.__disable_controler)
             self.__data_lib_file = self.__stock_lib.lib_file()
             self.__stock_code = self.__data_lib_file.split('/')[-1].split('.')[0]  # xx/xx/id.lib
         else:
@@ -156,15 +156,15 @@ class Stock(object):
                 break
             period_key = period.keys()[0]
             period_value = period.values()[0]
-            period_url = '{root_url}/{period}/?{code}={stock_code}&type={period_type}'.format( \
-                          root_url = self.__stock_data_url, \
-                          period = period_value[0], \
-                          code = period_value[1], \
-                          stock_code = self.__stock_code, \
+            period_url = '{root_url}/{period}/?{code}={stock_code}&type={period_type}'.format(
+                          root_url = self.__stock_data_url,
+                          period = period_value[0],
+                          code = period_value[1],
+                          stock_code = self.__stock_code,
                           period_type = period_value[2])
-            self.__vlog.VLOG(period_url)
+            log.VLOG(period_url)
             self.__parse_period_data(period_url, period_key)
-        self.__vlog.VLOG('done stock {stock_code}'.format(stock_code = self.__stock_code))
+        log.VLOG('done stock {stock_code}'.format(stock_code = self.__stock_code))
         return True if self.__status == _VALID else False
 
     # write stock data
@@ -187,13 +187,13 @@ class Stock(object):
     def __parse_period_data(self, url, period):
         page = self.__proxy_pool.get_page(url, self.__get_page_type, regex = '^{"record')
         if not page:
-            self.__vlog.VLOG('failed to get period page: {page}'.format(page = url))
+            log.VLOG('failed to get period page: {page}'.format(page = url))
             return
         stock_data = page[page.find('['):-1][2:-2].split('],[')
         # check if stock exist
         if not stock_data or len(stock_data) is 1 and not stock_data[0]:
             self.__status = _INVALID
-            self.__vlog.VLOG('invalid stock')
+            log.VLOG('invalid stock')
             return
         for data in stock_data:
             if period == _DAY_KEY or period == _WEEK_KEY or period == _MONTH_KEY:
@@ -260,6 +260,8 @@ _OPEN_OFF = 1
 _CLOSE_OFF = 2
 _HIGH_OFF = 3
 _LOW_OFF = 4
+_ADR_OFF = 5
+_KLINE_DETAIL_STRUCT = [[0, 7, 20]]
 _KLINE_REDUNT = 0.05
 _KLINE_MIN_INDENSE = 40
 _KLINE_MAX_INDENSE = 120
@@ -286,8 +288,7 @@ class StockData(object):
     #   __gen_crf_data
     #   __fetch_stock_data
     #   __write_crf_data
-    def __init__(self, resource, fp = None, vlog = 0):
-        self.__vlog = log.VLOG(vlog)
+    def __init__(self, resource, fp = None):
         self.__status = _VALID
         self.__disable_controler = True
         if isinstance(resource, str):  # stock id
@@ -295,7 +296,7 @@ class StockData(object):
             if not self.__stock_code:
                 self.__status = _INVALID 
             self.__data_lib_file = STOCK_DIR + self.__stock_code + '.lib'
-            self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler, vlog = 0)
+            self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
             self.__stock_lib.load_data_lib()
             if fp == None:
                 self.__fp = _TRAINING_DIR + _DEFAULT_FILE + self.__stock_code + '.train'
@@ -303,7 +304,7 @@ class StockData(object):
                 self.__fp = fp
         else:
             self.__status = _INVALID
-        self.__canvas = canvas.CANVAS(vlog = vlog)
+        self.__canvas = canvas.CANVAS()
 
     # data process with strategy or generate training data
     def display_data(self):
@@ -330,7 +331,7 @@ class StockData(object):
         model = _INDEX_MODEL
         while True:
             if model == _INDEX_MODEL:
-                command = tools.choose_command(datas.keys())
+                command = mio.choose_command(datas.keys())
                 if command == 'q':
                     break
                 else:
@@ -340,10 +341,10 @@ class StockData(object):
                     cdata = datas[command]
                     model = _KLINES_MODEL
                     kline_list = self.__form_kline_list(cdata)
-                    self.__canvas.new_area([[0, 6, 20]], name = _KLINE_DETAIL)
+                    self.__canvas.new_area(_KLINE_DETAIL_STRUCT, name = _KLINE_DETAIL)
             else:  # model == _KLINES_MODEL:
                 self.__display_kline(kline_list, [offs, cursor, max_kline])
-                command = tools.choose_command(block = False, log = False)
+                command = mio.choose_command(block = False, log = False)
                 if command == 'left':
                     if cursor < len(kline_list) - 1:
                         cursor += 1
@@ -366,9 +367,9 @@ class StockData(object):
     def __get_date_duration(self):
         finished = False
         while not finished:
-            self.__vlog.VLOG('print a date duration (xxxx.xx.xx~yyyy.yy.yy/\d year/\d month/\d week)')
-            self.__vlog.VLOG('\tor insert "n/q" to cancel')
-            date_range = tools.stdin()
+            log.VLOG('print a date duration (xxxx.xx.xx~yyyy.yy.yy/\d year/\d month/\d week)')
+            log.VLOG('\tor insert "n/q" to cancel')
+            date_range = mio.stdin()
             if re.match('^\d+ year$', date_range):
                 day = common.YEAR_DAY * int(re.search('(\d+)', date_range).group(1))
                 start = tools.get_date(-day)
@@ -387,41 +388,41 @@ class StockData(object):
                 if not tools.date_valid(start) or \
                    not tools.date_valid(end) or \
                    not tools.date_compare(start, end) == tools.LESS:
-                    self.__vlog.VLOG('insert date invalid')
+                    log.VLOG('insert date invalid')
                     continue
             elif date_range in _CMD_QUIT:
                 start = []
                 end = []
             else:
-                self.__vlog.VLOG('not support this type')
+                log.VLOG('not support this type')
                 continue
             finished = True
         if len(start) is not 0 and len(end) is not 0:
-            self.__vlog.VLOG('strategy date range:{start} to {end}'.format( \
-                              start = ' '.join(map(str, start)), \
-                              end = ' '.join(map(str, end))))
+            log.VLOG('strategy date range:{start} to {end}'.format(
+                     start = ' '.join(map(str, start)),
+                     end = ' '.join(map(str, end))))
         return [start, end]
 
     # get weekday strategy, weekday in weekday out
     def __get_weekday_strategy(self):
         finished = False
         while not finished:
-            self.__vlog.VLOG('insert in and out weekday \d \d (0~6)')
-            self.__vlog.VLOG('\tor insert "n/q" to cancel')
-            weekday = tools.stdin()
+            log.VLOG('insert in and out weekday \d \d (0~6)')
+            log.VLOG('\tor insert "n/q" to cancel')
+            weekday = mio.stdin()
             if re.match('^[0-6] [0-6]$', weekday):
                 [weekday_in, weekday_out] = map(int, re.search('^(\d \d)$', weekday).group(1).split())
             elif weekday in _CMD_QUIT:
                 weekday_in = -1
                 weekday_out = -1
             else:
-                self.__vlog.VLOG('not support this type')
+                log.VLOG('not support this type')
                 continue
             finished = True
         if weekday_in is not -1 and weekday_out is not -1:
-            self.__vlog.VLOG('strategy weekday in: {weekday_in}, out: {weekday_out}'.format( \
-                              weekday_in = weekday_in, \
-                              weekday_out = weekday_out))
+            log.VLOG('strategy weekday in: {weekday_in}, out: {weekday_out}'.format(
+                     weekday_in = weekday_in,
+                     weekday_out = weekday_out))
         return [weekday_in, weekday_out]
 
     # form kline list contain date, open close high low pair
@@ -431,7 +432,7 @@ class StockData(object):
         while len(kline_list) < len(datas):
             if cdate in datas:
                 cdata = datas[cdate]
-                ikline = [cdate, cdata[_OPEN_KEY], cdata[_CLOSE_KEY], cdata[_HIGH_KEY], cdata[_LOW_KEY]]
+                ikline = [cdate, cdata[_OPEN_KEY], cdata[_CLOSE_KEY], cdata[_HIGH_KEY], cdata[_LOW_KEY], cdata[_ADVANCE_DECLINE_RATIO_KEY]]
                 kline_list.append(ikline)
             cdate = tools.get_date(-1, cdate)
         kline_list.reverse()
@@ -463,11 +464,14 @@ class StockData(object):
 
     def __draw_kline(self, data, n, highlight = False):
         x = _KLINE_SPARSE * n
-        color = ''
-        # color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
+        # color = ''
+        if data[_OPEN_OFF] != data[_CLOSE_OFF]:
+            color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
+        else:
+            color = canvas.GREEN if data[_ADR_OFF] < 0 else canvas.RED
         line_up, line_down = [_OPEN_OFF, _CLOSE_OFF] if data[_OPEN_OFF] < data[_CLOSE_OFF] else [_CLOSE_OFF, _OPEN_OFF]
         for i in range(data[_HIGH_OFF], data[line_up]):
-            self.__canvas.paint('│', coordinate = [i, x], color = color)
+            self.__canvas.paint('│', coordinate = [i, x], front = color)
             if highlight:
                 self.__canvas.insert_format([i, x, 1], other = canvas.HIGHLIGHT)
         if data[line_up] == data[line_down]:
@@ -484,7 +488,7 @@ class StockData(object):
                 if highlight:
                     self.__canvas.insert_format([i, x, 1], other = canvas.HIGHLIGHT)
         for i in range(data[line_down], data[_LOW_OFF]):
-            self.__canvas.paint('│', coordinate = [i, x], color = color)
+            self.__canvas.paint('│', coordinate = [i, x], front = color)
             if highlight:
                 self.__canvas.insert_format([i, x, 1], other = canvas.HIGHLIGHT)
 
@@ -498,27 +502,28 @@ class StockData(object):
         end = begin + data_num
         top, bottom = self.__get_kline_range(kline_list, begin, end)
         step = (top - bottom) / height
-        display_list = [[x[_DATE_OFF]] + [int((top - y) / step) for y in x[_OPEN_OFF:]] for x in kline_list[begin : end]]
+        display_list = [[x[_DATE_OFF]] + [int((top - y) / step) for y in x[_OPEN_OFF:_ADR_OFF]] + [x[_ADR_OFF]] for x in kline_list[begin : end]]
         icursor = data_num - cursor + offset - 1
         coord = [0, 0] if icursor > data_num / 2 else [0, width / 2]
         self.__canvas.move_area(_KLINE_DETAIL, coord, module = canvas.MOVE_MODULE_TO)
         self.__canvas.erase()
         self.__canvas.clear_area()
-        # for n, ikline in enumerate(display_list):
-        #     if n == icursor:
-        #         self.__draw_kline(ikline, n, True)
-        #     else:
-        #         self.__draw_kline(ikline, n)
+        for n, ikline in enumerate(display_list):
+            if n == icursor:
+                self.__draw_kline(ikline, n, True)
+            else:
+                self.__draw_kline(ikline, n)
         self.__kline_detail(kline_list[-(cursor + 1)])
         self.__canvas.display()
 
     def __kline_detail(self, data):
         self.__canvas.paint('_' * 20, name = _KLINE_DETAIL)
         self.__canvas.paint('DATE : {}:'.format(data[_DATE_OFF]), name = _KLINE_DETAIL)
-        self.__canvas.paint('OPEN : {:6.2f}:'.format(data[_OPEN_OFF]), name = _KLINE_DETAIL)
-        self.__canvas.paint('CLOSE: {:6.2f}:'.format(data[_CLOSE_OFF]), name = _KLINE_DETAIL)
-        self.__canvas.paint('HIGH : {:6.2f}:'.format(data[_HIGH_OFF]), name = _KLINE_DETAIL)
-        self.__canvas.paint('LOW  : {:6.2f}:'.format(data[_LOW_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('OPEN : {:6.2f}'.format(data[_OPEN_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('CLOSE: {:6.2f}'.format(data[_CLOSE_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('HIGH : {:6.2f}'.format(data[_HIGH_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('LOW  : {:6.2f}'.format(data[_LOW_OFF]), name = _KLINE_DETAIL)
+        self.__canvas.paint('ADR  : {:6.2f}%'.format(data[_ADR_OFF]), name = _KLINE_DETAIL)
 
     # use strategy for specific day in and out
     def __apply_strategy(self, data):
@@ -535,25 +540,25 @@ class StockData(object):
         while not tools.date_compare(date, end) == tools.EQUAL:
             date_str = tools.date_list_to_str(date)
             if date_str in data:
-                self.__vlog.VLOG(data[date_str], 1)
+                log.VLOG(data[date_str], 1)
                 data_unit = data[date_str]
                 if data_unit[_WEEKDAY_KEY] == weekday_in and state == _EMPTY_STATE:
                     state = _FULLY_STATE
                 if state == _FULLY_STATE:
-                    self.__vlog.VLOG('\t{date} profit: {profit:.2f}%'.format(date = date_str, \
-                                                                         profit = data_unit[_ADVANCE_DECLINE_RATIO_KEY]))
+                    log.VLOG('\t{date} profit: {profit:.2f}%'.format(date = date_str,
+                                                                     profit = data_unit[_ADVANCE_DECLINE_RATIO_KEY]))
                     principal = principal * (100 + data_unit[_ADVANCE_DECLINE_RATIO_KEY]) / 100
                 if data_unit[_WEEKDAY_KEY] == weekday_out and state == _FULLY_STATE:
                     deal_num += 1
                     # process service charge
                     service_charge -= principal * _SERVICE_CHARGE / 100
                     principal = principal * (100 + _SERVICE_CHARGE) / 100
-                    self.__vlog.VLOG('deal number{deal_num}, profit: {profit:.2f}%'.format(deal_num = deal_num, \
-                                                                                       profit = principal - 100))
+                    log.VLOG('deal number{deal_num}, profit: {profit:.2f}%'.format(deal_num = deal_num,
+                                                                                   profit = principal - 100))
                     state = _EMPTY_STATE
             date = tools.get_date(1, date)
-        self.__vlog.VLOG('total profit is {profit:.2f}%'.format(profit = principal - 100))
-        self.__vlog.VLOG('total service charge is {service:.2f}%'.format(service = service_charge))
+        log.VLOG('total profit is {profit:.2f}%'.format(profit = principal - 100))
+        log.VLOG('total service charge is {service:.2f}%'.format(service = service_charge))
 
     # generate training data for crf model
     def __gen_crf_data(self, data):
@@ -566,7 +571,7 @@ class StockData(object):
             date_str = tools.date_list_to_str(date)
             if date_str in data:
                 train_vector = []
-                self.__vlog.VLOG(data[date_str], 1)
+                log.VLOG(data[date_str], 1)
                 data_unit = data[date_str]
                 if _TURN_OVER_KEY not in data_unit:
                     f2 = 0.0

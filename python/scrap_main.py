@@ -35,9 +35,9 @@ gflags.DEFINE_string('v', '0', 'vlog')
 def main(argv):
     try:
         argv = FLAGS(argv) # parse flags
-    except gflags.FlagsError, e:
-        print '%s\nUsage: %s ARGVS\n%s' % (e, sys.argv[0], FLAGS)
-    vlog = log.VLOG(int(FLAGS.v))
+    except gflags.FlagsError as e:
+        log.INFO('%s\nUsage: %s ARGVS\n%s' % (e, sys.argv[0], FLAGS))
+    log.set_log_level(int(FLAGS.v))
 
     if FLAGS.target == 'zhihu':
         zhihu_login = zhihu.ZhihuLogin()
@@ -51,7 +51,7 @@ def main(argv):
         uqer_login.get_param()
     elif FLAGS.target == 'lianjia':
         if not FLAGS.city:
-            vlog.VLOG('choose a city')
+            log.VLOG('choose a city')
             return
         lianjia_login = lianjia.LianJia(FLAGS.city)
         lianjia_login.get_lianjia_data()
@@ -66,19 +66,19 @@ def main(argv):
         stock_market_data.get_stock_market_data()
     elif FLAGS.target == 'stock':
         if not FLAGS.stock_id:
-            vlog.VLOG('choose a stock')
+            log.VLOG('choose a stock')
             return 
         stock_data = stock.Stock(FLAGS.stock_id)
         stock_data.get_stock_data()
         stock_data.write_stock_data()
     elif FLAGS.target == 'monitor':
-        stock_monitor = monitor.StockMonitor(vlog = int(FLAGS.v))
+        stock_monitor = monitor.StockMonitor()
         stock_monitor.stock_monitor()
     else:
-        vlog.VLOG(FLAGS.target)
-        vlog.VLOG('error')
+        log.VLOG(FLAGS.target)
+        log.VLOG('error')
 
-    vlog.VLOG('done scrap')
+    log.VLOG('done scrap')
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -2,7 +2,7 @@
 # coding=utf-8
 
 import common
-
+import log
 import requests
 import urllib
 import urllib2
@@ -32,20 +32,20 @@ class GithubLogin(object):
         try:
             self.session.cookies.load(ignore_discard=True)
         except:
-            print 'cookie failed'
+            log.INFO('cookie failed')
 
     def get_param(self):
-        print 'start to get param'
+        log.INFO('start to get param')
         response = self.session.get(self.login_url, headers=self.headers)
         selector = etree.HTML(response.text)
         field_one = selector.xpath('//div/input[2]/@value')
-        print field_one
-        print 'end get param'
+        log.INFO(field_one)
+        log.INFO('end get param')
         return field_one
         pass
 
     def post_param(self, usr_id, password):
-        print 'start to post param'
+        log.INFO('start to post param')
         post_data = {
                 'commit': 'Sign in',
                 'utf8': '✓',
@@ -54,7 +54,7 @@ class GithubLogin(object):
                 'password': password,
         }
         response = self.session.post(self.post_url, data=post_data, headers=self.headers)
-        print 'end post param'
+        log.INFO('end post param')
         self.session.cookies.save()
 
         pass
@@ -67,7 +67,7 @@ class GithubLogin(object):
         flag = selector.xpath('//div[@class="column two-thirds"]/dl/dt/label/text()')
         with open('net.txt', 'w') as fp:
             fp.writelines(line)
-        print 'personal setting Profile include: %s' % flag
+        log.INFO('personal setting Profile include: %s' % flag)
         pass
 
     def login(self, usr_id, password):
