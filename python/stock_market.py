@@ -9,7 +9,6 @@ method for stock market'''
 from bs4 import BeautifulSoup
 import common
 import datalib
-import mthreadpool
 import mprocessingpool
 import proxypool
 import stock
@@ -64,7 +63,8 @@ class StockMarket(object):
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
         self.__stock_market_lib.load_data_lib()
         self.__get_page_type = common.URL_WRITE
-        self.__stock_market_class = [_ZS_CLASS, _SH_CLASS, _SZ_CLASS, _CY_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+        # self.__stock_market_class = [_ZS_CLASS, _SH_CLASS, _SZ_CLASS, _CY_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+        self.__stock_market_class = [_ZS_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
         self.__tape_set = {_SH_TAPE_ID, _SZ_TAPE_ID, _CY_TAPE_ID}
         self.__get_stock_list(_PROCESS_STOCK_LIST)
 
@@ -75,7 +75,7 @@ class StockMarket(object):
         self.__write_data_lib()
         log.VLOG('done stock market')
         self.__end = time.time()
-        print 'use time {}'.format(self.__end - self.__begin)
+        print('use time {}'.format(self.__end - self.__begin))
 
     def get_stock_map_list(self):
         map_list = dict()
@@ -113,7 +113,7 @@ class StockMarket(object):
         soup = BeautifulSoup(page, common.HTML_PARSER)
         for stock_element in soup.select('div.result ul li'):
             stock_unit = dict()
-            stock_text = tools.ultra_encode(stock_element.get_text())
+            stock_text = stock_element.get_text()
             stock_id = stock_text.split('(')[1][:-1] 
             stock_name = stock_text.split('(')[0]
             stock_href = tools.parse_href_url(str(stock_element.a[common.HREF_KEY]), class_url)
@@ -243,5 +243,5 @@ class StockMarketData(object):
                     strs += '\t%f' % stock_id[1][ranges]
                 fp.writelines('%s\n' % strs)
 
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     stock_market = StockMarket()

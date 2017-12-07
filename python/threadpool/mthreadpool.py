@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # coding=utf-8
 '''tools for thread pool methods
-
 Magtroid @ 2017-11-20 16:18
 '''
 
 # import library
-import common
-import ctypes
-import log
-import Queue
 import sys
+sys.path.append('..')
+import ctypes
+import queue
 import threading
-import tools
 import time
+
+import log
+import util
 
 # common define
 _STATUS_SLEEP = '__sleep__'
@@ -34,21 +34,23 @@ class NoResultsPending(Exception):
 class WorkThread(threading.Thread):
     '''
     public:
-        get_time_out
         get_status
+        get_id
+        get_tid
+        get_time_out
+        get_thread
         run  # main function
         dismiss
         awake
         terminate
     private:
         __update_status
-        __update_pid
+        __update_tid
     '''
-    def __init__(self, request_queue, result_queue, name, thread_id, time_out = _DEFAULT_TIME_OUT):
+    def __init__(self, request_queue, result_queue, thread_id, time_out = _DEFAULT_TIME_OUT):
         threading.Thread.__init__(self)
         self.__request_queue = request_queue
         self.__result_queue = result_queue
-        self.__name = name
         self.__thread_id = thread_id
         self.__time_out = time_out
         self.__status = _STATUS_SLEEP
@@ -56,12 +58,21 @@ class WorkThread(threading.Thread):
         self.setDaemon(True)
         self.start()
 
-    def get_time_out(self):
-        return self.__time_out
-
     # sleep working dismiss
     def get_status(self):
         return self.__status
+
+    def get_id(self):
+        return self.__thread_id
+
+    def get_tid(self):
+        return self.__tid
+
+    def get_time_out(self):
+        return self.__time_out
+
+    def get_thread(self):
+        return self
 
     def run(self):
         self.__update_tid()
@@ -70,7 +81,7 @@ class WorkThread(threading.Thread):
                 break
             try:
                 request = self.__request_queue.get(True, self.__time_out)
-            except Queue.Empty:
+            except queue.Empty:
                 continue
             else:
                 if self.__status == _STATUS_DISMISS:
@@ -93,16 +104,9 @@ class WorkThread(threading.Thread):
 
     def terminate(self):
         if self.__tid in threading._active:
-            # print threading.current_thread().getName()
             log.VLOG('terminate tid {}'.format(self.__tid), 0)
-            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.__tid), ctypes.py_object(SystemExit))
-            print 'terminate status {}'.format(res)
-            print threading._active
-            t_len = len(threading._active)
-            while t_len == len(threading._active):
-                pass
-            print threading._active
-
+            if self.__status is _STATUS_WORKING:
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.__tid), ctypes.py_object(SystemExit))
             self.dismiss()
 
     def __update_status(self, status):
@@ -126,7 +130,7 @@ class WorkRequest(object):
         __exit
     '''
     def __init__(self, func = None, args = None, kwargs = None, request_id = None,
-                 call_back = None, cargs = None, ckwargs = None, name = None):
+                 call_back = None, cargs = None, ckwargs = None):
         if request_id is None:
             self.__request_id = id(self)
         else:
@@ -134,8 +138,8 @@ class WorkRequest(object):
                 self.__request_id = hash(request_id)
             except TypeError:
                 raise TypeError('request id must be hashable')
-        self.__func = func if tools.is_function(func) else self.__exit
-        self.__call_back = call_back if tools.is_function(call_back) else None
+        self.__func = func if util.is_function(func) else self.__exit
+        self.__call_back = call_back if util.is_function(call_back) else None
         self.__args = args or []
         self.__kwargs = kwargs or {}
         self.__cargs = cargs or []
@@ -169,82 +173,79 @@ class ThreadPool(object):
     public:
         thread_pool_status
         thread_number
-        all_thread_number
         new_thread
         dismiss_thread
         terminate_thread
         put_request
-        poll
-        dismiss_all_thread
-        terminate_all_thread
+        poll_response
     private:
         __update_time_out
     '''
     # time out is thread pool request time out, usually is max time of all threads
-    def __init__(self, thread_num = 0, name = _NAME_BASE, time_out = _DEFAULT_TIME_OUT):
-        self.__request_queue = Queue.Queue()
-        self.__result_queue = Queue.Queue()
-        self.__thread_group = dict()
+    def __init__(self, thread_num = 0, name = _NAME_BASE, time_out = 0):
+        self.__request_queue = queue.Queue()
+        self.__result_queue = queue.Queue()
+        self.__thread_pool = []
         self.__work_requests = dict()
+        self.__name = name
         self.__time_out = time_out
-        self.new_thread(thread_num, name = name, time_out = self.__time_out)
+        self.new_thread(thread_num, time_out = self.__time_out)
 
     # sleep or working
     def thread_pool_status(self):
         status = _STATUS_SLEEP
-        for thread_group_item in self.__thread_group.items():
-            for thread in thread_group_item[1]:
-                if thread.get_status() == _STATUS_WORKING:
-                    status = _STATUS_WORKING
-                    break
+        for thread in self.__thread_pool:
+            if thread.get_status() == _STATUS_WORKING:
+                status = _STATUS_WORKING
+                break
         return status
 
-    # return target name thread, if no target name, return base thread number
-    def thread_number(self, name = _NAME_BASE):
-        if name in self.__thread_group:
-            return len(self.__thread_group[name])
+    def thread_number(self, detail = False):
+        if detail:
+            for thread in self.__thread_pool:
+                log.VLOG('\tname: {:20s} id: {:2d} status: {:10s} time_out: {:3f} tid: {}'.format(self.__name,
+                                                                                                  thread.get_id(),
+                                                                                                  thread.get_status(),
+                                                                                                  thread.get_time_out(),
+                                                                                                  thread.get_thread()))
+        return len(self.__thread_pool)
 
-    def all_thread_number(self):
-        total_number = 0
-        for thread_group in self.__thread_group.keys():
-            total_number += self.thread_number(thread_group)
-        return total_number
-
-    # new thread is named with name, id from 0 to range
-    def new_thread(self, thread_number, name = _NAME_BASE, time_out = _DEFAULT_TIME_OUT):
-        if name not in self.__thread_group:
-            self.__thread_group[name] = []
-        thread_fund_id = self.thread_number(name)
+    # new thread with id from 0 to range
+    # return thread id list of initialed new thread
+    def new_thread(self, thread_number, time_out = _DEFAULT_TIME_OUT):
+        thread_fund_id = self.thread_number()
+        new_thread_id_list = []
         for i in range(thread_number):
-            self.__thread_group[name].append(WorkThread(self.__request_queue, self.__result_queue, name = name, thread_id = thread_fund_id + i, time_out = time_out))
+            new_thread = WorkThread(self.__request_queue, self.__result_queue, thread_id = thread_fund_id + i, time_out = time_out)
+            self.__thread_pool.append(new_thread)
+            new_thread_id_list.append(new_thread.get_tid())
         self.__time_out = max(time_out, self.__time_out)
+        return new_thread_id_list
 
-    # stop target name thread, if no target name, stop base, if number is 0, stop all
-    def dismiss_thread(self, name = _NAME_BASE, number = 0, do_join = False, time_out = None):
-        if name in self.__thread_group:
-            dismiss_list = []
-            if number == 0:
-                number = self.thread_number(name)
-            for i in range(min(number, self.thread_number(name))):
-                thread = self.__thread_group[name].pop()
-                thread.dismiss()
-                dismiss_list.append(thread)
-            if do_join:
-                if time_out is None:
-                    time_out = self.__time_out
-                for thread in dismiss_list:
-                    thread.join(time_out)
-            self.__update_time_out()
+    # stop target thread, if number is 0, stop all
+    def dismiss_thread(self, number = 0, do_join = False, time_out = None):
+        dismiss_list = []
+        if number == 0:
+            number = self.thread_number()
+        for i in range(min(number, self.thread_number())):
+            thread = self.__thread_pool[i]
+            thread.dismiss()
+            dismiss_list.append(thread)
+        if do_join:
+            if time_out is None:
+                time_out = self.__time_out
+            for thread in dismiss_list:
+                thread.join(time_out)
+        self.__update_time_out()
 
-    def terminate_thread(self, name = _NAME_BASE, number = 0, do_join = False, time_out = None):
-        if name in self.__thread_group:
-            if number == 0:
-                number = self.thread_number(name)
-            for i in range(min(number, self.thread_number(name))):
-                thread = self.__thread_group[name].pop()
-                thread.terminate()
-                thread.join(_TERMINAL_TIME_OUT)
-            self.__update_time_out()
+    def terminate_thread(self, number = 0):
+        if number == 0:
+            number = self.thread_number()
+        for i in range(min(number, self.thread_number())):
+            thread = self.__thread_pool.pop()
+            thread.terminate()
+            thread.join(_TERMINAL_TIME_OUT)
+        self.__update_time_out()
 
     # request is WorkRequest class
     def put_request(self, request, block = True):
@@ -260,28 +261,14 @@ class ThreadPool(object):
                 request, result = self.__result_queue.get(block = block)
                 request.run_call_back(result)
                 del self.__work_requests[request.request_id()]
-            except Queue.Empty:
+            except queue.Empty:
                 time.sleep(self.__time_out)
-
-    # stop all thread and quit, if check request, 
-    def dismiss_all_thread(self, check_request = False):
-        if check_request:
-            while self.__request_queue.qsize():
-                time.sleep(self.__time_out)
-        for thread_group in self.__thread_group.keys():
-            self.dismiss_thread(thread_group, do_join = True)
-
-    # stop by force
-    def terminate_all_thread(self):  # TODO fix this function logistic later
-        for thread_group in self.__thread_group.keys():
-            self.terminate_thread(thread_group)
 
     # update time out to max thread time out
     def __update_time_out(self):
         time_out = 0
-        for thread_group in self.__thread_group.items():
-            for thread in thread_group[1]:
-                time_out = max(time_out, thread.get_time_out())
+        for thread in self.__thread_pool:
+            time_out = max(time_out, thread.get_time_out())
         self.__time_out = time_out
 
 # for test
@@ -291,14 +278,14 @@ class do(object):
     def do_work(self):
         time.sleep(0.5)
         self.__b += 3
-        print 'thread: {} print {}'.format(threading.current_thread().getName(), self.__b)
+        print('thread: {} print {}'.format(threading.current_thread().getName(), self.__b))
         if self.__b % 2 == 0:
             return True
         else:
             return False
     def call_back(self, result):
         ty = 'odd' if not result else 'even'
-        print 'this number {} is {}'.format(self.__b, ty)
+        print('this number {} is {}'.format(self.__b, ty))
 
 def call_back(result, do):
     do.call_back(result)
@@ -308,50 +295,37 @@ def loop():
         while True:
             pass
     finally:
-        print 'pass'
+        print('pass')
 
 def looop():
     n = ThreadPool(1)
     req = WorkRequest(loop)
     n.put_request(req)
     time.sleep(1)
-    print threading._active
     begin = time.time()
     thread_num = len(threading._active)
     n.terminate_all_thread()
-    print threading._active
     while len(threading._active) == thread_num:
         pass
-    print threading._active
     end = time.time()
-    print end - begin
 
-if __name__ == common.MAIN:
-    # m = ThreadPool(10)
-    # x = ThreadPool(9)
-    # for i in range(100):
-    #     n = do(i)
-    #     req = WorkRequest(n.do_work, call_back = call_back, cargs = [n])
-    #     m.put_request(req)
-    #     x.put_request(req)
-    # m.poll()
-    # m.stop()
-    # x.poll()
-    # x.stop()
-    m = ThreadPool(1)
-    req = WorkRequest(looop)
-    m.put_request(req)
+if __name__ == '__main__':
+    a = ThreadPool(4)
+    req = WorkRequest(loop)
+    a.put_request(req)
+    a.put_request(req)
+    # a.put_request(req)
+    # a.put_request(req)
     time.sleep(1)
-    # print time.time()
-    # print threading._active
-    # begin = time.time()
-    # m.terminate_all_thread()
     thread_num = len(threading._active)
-    # while len(threading._active) == thread_num:
-    #     pass
+    n = 1
     while True:
+        n += 1
+        print(threading._active)
+        time.sleep(1)
+        if n is 5:
+            a.terminate_thread()
+        elif n is 10:
+            break
         pass
-    # end = time.time()
-    # print threading._active
-    # print end - begin
-    print 'done'
+    print('done')

@@ -6,7 +6,6 @@ Magtroid @ 2017-11-21 15:51
 '''
 
 # import library
-import common
 import datalib
 import log
 import os
@@ -72,6 +71,6 @@ def main(argv):
             else:
                 print 'file_error'
 
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     main(sys.argv)
     log.INFO('done')

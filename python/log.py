@@ -7,7 +7,6 @@ method for log manager
 '''
 
 # import library
-import common
 
 # common define
 _LEVEL = 0
@@ -22,13 +21,13 @@ def INFO(log = None, end = True):
     if end:
         print(log)
     else:
-        print(log),
+        print(log, end = '')
 
 def VLOG(log = None, level = 0, end = True):
     if _LEVEL >= level:
         INFO(log, end = end)
 
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     _LEVEL = 3
     INFO()
     INFO('hello')

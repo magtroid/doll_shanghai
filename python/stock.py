@@ -176,7 +176,7 @@ class Stock(object):
     def __parse_date(self, date_str):
         date = ''
         segs = str(date_str).split()
-        if not tools.date_valid(map(int, segs[0].split('-'))):
+        if not tools.date_valid(list(map(int, segs[0].split('-')))):
             return date
         date += '.'.join(segs[0].split('-'))
         if len(segs) is 2:
@@ -315,7 +315,7 @@ class StockData(object):
     # calculate ad ratio from a target date
     def get_ad_ratio(self, date):
         ratio = 100.0
-        cdate = map(int, date.split('.'))
+        cdate = list(map(int, date.split('.')))
         today = tools.get_date()
         data = self.__stock_lib.get_data()[_DAY_KEY]
         while not tools.date_compare(cdate, today) == tools.EQUAL:
@@ -344,7 +344,7 @@ class StockData(object):
                     self.__canvas.new_area(_KLINE_DETAIL_STRUCT, name = _KLINE_DETAIL)
             else:  # model == _KLINES_MODEL:
                 self.__display_kline(kline_list, [offs, cursor, max_kline])
-                command = mio.choose_command(block = False, log = False)
+                command = mio.choose_command(block = False, print_log = False)
                 if command == 'left':
                     if cursor < len(kline_list) - 1:
                         cursor += 1
@@ -383,8 +383,8 @@ class StockData(object):
                 start = tools.get_date(-day)
                 end = tools.get_date()
             elif re.match('^\d{4}\.\d{2}\.\d{2}~\d{4}\.\d{2}\.\d{2}$', date_range):
-                start = map(int, date_range.split('~')[0].split('.'))
-                end = map(int, date_range.split('~')[1].split('.'))
+                start = list(map(int, date_range.split('~')[0].split('.')))
+                end = list(map(int, date_range.split('~')[1].split('.')))
                 if not tools.date_valid(start) or \
                    not tools.date_valid(end) or \
                    not tools.date_compare(start, end) == tools.LESS:
@@ -399,8 +399,8 @@ class StockData(object):
             finished = True
         if len(start) is not 0 and len(end) is not 0:
             log.VLOG('strategy date range:{start} to {end}'.format(
-                     start = ' '.join(map(str, start)),
-                     end = ' '.join(map(str, end))))
+                     start = ' '.join(list(map(str, start))),
+                     end = ' '.join(list(map(str, end)))))
         return [start, end]
 
     # get weekday strategy, weekday in weekday out
@@ -411,7 +411,7 @@ class StockData(object):
             log.VLOG('\tor insert "n/q" to cancel')
             weekday = mio.stdin()
             if re.match('^[0-6] [0-6]$', weekday):
-                [weekday_in, weekday_out] = map(int, re.search('^(\d \d)$', weekday).group(1).split())
+                [weekday_in, weekday_out] = list(map(int, re.search('^(\d \d)$', weekday).group(1).split()))
             elif weekday in _CMD_QUIT:
                 weekday_in = -1
                 weekday_out = -1
@@ -658,12 +658,12 @@ class StockData(object):
     # write crf data
     def __write_crf_data(self, train_list, fp):
         for vector in train_list:
-            str_line = ('{str}\n').format(str = '\t'.join(map(str, vector)))
+            str_line = ('{str}\n').format(str = '\t'.join(list(map(str, vector))))
             fp.writelines(str_line)
 
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     log.LOG('choose a stock id:')
-    stock_id = tools.choose_file_from_dir(STOCK_DIR, log = False)
+    stock_id = tools.choose_file_from_dir(STOCK_DIR, print_log = False)
     log.LOG()
     if stock_id:
         stock_data = StockData(re.sub('\.lib$', '', stock_id))

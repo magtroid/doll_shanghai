@@ -257,8 +257,8 @@ class LianJia(object):
                 self.__end_date = []
             elif re.match('^\d{4}\.\d{2}\.\d{2}~\d{4}\.\d{2}\.\d{2}$', date_range):
                 self.__get_page_type = common.URL_WRITE
-                start_date = map(int, date_range.split('~')[0].split('.'))
-                end_date = map(int, date_range.split('~')[1].split('.'))
+                start_date = list(map(int, date_range.split('~')[0].split('.')))
+                end_date = list(map(int, date_range.split('~')[1].split('.')))
                 if tools.date_valid(start_date) and \
                    tools.date_valid(end_date) and \
                    tools.date_compare(start_date, end_date) == tools.LESS:
@@ -275,7 +275,7 @@ class LianJia(object):
             return False
         else:
             self.__fix_start_date()
-            log.VLOG('start to get data in time duration: {} to {}'.format(' '.join(map(str, self.__start_date)), ' '.join(map(str, self.__end_date))))
+            log.VLOG('start to get data in time duration: {} to {}'.format(' '.join(list(map(str, self.__start_date))), ' '.join(list(map(str, self.__end_date)))))
             return True
 
     # fix start date to mask days before
@@ -400,7 +400,7 @@ class LianJia(object):
             if len(data_element_div.select('.dealDate')) == 0:
                 log.VLOG('masked for 1 month limit')
                 continue
-            lianjia_unit[_DATE_KEY] = map(int, data_element_div.select('.dealDate')[0].get_text().split('.'))
+            lianjia_unit[_DATE_KEY] = list(map(int, data_element_div.select('.dealDate')[0].get_text().split('.')))
 
             # if in search range
             if not self.__in_search_range(lianjia_unit[_DATE_KEY]):

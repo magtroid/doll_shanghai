@@ -23,8 +23,6 @@ HREF_KEY = 'href'
 FIND_NONE = -1
 # None string
 NONE = '__none__'
-# dubug test
-MAIN = '__main__'
 # empty key
 EMPTY_KEY = ''
 # backspace key

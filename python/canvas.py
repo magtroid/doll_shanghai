@@ -5,7 +5,6 @@ Magtroid @ 2017-10-17 10:35
 '''
 
 # import library
-import common
 import log
 import re
 import tools
@@ -37,6 +36,8 @@ _BACK = '4'
 _BEGIN = 0
 _END = 1
 _FORMAT = 2
+
+_WIDTH_BUFF = 4
 
 # move module
 MOVE_MODULE_OFF = '__module_off__'
@@ -129,7 +130,7 @@ class CANVAS(object):
     def display(self):
         tools.clear()
         height, width = tools.get_terminal_size()
-        self.__found.update_struct([height, width])
+        self.__found.update_struct([height, width - _WIDTH_BUFF])
         self.__found.display()
         for key, area in self.__area_dict.items():
             area.display()
@@ -158,7 +159,7 @@ class CANVAS(object):
     # create foundation area cover all screen
     def __foundation(self):
         height, width = tools.get_terminal_size()
-        foundation = AREA(self.__canvas, self.__format, [[0, height - 1, width]])
+        foundation = AREA(self.__canvas, self.__format, [[0, height - 1, width - _WIDTH_BUFF]])
         return foundation
 
     # get canvas formed by format, if format is None, formed by self.__format
@@ -237,7 +238,6 @@ class AREA(object):
 
     # coordinate is for paint position
     def paint(self, text, backspace = True, coordinate = None, other = '', front = '', back = ''):
-        text = unicode(text)
         if coordinate is None:
             coordinate = self.__coordinate[:]
         if coordinate[_COORD_Y] >= len(self.__struct):
@@ -432,7 +432,7 @@ class AREA(object):
         pformat_list[y] = nformat
 
 # debug test
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     canvas = CANVAS()
     canvas.erase()
     canvas.clear_area()

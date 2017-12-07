@@ -5,7 +5,6 @@ import common
 import log
 import requests
 import urllib
-import urllib2
 import sys
 import re
 from lxml import etree

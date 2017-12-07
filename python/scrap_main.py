@@ -8,14 +8,12 @@ import sys
 import log
 
 # login files
-import github
 import lianjia
 import monitor
 import proxy
 import proxy66
 import stock
 import stock_market
-import uqer
 import tools
 import zhihu
 
@@ -23,7 +21,7 @@ sys.path.append('./gflags')
 import gflags
 
 FLAGS = gflags.FLAGS
-gflags.DEFINE_string('target', 'stock', 'zhihu | github | uqer | lianjia | proxy-xici | proxy-66ip | stock_market | stock | monitor')
+gflags.DEFINE_string('target', 'stock', 'zhihu | lianjia | proxy-xici | proxy-66ip | stock_market | stock | monitor')
 # gflags.DEFINE_string('account', '15101116531', '')
 # gflags.DEFINE_string('password', '1122344751', '')
 gflags.DEFINE_string('account', '', '')
@@ -42,13 +40,6 @@ def main(argv):
     if FLAGS.target == 'zhihu':
         zhihu_login = zhihu.ZhihuLogin()
         zhihu_login.login(FLAGS.account, FLAGS.password)
-    elif FLAGS.target == 'github':
-        github_login = github.GithubLogin()
-        github_login.login(FLAGS.account, FLAGS.password)
-    elif FLAGS.target == 'uqer':
-        uqer_login = uqer.UqerLogin()
-        uqer_login.login(FLAGS.account, FLAGS.password)
-        uqer_login.get_param()
     elif FLAGS.target == 'lianjia':
         if not FLAGS.city:
             log.VLOG('choose a city')

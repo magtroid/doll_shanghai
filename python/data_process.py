@@ -22,7 +22,7 @@ gflags.DEFINE_string('v', '0', 'vlog')
 def main(argv):
     try:
         argv = FLAGS(argv) # parse flags
-    except gflags.FlagsError, e:
+    except gflags.FlagsError as e:
         log.INFO('{}\nUsage: {} ARGVS\n{}'.format(e, sys.argv[0], FLAGS))
     log.set_log_level(int(FLAGS.v))
 

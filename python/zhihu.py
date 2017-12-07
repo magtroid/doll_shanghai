@@ -11,7 +11,6 @@ import re
 import requests
 import sys
 import urllib
-import urllib2
 try:
     import cookielib
 except:
@@ -32,7 +31,7 @@ class ZhihuLogin(object):
         # try:
         #     session.cookies.load(ignore_discard=True)
         # except:
-        #     print 'error to load cookie'
+        #     print('error to load cookie')
 
     def get_xsrf(self):
         '''_xsrf is a dynamic parameter'''
@@ -40,14 +39,14 @@ class ZhihuLogin(object):
         # get _xsrf
         index_page = self.session.get(index_url, headers=self.headers)
         # html = index_page.text
-        # print html
+        # print(html)
 
     def login(self, account, password):
         common.check_login(self.session, self.url, self.headers)
         (account, password) = common.confirm_password(account, password)
         # _xsrf = self.get_xsrf()
         if re.match(r'^1\d{10}$', account):
-            print 'phone number:'
+            print('phone number:')
             post_url = 'https://www.zhihu.com/login/phone_num'
             postdata = {
                     '_xsrf': '',
@@ -56,9 +55,9 @@ class ZhihuLogin(object):
             }
         else:
             if '@' in account:
-                print 'email:'
+                print('email:')
             else:
-                print 'illegal email address:'
+                print('illegal email address:')
                 return 0
             post_url = 'https://www.zhihu.com/login/email'
             postdata = {

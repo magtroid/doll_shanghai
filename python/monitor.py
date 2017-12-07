@@ -247,7 +247,6 @@ class StockMonitor(object):
                 self.__del_stock_list(command)
             else:
                 self.__insert_stock_list(command, check = True)
-        print command
 
     # process command in system_command
     def __process_system_command(self, command, argv = None):

@@ -30,17 +30,17 @@ class UqerLogin(object):
         try:
             self.session.cookies.load(ignore_discard=True)
         except:
-            print 'cookie failed'
+            print('cookie failed')
 
     def post_param(self, account, password):
-        print 'start to post param'
+        print('start to post param')
         post_data = {
                 'username': account,
                 'password': password,
                 'rememberMe': 'false',
         }
         response = self.session.post(self.post_url, data=post_data, headers=self.headers)
-        print 'end post param'
+        print('end post param')
         self.session.cookies.save()
 
     def bool_login(self):

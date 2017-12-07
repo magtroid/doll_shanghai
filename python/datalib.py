@@ -8,7 +8,6 @@ methods for datas
 
 # import library
 import canvas
-import common
 import copy
 import controler
 import mio
@@ -111,7 +110,7 @@ class DataLib(object):
             with open(data_file) as fp_in:
                 lines = fp_in.readlines()
                 i = 0
-                data_file_len = len(lines) / 3
+                data_file_len = len(lines) // 3
                 for i in range(0, data_file_len):
                     if schedule:
                         tools.schedule(i + 1, data_file_len)
@@ -153,7 +152,7 @@ class DataLib(object):
                         elif data_format == _LIB_TYPE_BOOL:
                             unit[keys_segs[j]] = bool(data_value)
                         elif data_format == _LIB_TYPE_LIST:
-                            unit[keys_segs[j]] = map(int, data_value[1: -1].split(',')) # TODO
+                            unit[keys_segs[j]] = list(map(int, data_value[1: -1].split(','))) # TODO
                         elif data_format == _LIB_TYPE_STRING:
                             unit[keys_segs[j]] = data_value
                         else:  # data_format == _LIB_TYPE_OTHERS
@@ -554,7 +553,7 @@ class DataLibManager(object):
             self.__canvas.paint('│')
         while True:
             is_tail = True if off == len(cur_node) - 1 else False
-            cur_key = cur_node.keys()[off]
+            cur_key = list(cur_node)[off]
             filtered = False
             if n == len(offs_path) - 1 and filter_dict is not None and cur_key not in filter_dict:
                 filter_num += 1
@@ -582,7 +581,7 @@ class DataLibManager(object):
                     level.append(1)
             else:
                 off += 1
-                while len(cur_node.keys()) <= off:
+                while len(list(cur_node)) <= off:
                     if n == 0:
                         break
                     else:
@@ -609,8 +608,8 @@ class DataLibManager(object):
         filter_dict = None
         while True:
             if model == _COMMOND_MODEL:
-                command = mio.choose_command(command_list, block = False, log = False)
-                cur_target_key = cur_lib.keys()[offs_path[-1]]
+                command = mio.choose_command(command_list, block = False, print_log = False)
+                cur_target_key = list(cur_lib)[offs_path[-1]]
                 if command == 'up':
                     if offs_path[-1] > 0:
                         offs_path[-1] -= 1
@@ -633,7 +632,7 @@ class DataLibManager(object):
                     model = _FILTER_MODEL
                     filter_str = ''
                     filter_dict = dict()
-                    for n, key in enumerate(cur_lib.keys()):
+                    for n, key in enumerate(list(cur_lib)):
                         filter_dict[key] = n
                     continue
                 elif command == 'esc':
@@ -656,7 +655,7 @@ class DataLibManager(object):
                 #     break
                 elif command == 's':
                     log.VLOG('save and quit? (y/n)')
-                    command = mio.choose_command(['y', 'n'], log = False)
+                    command = mio.choose_command(['y', 'n'], print_log = False)
                     if command == 'y':
                         self.__target_lib.write_data_lib()
                         break
@@ -713,7 +712,7 @@ class DataLibManager(object):
             self.__level_display(skip_offset = skip_off, target_lib = target_lib, lkey_path = lkey_path, offs_path = offs_path, filter_dict = filter_dict)
             cur_lib = target_lib.get_data(form_lkey(lkey_path))
 
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     datalib_manager = DataLibManager()
     datalib_manager.manage()
-    print 'done'
+    log.INFO('done')

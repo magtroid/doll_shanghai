@@ -6,31 +6,24 @@ Magtroid @ 2017-10-31 11:25
 '''
 
 # import library
-import common
-import log
-import malarm
-import mthreadpool
-import threading  # TODO
-import select
 import sys
-import termios
+import select
+import threading  # TODO
+import re
+
+import mstdin
+import threadpoolmanager
+import log
 import tools
-import tty
 
 # const define
 _REST = -1
 _ALL = 0
 
-class TimeOverError(Exception):
-    '''alarm time over'''
-    pass
-
 # function
 #   _flush
 #   _lclear
 #   _refresh_line
-#   _swallow
-#   _get_stdin
 #   kbhit
 #   stdin
 #   choose command
@@ -49,55 +42,19 @@ def _refresh_line(pstr):
     log.INFO(pstr, end = False)
     _flush()
 
-# read stdin until receive a exception
-def _swallow(strs):
-    while True:
-        strs[0] += _get_stdin(1)
-        # tools.test_function()
-
-# read stdin fp
-# number stands for read number of stdin
-# if number is _ALL, read until \n
-# if number is _REST read rest all if no \n
-def _get_stdin(number = _ALL):
-    if number == _ALL:
-        return sys.stdin.readline().strip()
-    if number != _REST:
-        return sys.stdin.read(number)
-    rstr = ['']
-    alarm = malarm.MAlarm(0.01)
-    swallow = mthreadpool.ThreadPool(1)
-    swallow.put_request(mthreadpool.WorkRequest(_swallow, args = [rstr]))
-    print threading._active
-    while alarm.is_alive():
-        pass
-    t_num = len(threading._active)
-    print threading._active
-    swallow.terminate_all_thread()
-    # while len(threading._active) == t_num:
-        # print threading._active
-        # pass
-    print threading._active
-    return rstr[0]
-
 # monitor keyboard hit in runing program
 # thread block until input exist
 # if one_hit is True, return after each backspace, else return each
 def kbhit(one_hit = True):
-    rstr = ''
-    readl = _ALL
-    if one_hit:
-        tty_fd = sys.stdin.fileno()
-        tty_old_settings = termios.tcgetattr(tty_fd)
-        tty.setcbreak(tty_fd)
-        readl = _REST
-    while not select.select([sys.stdin], [], [], 0.01)[0]:
+    mstdin.clear_stdin()
+    while not mstdin.get_stdin():
         pass
-    rstr = _get_stdin(readl)
     if one_hit:
-        termios.tcsetattr(tty_fd, termios.TCSADRAIN, tty_old_settings)
-    print threading._active
-    return rstr
+        return mstdin.get_stdin()
+    else:
+        while mstdin.get_stdin()[-1] != '\n':
+            pass
+        return mstdin.get_stdin()
 
 # return stdin
 def stdin(block = True, search_list = None):
@@ -180,6 +137,7 @@ def stdin(block = True, search_list = None):
                     fill_coordinate = [-1, -1]
                     _refresh_line(rstr)
                 else:
+                    log.VLOG()
                     return rstr
             elif command in ['esc', 'up', 'down', 'left', 'right']:  # arrow
                 switch_model = False
@@ -199,16 +157,16 @@ def stdin(block = True, search_list = None):
 # get command
 # if input choose, select the key of choose
 # if not blocked, receive only one character
-def choose_command(choose = None, option = None, block = True, log = True):
+def choose_command(choose = None, option = None, block = True, print_log = True):
     if choose:
         if isinstance(choose, dict):
-            choose_item = map(str, choose.keys())
+            choose_item = list(map(str, choose.keys()))
         elif isinstance(choose, list):
             choose_item = choose
         else:
             log.INFO('not support this format of command {}'.format(choose))
             return
-        if log:
+        if print_log:
             log.INFO('choose your items: \n or press "cancel" or "q" to quit')
             tools.print_list(choose_item)
         command = stdin(search_list = choose_item, block = block)
@@ -219,7 +177,7 @@ def choose_command(choose = None, option = None, block = True, log = True):
                 log.INFO('error items, type again')
                 command = stdin(search_list = choose_item, block = block)
     else:
-        if log:
+        if print_log:
             log.INFO('type your items or press "cancel" or "q" to quit')
         command = stdin(block = block)
     return command
@@ -229,18 +187,18 @@ def dfd():
     if command:
         log.INFO('what you type is: {}'.format(repr(command)))
 
-if __name__ == common.MAIN:
+if __name__ == '__main__':
     import time
     import threading
     while True:
-        command = kbhit()
+        time.sleep(3)
+        print('start to type in you command')
+        command = kbhit(one_hit = False)
         # command1 = kbhit()
         # command2 = kbhit()
         log.INFO('what you type is: {}'.format(repr(command)))
         # log.INFO('what you type is: {} {}'.format(repr(command1), repr(command2)))
-        print threading._active
         break
-        # a = malarm.MAlarm(0.2, kbhit)
         # time.sleep(0.2)
         # if a.result():
         #     print repr(a.result())

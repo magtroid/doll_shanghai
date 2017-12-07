@@ -7,15 +7,16 @@ method for proxy
 '''
 
 # import library
-import datalib
 import os
 import re
 import requests
 import sys
 import time
+
+import datalib
 import tools
 import common
-import traceback
+import mio
 import log
 
 # const define
@@ -124,7 +125,7 @@ class ProxyPool(object):
                         continue
                 proxy[_SUCC_KEY] += 1
                 proxy[_HISTORY_KEY][self.__today][_SUCC_KEY] += 1
-                return response.text
+                return response.text.encode(response.encoding).decode(response.apparent_encoding)
             except requests.exceptions.RequestException:
                 pass
 
@@ -169,7 +170,7 @@ class ProxyPool(object):
             if self.__request_num < self.__request_threshold:
                 try:
                     response = self.__session.get(url, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
-                    response = response.text
+                    response = response.text.encode(response.encoding).decode(response.apparent_encoding)
                 except requests.exceptions.RequestException:
                     log.VLOG('bad proxy, switch proxy')
                     response = self.__switch_proxy(url)
@@ -371,15 +372,15 @@ class ProxyPoolData(object):
 
     # choose one proxy and display detail
     def __display_detail_data(self):
-        while 1:
-            commond = tools.choose_commond()
-            if commond == 'cancel' or commond == 'q':
+        while True:
+            command = mio.choose_command()
+            if command == 'cancel' or command == 'q':
                 log.VLOG('canceled...')
                 break
             data = self.__proxy_lib.get_data()
             for type_items in data.items():
-                if commond in type_items[1]:
-                    proxy = type_items[1][commond]
+                if command in type_items[1]:
+                    proxy = type_items[1][command]
                     try_number = proxy[_SUCC_KEY] + proxy[_FAIL_KEY]
                     per = float(proxy[_SUCC_KEY]) * 100 / try_number if try_number else 0
                     log.VLOG('\t%-15s:%-5s (s/f : %3d/%-3d (%.2f))' % (proxy[_IP_KEY], proxy[_PORT_KEY],

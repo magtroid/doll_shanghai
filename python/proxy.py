@@ -29,7 +29,7 @@ class Proxy(object):
             elif self.target_type == 'https':
                 net_search = re.search('<h2>HTTPS代理IP.*?more" href="(.*?)"', page, re.S)
             else:
-                print 'error proxy type'
+                print('error proxy type')
                 return target_page
 
             if net_search:
@@ -39,7 +39,7 @@ class Proxy(object):
             else:
                 page = self.proxy_pool.switch_proxy(self.url)
                 if not page:
-                    print 'error to scrap proxy targe page'
+                    print('error to scrap proxy targe page')
                     return target_page
         return target_page
 
@@ -50,7 +50,7 @@ class Proxy(object):
         if net_search:
             page_num = int(net_search.group(1))
         else:
-            print 'error to scrap page number'
+            print('error to scrap page number')
         return page_num
 
     def get_proxy_data(self, url):
@@ -73,7 +73,7 @@ class Proxy(object):
         while not proxy_search:
             page = self.proxy_pool.switch_proxy(url)
             if not page:
-                print 'no proxy for url'
+                print('no proxy for url')
                 return False
             proxy_search = re.search('(<table id="ip_list".*?</table>)', page, re.S)
         proxy_search = proxy_search.group(1)
@@ -90,7 +90,7 @@ class Proxy(object):
                 proxy_unit['country'] = ''
             proxy_unit['ip'] = pattern_list[1]
             proxy_unit['port'] = pattern_list[2]
-            print 'schedule %d/%d (%s:%s)' % (count, len(proxy_list), proxy_unit['ip'], proxy_unit['port'])
+            print('schedule %d/%d (%s:%s)' % (count, len(proxy_list), proxy_unit['ip'], proxy_unit['port']))
             province_search = re.search('href.*?>(.*?)<', pattern_list[3], re.S)
             if province_search:
                 proxy_unit['province'] = province_search.group(1)
@@ -98,7 +98,7 @@ class Proxy(object):
                 proxy_unit['province'] = ''
             proxy_unit['anony'] = pattern_list[4]
             if not proxy_unit['anony'] == '高匿':
-                print 'not anony, change one'
+                print('not anony, change one')
                 continue
             proxy_unit['type'] = pattern_list[5].lower()
             speed_search = re.search('title="(.*?)"', pattern_list[6], re.S)
@@ -119,22 +119,22 @@ class Proxy(object):
             if self.proxy_pool.simple_try_proxy(proxy_unit):
                 if self.proxy_pool.insert_data(proxy_unit) > self.max_num:
                     return True
-                print 'success in proxy: %s' % ('add proxy: %s:%s(%d/%d)' % (proxy_unit['ip'], proxy_unit['port'], self.proxy_pool.proxy_num, self.max_num))
+                print('success in proxy: %s' % ('add proxy: %s:%s(%d/%d)' % (proxy_unit['ip'], proxy_unit['port'], self.proxy_pool.proxy_num, self.max_num)))
         return False
 
     def get_proxy(self):
         target_page = self.get_target_page()
         if target_page is '':
-            print 'error in get target page'
-        print 'begin to scrap target page: %s' % target_page 
+            print('error in get target page')
+        print('begin to scrap target page: %s' % target_page)
         target_page_num = self.get_page_num(target_page)
         if target_page_num is 0:
-            print 'error in get target page number'
-        print 'target page number is: %d' % target_page_num
+            print('error in get target page number')
+        print('target page number is: %d' % target_page_num)
 
         for i in range(1, target_page_num+1):
             net_url = '%s/%d' % (target_page, i)
-            print net_url
+            print(net_url)
             if self.get_proxy_data(net_url):
                 break
             self.proxy_pool.write_data()

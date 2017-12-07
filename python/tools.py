@@ -39,8 +39,7 @@ TIME_MINUTE = 4
 TIME_SECOND = 5
 
 # function
-#   test_function
-#   is_function
+#   cmp
 #   get_stair_format
 #   get_terminal_size
 #   is_leap_year
@@ -55,20 +54,18 @@ TIME_SECOND = 5
 #   choose_file_from_dir
 #   get_url_type
 #   parse_href_url
-#   ultra_encode
 #   schedule
 #   open_file
 #   sleep
 #   clear
 
-# function for multithread testing
-def test_function(count = [0]):
-    print 'Hello World {}'.format(count[0])
-    count[0] += 1
-    time.sleep(1)
-
-def is_function(func):
-    return hasattr(func, '__call__')
+def cmp(a, b):
+    if a > b:
+        return 1
+    elif a == b:
+        return 0
+    else:
+        return -1
 
 # return stair format string,
 # is_tail stands for one stair last one
@@ -111,7 +108,7 @@ def get_time_str(start, end, spliter):
         end = TIME_SECOND
     if end < start:
         end = start
-    times = map(str, time.localtime()[start : end+1])
+    times = list(map(str, time.localtime()[start : end+1]))
     for n,each in enumerate(times):
         if len(each) is 1:
             times[n] = '0' + each
@@ -128,13 +125,13 @@ def get_date(delta_date = 0, current_date = None, filt = None):
     else:
         if isinstance(current_date, str) and re.match('^\d+\.\d+(\.\d+)?$', current_date):
             str_format = True
-            current_date = map(int, current_date.split('.'))
+            current_date = list(map(int, current_date.split('.')))
         current_date = datetime(*current_date)
 
     finished = False
     while not finished:
         date_target = current_date + timedelta(days = delta_date)
-        date = map(int, str(date_target).split()[0].split('-'))
+        date = list(map(int, str(date_target).split()[0].split('-')))
         date_str = '.'.join(['0' + str(x) if x < 10 else str(x) for x in date])
         if filt is not None and get_weekday(date_str) in filt:
             delta_date = delta_date + 1 if delta_date > 0 else delta_date - 1
@@ -146,7 +143,7 @@ def get_date(delta_date = 0, current_date = None, filt = None):
 
 # return weekday of a day(str): xxxx.xx.xx
 def get_weekday(date):
-    date_list = map(int, date.split('.'))
+    date_list = list(map(int, date.split('.')))
     return datetime(*date_list).weekday() 
 
 # check if date is valid, date format is list [xxxx, xx, xx]
@@ -180,9 +177,9 @@ def date_valid(date):
 #  2: include
 def date_compare(date1, date2):
     if isinstance(date1, str) and re.match('^\d+\.\d+(\.\d+)?$', date1):
-        date1 = map(int, date1.split('.'))
+        date1 = list(map(int, date1.split('.')))
     if isinstance(date2, str) and re.match('^\d+\.\d+(\.\d+)?$', date2):
-        date2 = map(int, date2.split('.'))
+        date2 = list(map(int, date2.split('.')))
     diff = [0] * 3
     diff[0] = cmp(date1[0], date2[0])
     diff[1] = cmp(date1[1], date2[1]) if len(date1) > 1 and len(date2) > 1 else \
@@ -199,6 +196,7 @@ def date_compare(date1, date2):
 
 # convert list data into str, xxxx.xx.xx format
 def date_list_to_str(date):
+    print(date)
     date_str = str(date[0])
     if len(date) > 1:
         date_str += '.0' + str(date[1]) if date[1] < 10 else '.' + str(date[1])
@@ -213,7 +211,7 @@ def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0,
     terminal_width = get_terminal_size()[1] - offset
     thread_line_num = 10
     max_seg_len = 24 if terminal_width > 24 else terminal_width
-    min_seg_len = max_seg_len / 2
+    min_seg_len = max_seg_len // 2
     if not isinstance(target_list, list) or len(target_list) == 0:
         return '' if list_str else [], 0
     if num_per_line == 0:
@@ -223,15 +221,15 @@ def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0,
             segs_len = min_seg_len 
         if segs_len > max_seg_len:
             segs_len = max_seg_len 
-        num_per_line = terminal_width / (segs_len + sep_len)
+        num_per_line = terminal_width // (segs_len + sep_len)
         if num_per_line == 0:
             num_per_line = 1
-        if len(target_list) / num_per_line <= thread_line_num:
-            for num in range(num_per_line - 1, (num_per_line / 2), -1):
-                if len(target_list) % num == 0 and len(target_list) / num < 2 * thread_line_num:
+        if len(target_list) // num_per_line <= thread_line_num:
+            for num in range(num_per_line - 1, (num_per_line // 2), -1):
+                if len(target_list) % num == 0 and len(target_list) // num < 2 * thread_line_num:
                     num_per_line = num
                     break
-    segs_len = terminal_width / num_per_line - sep_len
+    segs_len = terminal_width // num_per_line - sep_len
     if segs_len > max_seg_len:
         segs_len = max_seg_len
     chart_list = []
@@ -261,11 +259,11 @@ def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0,
 def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
     chart_list = form_chart_list(target_list, list_str = True, offset = offset, num_per_line = num_per_line, sep_len = sep_len)
     for list_line in chart_list:
-        print list_line
+        log.INFO(list_line)
 
-def choose_file_from_dir(target_dir, log = True):
+def choose_file_from_dir(target_dir, print_log = True):
     files = os.listdir(target_dir)
-    return mio.choose_command(files, log = log)
+    return mio.choose_command(files, print_log = print_log)
 
 # return type of a url
 def get_url_type(url):
@@ -278,55 +276,12 @@ def parse_href_url(href, root_url):
     else:
         return href
 
-# ultra encode for special page
-def ultra_encode(text_in):
-    uni = unicode(text_in)
-    text_out = ''
-    for s in uni:
-        string = str(s)
-        if string[0] == '\xc3':
-            if string[1] == '\xa1':
-                text_out += '\xe1'
-            elif string[1] == '\xa2':
-                text_out += '\xe2'
-            elif string[1] == '\xa3':
-                text_out += '\xe3'
-            elif string[1] == '\xa4':
-                text_out += '\xe4'
-            elif string[1] == '\xa5':
-                text_out += '\xe5'
-            elif string[1] == '\xa6':
-                text_out += '\xe6'
-            elif string[1] == '\xa7':
-                text_out += '\xe7'
-            elif string[1] == '\xa8':
-                text_out += '\xe8'
-            elif string[1] == '\xa9':
-                text_out += '\xe9'
-            elif string[1] == '\xaa':
-                text_out += '\xea'
-            elif string[1] == '\xab':
-                text_out += '\xeb'
-            elif string[1] == '\xac':
-                text_out += '\xec'
-            elif string[1] == '\xad':
-                text_out += '\xed'
-            elif string[1] == '\xae':
-                text_out += '\xee'
-            elif string[1] == '\xaf':
-                text_out += '\xef'
-        elif string[0] == '\xc2':
-            text_out += string[1]
-        else:
-            text_out += string
-    return text_out
-
 # print schedule of current job
 def schedule(num, total):
     if int(num / float(total) * 10000) > int((num - 1) / float(total) * 10000):
         percent = int(num / float(total) * 10000) / 100.0
         # print '%s %.2f%% (%d/%d)' % (('%%-%ds' % _SCHEDULE_LEN) % (int(_SCHEDULE_LEN * percent / 99) * '='), percent, num, total),
-        print '\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total),
+        log.INFO('\r%s %.2f%% (%d/%d)' % ('%s%s' % (int(_SCHEDULE_LEN * percent / 100) * '>', (_SCHEDULE_LEN - int(_SCHEDULE_LEN * percent / 100)) * '='), percent, num, total), end = False)
         # flush()
 
 # open file for write
