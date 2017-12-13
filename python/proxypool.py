@@ -125,7 +125,8 @@ class ProxyPool(object):
                         continue
                 proxy[_SUCC_KEY] += 1
                 proxy[_HISTORY_KEY][self.__today][_SUCC_KEY] += 1
-                return response.text.encode(response.encoding).decode(response.apparent_encoding)
+                response = response.text.encode(response.encoding).decode(response.apparent_encoding) if response.text else response.text
+                return response
             except requests.exceptions.RequestException:
                 pass
 
@@ -170,7 +171,7 @@ class ProxyPool(object):
             if self.__request_num < self.__request_threshold:
                 try:
                     response = self.__session.get(url, headers=self.__headers, proxies=self.__proxy, timeout=self.__time_out)
-                    response = response.text.encode(response.encoding).decode(response.apparent_encoding)
+                    response = response.text.encode(response.encoding).decode(response.apparent_encoding) if response.text else response.text
                 except requests.exceptions.RequestException:
                     log.VLOG('bad proxy, switch proxy')
                     response = self.__switch_proxy(url)

@@ -9,12 +9,15 @@ method for stock market'''
 from bs4 import BeautifulSoup
 import common
 import datalib
-import mprocessingpool
+import processingpoolmanager
 import proxypool
 import stock
 import tools
 import log
 import time  # TODO
+
+# 
+_PROCESSING_NUMBER = 10
 
 # process switch
 _PROCESS_STOCK_LIST = True  # get or update new stock list
@@ -47,7 +50,7 @@ class StockMarket(object):
     #   __parse_class_stock_list
     #   __insert_stock_data
     #   __scrap_tape_data
-    #   __scrap_stock_data_async
+    #   _scrap_stock_data_async
     #   __scrap_stock_market_data
     #   __write_data_lib
 
@@ -140,7 +143,7 @@ class StockMarket(object):
                 if stock_data.get_stock_data():
                     tape_item[1][datalib.LINK_FEATURE] = stock_data.get_stock_lib()
 
-    def __scrap_stock_data_async(self, stock_item, stock_num, all_num):
+    def _scrap_stock_data_async(self, stock_item, stock_num, all_num):
         stock_code = stock_item[_HREF_KEY].split('/')[-2]  # stock/sh000001/index.shtml
         log.VLOG('scrap stock: {stock_code} ({stock_name}) ({num}/{all_num})'.format(stock_code = stock_code,
                                                                                      stock_name = stock_item[_NAME_KEY],
@@ -157,16 +160,15 @@ class StockMarket(object):
 
     # get stock data
     def __scrap_stock_market_data(self):
-        self.__processing_pool = mprocessingpool.ProcessingPool(10)  # TODO
+        processingpoolmanager.new_processing(_PROCESSING_NUMBER)
         data = self.__stock_market_lib.get_data()
         for stock_class in self.__stock_market_class:
             stock_num = 0
             class_data = data[stock_class]
             for stock_item in class_data.items():
                 stock_num += 1
-                self.__processing_pool.process(self.__scrap_stock_data_async, args = [stock_item[1], stock_num, len(class_data)])
-        self.__processing_pool.close()
-        self.__processing_pool.join()
+                processingpoolmanager.put_request(self._scrap_stock_data_async, args = [stock_item[1], stock_num, len(class_data)])
+        processingpoolmanager.close_all_processing()
 
     # write data lib
     def __write_data_lib(self, config = None):

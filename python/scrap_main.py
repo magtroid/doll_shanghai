@@ -17,7 +17,7 @@ import stock_market
 import tools
 import zhihu
 
-sys.path.append('./gflags')
+import config
 import gflags
 
 FLAGS = gflags.FLAGS
@@ -29,6 +29,9 @@ gflags.DEFINE_string('password', '', '')
 gflags.DEFINE_string('city', '', 'bj | sz | gz | hz | nj | cs | wh')
 gflags.DEFINE_string('stock_id', '', '')
 gflags.DEFINE_string('v', '0', 'vlog')
+
+def for_test():
+    print('aa')
 
 def main(argv):
     try:
@@ -70,6 +73,9 @@ def main(argv):
         log.VLOG('error')
 
     log.VLOG('done scrap')
+
+def ass():
+    print('11')
 
 if __name__ == '__main__':
     main(sys.argv)

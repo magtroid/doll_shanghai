@@ -50,7 +50,7 @@ _ACTION_ACTION_KEY = 'action'
 _ACTION_STOCK_KEY = 'stock'
 _ACTION_PRICE_KEY = 'price'
 _ACTION_NUMBER_KEY = 'number'
-_ACTION_SERVICE_KEY = 'number'
+_ACTION_SERVICE_KEY = 'service'
 
 _STOCK_ID_KEY = 'ID'
 _STOCK_NUM_KEY = 'number'
@@ -221,7 +221,7 @@ class StockMonitor(object):
 
     # receive command and control
     def __command_control(self):
-        command = mio.kbhit(one_hit = False)  # TODO
+        command = mio.kbhit(one_hit = False).strip()  # TODO
         if command:
             command_list = command.split()
             if len(command_list) != 1:
@@ -397,7 +397,7 @@ class StockMonitor(object):
         elif re.match('\d', stock_id):
             stock_id = int(stock_id) - 1
             if stock_id >= 0 and stock_id < len(self.__stock_list):
-                stock_id = self.__stock_list.keys()[stock_id]
+                stock_id = list(self.__stock_list.keys())[stock_id]
         if stock_id in self.__stock_list:
             if stock_id in self.__display_feat[_DETAIL_INDEX]:
                 del self.__display_feat[_DETAIL_INDEX][stock_id]
@@ -503,7 +503,7 @@ class StockMonitor(object):
                     response = self.__proxy_pool.get_page(url)
                     if len(response) == 0:
                         return 0
-                    price = float(re.sub('"', '', response[1:-1].encode('utf-8')).split(',')[2])
+                    price = float(re.sub('"', '', response[1:-1]).split(',')[2])
                     if price != 0:
                         virtual_property += price * stock_item[1][_STOCK_NUM_KEY]
                     else:
@@ -572,7 +572,7 @@ class StockMonitor(object):
                 if stock_id in stock_lib:
                     total_property += stock_lib[stock_id][_STOCK_PRICE_KEY] * stock_lib[stock_id][_STOCK_NUM_KEY]
                 continue
-            price = re.sub('"', '', response[1:-1].encode('utf-8')).split(',')
+            price = re.sub('"', '', response[1:-1]).split(',')
             ctime = re.sub(':\d\d$', '', price[0].split()[1])
             cprice = float(price[2])
             crate = float(price[3])

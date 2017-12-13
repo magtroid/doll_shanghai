@@ -3,3 +3,4 @@
 
 import sys
 sys.path.append('threadpool')
+sys.path.append('gflags')

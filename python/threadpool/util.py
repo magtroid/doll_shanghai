@@ -7,9 +7,14 @@ Magtroid @ 2017-12-04 11:09
 # import library
 import sys
 sys.path.append('..')
+import os
 
 import threading
 import log
+
+# const define
+THREAD = '__thread__'
+PROCESS = '__process__'
 
 # functions
 '''
@@ -17,8 +22,11 @@ test_function
 is_function
 '''
 
-def test_function(count = [0]):
-    log.INFO('Hello World {} in thread {}'.format(count[0], threading.current_thread().getName()))
+def test_function(name = THREAD, count = [0]):
+    if name == THREAD:
+        log.INFO('Hello World {} in thread {}'.format(count[0], threading.current_thread().getName()))
+    elif name == PROCESS:
+        log.INFO('Hello World {} in process {}'.format(count[0], os.getpid()))
     count[0] += 1
 
 def is_function(func):

@@ -5,7 +5,6 @@ Magtroid @ 2017-12-05 11:31
 '''
 
 # import library
-import time
 import threading
 
 import mthreadpool
@@ -13,13 +12,19 @@ from mthreadpool import _NAME_BASE
 import log
 import util
 
+# common define
+
 # singleton object
 # key value is threadpool name and target threadpool
 thread_pool_manager = dict()
+_thread_pool_lock = [False]
 
 # function
 '''
 new_thread
+set_lock
+set_unlock
+is_locked
 thread_pool_status
 thread_number
 all_thread_number
@@ -35,6 +40,14 @@ def new_thread(thread_number, name = _NAME_BASE, time_out = 0):
     if name not in thread_pool_manager:
         thread_pool_manager[name] = mthreadpool.ThreadPool(name = name, time_out = time_out)
     thread_pool_manager[name].new_thread(thread_number, time_out = time_out)
+
+def set_lock():
+    _thread_pool_lock[0] = True
+def set_unlock():
+    _thread_pool_lock[0] = False
+def is_locked():
+    return _thread_pool_lock[0]
+
 
 def thread_pool_status(name = _NAME_BASE):
     if name in thread_pool_manager:
@@ -65,12 +78,12 @@ def terminate_thread(name = _NAME_BASE, number = 0):
             del thread_pool_manager[name]
 
 def dismiss_all_thread():
-    for name, threadpool in thread_pool_manager.items():
+    for name, threadpool in list(thread_pool_manager.items()):
         threadpool.dismiss_thread(do_join = True)
         del thread_pool_manager[name]
 
 def terminate_all_thread():
-    for name, threadpool in thread_pool_manager.items():
+    for name, threadpool in list(thread_pool_manager.items()):
         threadpool.terminate_thread()
         del thread_pool_manager[name]
 
@@ -94,10 +107,18 @@ def loop():
     finally:
         print('pass')
 
+def choose():
+    command = mio.choose_command()
+    print('what you type is: {}'.format(command))
+
 if __name__ == '__main__':
-    new_thread(1)
+    new_thread(2)
     import sys
-    put_request(sys.stdin.read)
+    import mio
+    import time
+    put_request(choose)
+    time.sleep(3)
+    put_request(choose)
     # new_thread(2)
     # new_thread(5, name = 'time')
     # new_thread(4, name = 'base')
@@ -108,7 +129,7 @@ if __name__ == '__main__':
         n += 1
         time.sleep(1)
         log.INFO(threading._active)
-        if n is 3:
+        if n is 8:
             terminate_thread()
     #     if n is 6:
     #         terminate_thread(name = 'base')

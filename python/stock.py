@@ -154,8 +154,8 @@ class Stock(object):
         for period in self.__stock_period_set:
             if self.__status == _INVALID:
                 break
-            period_key = period.keys()[0]
-            period_value = period.values()[0]
+            period_key = list(period.keys())[0]
+            period_value = list(period.values())[0]
             period_url = '{root_url}/{period}/?{code}={stock_code}&type={period_type}'.format(
                           root_url = self.__stock_data_url,
                           period = period_value[0],

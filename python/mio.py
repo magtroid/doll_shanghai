@@ -10,6 +10,7 @@ import sys
 import select
 import threading  # TODO
 import re
+import time
 
 import mstdin
 import threadpoolmanager
@@ -19,6 +20,7 @@ import tools
 # const define
 _REST = -1
 _ALL = 0
+_REFRESH_TIME = 0.1
 
 # function
 #   _flush
@@ -45,10 +47,10 @@ def _refresh_line(pstr):
 # monitor keyboard hit in runing program
 # thread block until input exist
 # if one_hit is True, return after each backspace, else return each
-def kbhit(one_hit = True):
+def kbhit(one_hit = True, refresh_time = _REFRESH_TIME):
     mstdin.clear_stdin()
     while not mstdin.get_stdin():
-        pass
+        time.sleep(refresh_time)
     if one_hit:
         return mstdin.get_stdin()
     else:
@@ -188,12 +190,10 @@ def dfd():
         log.INFO('what you type is: {}'.format(repr(command)))
 
 if __name__ == '__main__':
-    import time
     import threading
     while True:
-        time.sleep(3)
         print('start to type in you command')
-        command = kbhit(one_hit = False)
+        command = kbhit(one_hit = True)
         # command1 = kbhit()
         # command2 = kbhit()
         log.INFO('what you type is: {}'.format(repr(command)))

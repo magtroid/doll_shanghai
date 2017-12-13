@@ -8,20 +8,25 @@ Magtroid @ 2017-12-04 17:07
 import sys
 import tty
 import termios
+import time
 
 import config
 import threadpoolmanager
+import processingpoolmanager
 
 # common defin
 _STDIN_NAME = '__stdin__'
 
 _DELETE_BOT = '\x7f'
 
+_DELTA_TIME = 0.01
+
 _stdin = ['']
 
 # function
 '''
 _swallow
+clear_stdin
 get_stdin
 '''
 
@@ -32,8 +37,13 @@ def _swallow(strs):
     tty.setcbreak(tty_fd)
     try:
         while True:
+            while processingpoolmanager.is_locked():
+                pass
+            threadpoolmanager.set_lock()
             char = sys.stdin.read(1)
             strs[0] += char
+            threadpoolmanager.set_unlock()
+            time.sleep(_DELTA_TIME)
     finally:
         termios.tcsetattr(tty_fd, termios.TCSADRAIN, tty_old_settings)
 

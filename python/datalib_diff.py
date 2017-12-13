@@ -14,31 +14,31 @@ _DETAIL_MODULE = False
 
 def diff_lib(datalib1, datalib2):
     if type(datalib1) != type(datalib2):
-        print 'type differ'
+        print('type differ')
         return False
     for key in datalib1.keys():
         if key not in datalib2.keys():
-            print '{} not in datalib2'.format(key)
+            print('{} not in datalib2'.format(key))
             return False
         elif isinstance(datalib1[key], dict):
             if diff_lib(datalib1[key], datalib2[key]) == False:
-                print 'diff in dict {}'.format(key)
+                print('diff in dict {}'.format(key))
                 return False
         elif isinstance(datalib1[key], (int, float, str)):
             if datalib1[key] != datalib2[key]:
-                print 'diff in value {}'.format(key)
+                print('diff in value {}'.format(key))
                 return False
     for key in datalib2.keys():
         if key not in datalib1.keys():
-            print '{} not in datalib1'.format(key)
+            print('{} not in datalib1'.format(key))
             return False
         elif isinstance(datalib2[key], dict):
             if diff_lib(datalib2[key], datalib1[key]) == False:
-                print 'diff in dict {}'.format(key)
+                print('diff in dict {}'.format(key))
                 return False
         elif isinstance(datalib2[key], (int, float, str)):
             if datalib2[key] != datalib1[key]:
-                print 'diff in value {}'.format(key)
+                print('diff in value {}'.format(key))
                 return False
     return True
 
@@ -69,7 +69,7 @@ def main(argv):
             if os.path.isfile(file1) and os.path.isfile(file2):
                 file_cmp(file1, file2)
             else:
-                print 'file_error'
+                print('file_error')
 
 if __name__ == '__main__':
     main(sys.argv)

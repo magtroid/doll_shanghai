@@ -9,9 +9,12 @@ import multiprocessing
 import util
 import time
 
+# common define
+
 class ProcessingPool(object):
     def __init__(self, process_num):
         self.__processing_pool = multiprocessing.Pool(processes = process_num)
+        self.__processing_num = process_num
         # self.__result = []  # TODO
     def process(self, func, args = None, kwargs = None):
         self.__args = args or []
@@ -19,18 +22,16 @@ class ProcessingPool(object):
         if util.is_function(func):
             result = self.__processing_pool.apply_async(func, self.__args, self.__kwargs)
             # self.__result.append(result.get())
+
+    def processing_number(self):
+        return self.__processing_num
+
     def close(self):
         self.__processing_pool.close()
+    def terminate(self):
+        self.__processing_pool.terminate()
     def join(self):
         self.__processing_pool.join()
-    # def result(self):
-    #     return self.__result
-    # def __getstate__(self):
-    #     self_dict = self.__dict__.copy()
-    #     del self_dict[_PROCESSING_POOL_NAME]
-    #     return self_dict
-    # def __setstate__(self, state):
-    #     self.__dict__.update(state)
 
 # for test
 class a(object):
@@ -61,6 +62,10 @@ if __name__ == '__main__':
         pool.process(c.func, args = [i], kwargs = {'time' : i + 2})
     # print ('-' * 20)
     pool.close()
+    try:
+        pool.process(c.func, args = [i], kwargs = {'time' : i + 2})
+    except:
+        print('closed')
     pool.join()
     # print pool.result()
     print('sub-process done')
