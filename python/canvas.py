@@ -129,6 +129,7 @@ class CANVAS(object):
     # clear screan and display canvas
     def display(self):
         tools.clear()
+        self.erase()
         height, width = tools.get_terminal_size()
         self.__found.update_struct([height, width - _WIDTH_BUFF])
         self.__found.display()

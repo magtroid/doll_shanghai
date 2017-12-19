@@ -42,9 +42,13 @@ class for_t(object):
     def close(self):
         processingpoolmanager.close_processing()
 
+time.sleep(1)
 a = for_t()
 a.for_test()
 time.sleep(1)
 b = for_t()
 b.for_test2()
+time.sleep(1)
+c = for_t()
+c.for_test3()
 a.close()

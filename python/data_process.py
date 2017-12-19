@@ -15,7 +15,7 @@ import gflags
 
 FLAGS = gflags.FLAGS
 gflags.DEFINE_string('target', 'stock', 'lianjia | proxy | stock_market | stock')
-gflags.DEFINE_string('city', '', 'bj | sz | gz | hz | nj | cs | wh')
+gflags.DEFINE_string('city', '', 'bj | sz | tj | qd | gz | hz | nj | cs | wh')
 gflags.DEFINE_string('stock_id', '', '')
 gflags.DEFINE_string('v', '0', 'vlog')
 

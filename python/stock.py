@@ -20,6 +20,7 @@ import log
 STOCK_DIR = './datalib/stocks/'
 _SH_STOCK_CODE = 'sh'
 _SZ_STOCK_CODE = 'sz'
+_COLORED = True
 
 # stock feature period
 _DAY_KEY       = 'day'
@@ -331,7 +332,7 @@ class StockData(object):
         model = _INDEX_MODEL
         while True:
             if model == _INDEX_MODEL:
-                command = mio.choose_command(datas.keys())
+                command = mio.choose_command(list(datas.keys()))
                 if command == 'q':
                     break
                 else:
@@ -464,11 +465,13 @@ class StockData(object):
 
     def __draw_kline(self, data, n, highlight = False):
         x = _KLINE_SPARSE * n
-        # color = ''
-        if data[_OPEN_OFF] != data[_CLOSE_OFF]:
-            color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
+        if not _COLORED:
+            color = ''
         else:
-            color = canvas.GREEN if data[_ADR_OFF] < 0 else canvas.RED
+            if data[_OPEN_OFF] != data[_CLOSE_OFF]:
+                color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
+            else:
+                color = canvas.GREEN if data[_ADR_OFF] < 0 else canvas.RED
         line_up, line_down = [_OPEN_OFF, _CLOSE_OFF] if data[_OPEN_OFF] < data[_CLOSE_OFF] else [_CLOSE_OFF, _OPEN_OFF]
         for i in range(data[_HIGH_OFF], data[line_up]):
             self.__canvas.paint('│', coordinate = [i, x], front = color)
@@ -504,7 +507,7 @@ class StockData(object):
         step = (top - bottom) / height
         display_list = [[x[_DATE_OFF]] + [int((top - y) / step) for y in x[_OPEN_OFF:_ADR_OFF]] + [x[_ADR_OFF]] for x in kline_list[begin : end]]
         icursor = data_num - cursor + offset - 1
-        coord = [0, 0] if icursor > data_num / 2 else [0, width / 2]
+        coord = [0, 0] if icursor > data_num / 2 else [0, int(width / 2)]
         self.__canvas.move_area(_KLINE_DETAIL, coord, module = canvas.MOVE_MODULE_TO)
         self.__canvas.erase()
         self.__canvas.clear_area()
@@ -662,10 +665,10 @@ class StockData(object):
             fp.writelines(str_line)
 
 if __name__ == '__main__':
-    log.LOG('choose a stock id:')
+    log.INFO('choose a stock id:')
     stock_id = tools.choose_file_from_dir(STOCK_DIR, print_log = False)
-    log.LOG()
+    log.INFO()
     if stock_id:
         stock_data = StockData(re.sub('\.lib$', '', stock_id))
         stock_data.k_line()
-    log.LOG('done')
+    log.INFO('done')

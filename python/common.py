@@ -55,3 +55,8 @@ SUN = 6
 WEEK_DAY = 7
 MONTH_DAY = 30
 YEAR_DAY = 365
+
+UP_KEY = '\x1b[A'
+DOWN_KEY = '\x1b[B'
+RIGHT_KEY = '\x1b[C'
+LEFT_KEY = '\x1b[D'

@@ -37,16 +37,16 @@ put_request
 '''
 
 def new_processing(process_number, name = _NAME_BASE):
-    message = False
-    while threadpoolmanager.is_locked():
-        if not message:
-            log.INFO('wait for create processing typing')
-            message = True
-        pass
-    set_lock()
     if name not in processing_pool_manager:
+        message = False
+        while threadpoolmanager.is_locked():
+            if not message:
+                log.INFO('wait for create processing typing')
+                message = True
+            pass
+        set_lock()
         processing_pool_manager[name] = mprocessingpool.ProcessingPool(process_number)
-    set_unlock()
+        set_unlock()
 
 def set_lock():
     processing_pool_lock[0] = True

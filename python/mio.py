@@ -20,7 +20,7 @@ import tools
 # const define
 _REST = -1
 _ALL = 0
-_REFRESH_TIME = 0.1
+_REFRESH_TIMES = 5
 
 # function
 #   _flush
@@ -47,15 +47,17 @@ def _refresh_line(pstr):
 # monitor keyboard hit in runing program
 # thread block until input exist
 # if one_hit is True, return after each backspace, else return each
-def kbhit(one_hit = True, refresh_time = _REFRESH_TIME):
+def kbhit(one_hit = True, refresh_times = _REFRESH_TIMES):
+    refresh_time = refresh_times * mstdin.DELTA_TIME
     mstdin.clear_stdin()
     while not mstdin.get_stdin():
         time.sleep(refresh_time)
+    time.sleep(refresh_time)
     if one_hit:
         return mstdin.get_stdin()
     else:
         while mstdin.get_stdin()[-1] != '\n':
-            pass
+            time.sleep(refresh_time)
         return mstdin.get_stdin()
 
 # return stdin

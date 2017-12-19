@@ -24,7 +24,7 @@ import tools
 _URL_KEY = 'url'
 
 _SLEEP_TIME = 3.0
-_REFRESH_STEP = 0.5
+_REFRESH_STEP = 0.1
 
 _STATUS_ALIVE = 'alive'
 _STATUS_DEAD = 'dead'
@@ -43,6 +43,9 @@ _CASH_KEY = 'cash'
 _PROPERTY_KEY = 'property'
 _STOCK_KEY = 'stock'
 _ACTION_KEY = 'action'
+
+_VIEW_MODEL = 'VIEW MODEL'
+_COMMAND_MODEL = 'COMMAND MODEL'
 
 _ACTION_BUY = 'buy'
 _ACTION_SELL = 'sell'
@@ -134,7 +137,9 @@ class StockMonitor(object):
         self.__url = 'http://api.finance.ifeng.com/amin/?code='
         self.__type = '&type=now'
         self.__max_stock_monitor = 8
-        self.__system_command = ['quit', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
+        self.__system_command = ['quit', 'S', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
+        self.__view_command = ['S', common.UP_KEY, common.DOWN_KEY]
+        self.__view_model = True
         self.__stock_map_list = dict()
         self.__init_stock_map_list()
         self.__display_feat = [False, dict()]  # 1:property 2:detail_stock
@@ -148,7 +153,6 @@ class StockMonitor(object):
 
     # monitor stock and property
     def stock_monitor(self):
-        self.__refresh = malarm.MAlarm(_SLEEP_TIME + _REFRESH_STEP, func = self.__canvas.display, rtime = _REFRESH_STEP)
         self.__control = malarm.MAlarm(_SLEEP_TIME, func = self.__command_control, rtime = _REFRESH_STEP)
         self.__update = malarm.MAlarm(_SLEEP_TIME, func = self.__display_market, rtime = _SLEEP_TIME)
         while self.__status == _STATUS_ALIVE:
@@ -221,37 +225,56 @@ class StockMonitor(object):
 
     # receive command and control
     def __command_control(self):
-        command = mio.kbhit(one_hit = False).strip()  # TODO
-        if command:
-            command_list = command.split()
-            if len(command_list) != 1:
-                command = command_list[0]
-                argv = command_list[1:]
-            else:
-                argv = []
-            if command in self.__system_command:
-                self.__process_system_command(command, argv)
-            elif command in self.__stock_map_list:
-                command = self.__stock_map_list[command]
-                if command in self.__stock_list:
+        if self.__view_model:
+            command = mio.kbhit(refresh_times = 10)
+            if command in self.__view_command:
+                self.__process_view_command(command)
+                self.__canvas.display()
+        else:
+            command = mio.kbhit(one_hit = False).strip()
+            if command:
+                command_list = command.split()
+                if len(command_list) != 1:
+                    command = command_list[0]
+                    argv = command_list[1:]
+                else:
+                    argv = []
+                if command in self.__system_command:
+                    self.__process_system_command(command, argv)
+                elif command in self.__stock_map_list:
+                    command = self.__stock_map_list[command]
+                    if command in self.__stock_list:
+                        if command in self.__display_feat[_DETAIL_INDEX]:
+                            del self.__display_feat[_DETAIL_INDEX][command]
+                            self.__canvas.del_area(command)
+                        self.__del_stock_list(command)
+                    else:
+                        self.__insert_stock_list(command)
+                elif command in self.__stock_list:
                     if command in self.__display_feat[_DETAIL_INDEX]:
                         del self.__display_feat[_DETAIL_INDEX][command]
                         self.__canvas.del_area(command)
                     self.__del_stock_list(command)
                 else:
-                    self.__insert_stock_list(command)
-            elif command in self.__stock_list:
-                if command in self.__display_feat[_DETAIL_INDEX]:
-                    del self.__display_feat[_DETAIL_INDEX][command]
-                    self.__canvas.del_area(command)
-                self.__del_stock_list(command)
-            else:
-                self.__insert_stock_list(command, check = True)
+                    self.__insert_stock_list(command, check = True)
+
+    # process view command in view model
+    def __process_view_command(self, command):
+        if command == 'S':
+            self.__view_model = False
+        elif command == common.UP_KEY:
+            if self.__stock_list_cursor > 0:
+                self.__stock_list_cursor -= 1
+        elif command == common.DOWN_KEY:
+            if self.__stock_list_cursor < len(self.__stock_list) - 1:
+                self.__stock_list_cursor += 1
 
     # process command in system_command
     def __process_system_command(self, command, argv = None):
         if command == 'q' or command == 'Q' or command == 'quit':
             self.__status = _STATUS_DEAD
+        elif command == 'S':
+            self.__view_model = True
         elif command == 'in':
             for money in argv:
                 self.__in_cash(money)
@@ -439,7 +462,7 @@ class StockMonitor(object):
         last_close = stock_data[_LAST_CLOSE]
         for stage in range(5):
             price = float(sell_list[4 - stage])
-            transaction = int(float(sell_list[9 - stage])) / 100
+            transaction = int(float(sell_list[9 - stage]) / 100)
             color = canvas.GREEN if price < last_close else canvas.RED if price > last_close else canvas.WHITE
             if price:
                 self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), front = color, name = stock_id)
@@ -448,7 +471,7 @@ class StockMonitor(object):
         self.__canvas.paint('-' * 16, name = stock_id)
         for stage in range(5):
             price = float(buy_list[stage])
-            transaction = int(float(buy_list[5 + stage])) / 100
+            transaction = int(float(buy_list[5 + stage]) / 100)
             color = canvas.GREEN if price < last_close else canvas.RED if price > last_close else canvas.WHITE
             if price:
                 self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), front = color, name = stock_id)
@@ -549,13 +572,12 @@ class StockMonitor(object):
                                      (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), name = _PROPERTY)
 
     def __stop_alarm(self):
-        self.__refresh.stop()
         self.__control.stop()
         self.__update.stop()
 
     # display each stock price
     def __display_price(self):
-        self.__canvas.paint('-' * self.__display_feat_len)
+        self.__canvas.paint('{} {}'.format('-' * self.__display_feat_len, _VIEW_MODEL if self.__view_model else _COMMAND_MODEL))
         stocks_price_list = []
         self.__canvas.paint(tools.get_time_str(tools.TIME_HOUR, tools.TIME_SECOND, ':'))
         property_status = self.__property_lib.get_data()[self.__today]
@@ -614,13 +636,13 @@ class StockMonitor(object):
 
     # display all stock markets
     def __display_market(self):
-        self.__canvas.erase()
         self.__canvas.clear_area()
         if self.__display_feat[_PROPERTY_INDEX]:
             self.__property_display()
         self.__display_price()
         for stock_id in self.__display_feat[_DETAIL_INDEX]:
             self.__show_detail(stock_id)
+        self.__canvas.display()
 
     # write data lib
     def __write_data_lib(self):

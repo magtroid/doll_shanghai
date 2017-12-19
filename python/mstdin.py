@@ -15,12 +15,9 @@ import threadpoolmanager
 import processingpoolmanager
 
 # common defin
+DELTA_TIME = 0.001
 _STDIN_NAME = '__stdin__'
-
 _DELETE_BOT = '\x7f'
-
-_DELTA_TIME = 0.01
-
 _stdin = ['']
 
 # function
@@ -43,7 +40,7 @@ def _swallow(strs):
             char = sys.stdin.read(1)
             strs[0] += char
             threadpoolmanager.set_unlock()
-            time.sleep(_DELTA_TIME)
+            time.sleep(DELTA_TIME)
     finally:
         termios.tcsetattr(tty_fd, termios.TCSADRAIN, tty_old_settings)
 
