@@ -43,7 +43,7 @@ class MAlarm(object):
         self.__func = func if util.is_function(func) else self.__exit
         self.__args = args or []
         self.__kwargs = kwargs or {}
-        threadpoolmanager.put_request(self.__run, name = self.__name)
+        threadpoolmanager.put_request(self.__run, args = [self.__time], name = self.__name)
 
     def is_alive(self):
         return self.__is_alive
@@ -64,11 +64,11 @@ class MAlarm(object):
         self.__exit()
 
     # new thread function
-    def __run(self):
-        time.sleep(self.__time)
+    def __run(self, ctime):
+        time.sleep(ctime)
         self.__result = self.__func(*self.__args, **self.__kwargs)
         if self.__rtime:
-            threadpoolmanager.put_request(self.__run, name = self.__name)
+            threadpoolmanager.put_request(self.__run, args = [self.__rtime], name = self.__name)
         else:
             self.stop()
 
@@ -99,13 +99,13 @@ if __name__ == '__main__':
     # time.sleep(20)
     # p.stop()
     import mio
-    p = MAlarm(1, util.test_function, rtime = 1)
-    q = MAlarm(1, util.test_function, rtime = 1)
+    p = MAlarm(1, util.test_function, rtime = 0.1)
+    q = MAlarm(1, util.test_function, rtime = 0.1)
     import threading
     import time
     n = 0
     while True:
-        print(threading._active)
+        # print(threading._active)
         # print(p.result())
         time.sleep(1)
         n += 1

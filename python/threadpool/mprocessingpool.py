@@ -15,19 +15,21 @@ class ProcessingPool(object):
     def __init__(self, process_num):
         self.__processing_pool = multiprocessing.Pool(processes = process_num)
         self.__processing_num = process_num
-        # self.__result = []  # TODO
+        self.__result = []
     def process(self, func, args = None, kwargs = None):
         self.__args = args or []
         self.__kwargs = kwargs or {}
         if util.is_function(func):
             result = self.__processing_pool.apply_async(func, self.__args, self.__kwargs)
-            # self.__result.append(result.get())
+            self.__result.append(result)
 
     def processing_number(self):
         return self.__processing_num
 
     def close(self):
         self.__processing_pool.close()
+    def get_result(self):
+        return self.__result
     def terminate(self):
         self.__processing_pool.terminate()
     def join(self):

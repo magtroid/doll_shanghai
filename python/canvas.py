@@ -37,6 +37,10 @@ _BEGIN = 0
 _END = 1
 _FORMAT = 2
 
+_PFORMAT_REP = '__replace__'
+_PFORMAT_APD = '__append__'
+_PFORMAT_DEL = '__delete__'
+
 _WIDTH_BUFF = 4
 
 # move module
@@ -52,6 +56,7 @@ class CANVAS(object):
     #   move_area
     #   get_area_struct
     #   insert_format
+    #   delete_format
     #   display_area
     #   coordinate
     #   paint
@@ -108,6 +113,15 @@ class CANVAS(object):
         else:
             return
         target_area.insert_format(coord, other = other, front = front, back = back)
+
+    def delete_format(self, coord, other = '', front = '', back = '', name = None):
+        if name is None:
+            target_area = self.__found
+        elif name in self.__area_dict:
+            target_area = self.__area_dict[name]
+        else:
+            return
+        target_area.delete_format(coord, other = other, front = front, back = back)
 
     def display_area(self):
         for area in self.__area_dict:
@@ -183,6 +197,7 @@ class CANVAS(object):
         struct, canvas = cover_canvas.get_struct(), cover_canvas.get_canvas()
 
 _FORMAT_SEP = ';'
+_DEL_FORMAT = '-'
 # struct format [a, y, x]
 _OFFSET = 0
 _YARRAY = 1
@@ -201,6 +216,7 @@ class AREA(object):
     #   move_struct
     #   get_canvas
     #   insert_format
+    #   delete_format
     #   coordinate
     #   clear
     #   display_struct
@@ -283,9 +299,24 @@ class AREA(object):
     def insert_format(self, coord, other = '', front = '', back = ''):
         join_form = self.__join_form(other = other, front = front, back = back)
         if join_form:
-            tformat = [[coord[1], coord[1] + coord[2], join_form]]
+            length = coord[2]
+            if length == 0:
+                height, width = tools.get_terminal_size()
+                length = width - _WIDTH_BUFF
+            tformat = [[coord[1], coord[1] + length, join_form]]
             p_coord = [coord[0], self.__struct[coord[0]][_USTOFF], self.__struct[coord[0]][_USTLEN]]
-            self.__process_format(tformat, p_coord, append = True)  # TODO
+            self.__process_format(tformat, p_coord, method = _PFORMAT_APD)  # TODO
+
+    def delete_format(self, coord, other = '', front = '', back = ''):
+        join_form = self.__join_form(other = other, front = front, back = back, method = _PFORMAT_DEL)
+        if join_form:
+            length = coord[2]
+            if length == 0:
+                height, width = tools.get_terminal_size()
+                length = width - _WIDTH_BUFF
+            tformat = [[coord[1], coord[1] + length, join_form]]
+            p_coord = [coord[0], self.__struct[coord[0]][_USTOFF], self.__struct[coord[0]][_USTLEN]]
+            self.__process_format(tformat, p_coord, method = _PFORMAT_APD)  # TODO
 
     def coordinate(self):
         return self.__coordinate
@@ -345,7 +376,7 @@ class AREA(object):
                                                            text[iform[_END]:])
         return text
 
-    def __join_form(self, other = '', front = '', back = ''):
+    def __join_form(self, other = '', front = '', back = '', method = _PFORMAT_APD):
         form = []
         if other in self.__format_pallet:
             form.append(self.__format_pallet[other])
@@ -353,23 +384,27 @@ class AREA(object):
             form.append('{}{}'.format(_FRONT, self.__color_pallet[front]))
         if back in self.__color_pallet:
             form.append('{}{}'.format(_BACK, self.__color_pallet[back]))
+        if method is _PFORMAT_DEL:
+            form = ['{}{}'.format(_DEL_FORMAT, x) for x in form]
+            if not form:
+                return '0'
         return _FORMAT_SEP.join(form)
 
     def __norm_form(self, pformat):
         format_list = pformat.split(_FORMAT_SEP)
-        format_list.reverse()
-        nformat = []
-        lformat = []
+        nformat = dict()
         for iformat in format_list:
             if iformat == '0':
-                break
-            sign = '0{}'.format(iformat) if len(iformat) == 1 else iformat[0]
-            if sign in lformat:
-                continue
+                nformat.clear()
+            elif iformat[0] is _DEL_FORMAT:
+                iformat = iformat[1:]
+                sign = '0{}'.format(iformat) if len(iformat) == 1 else iformat[0]
+                if sign in nformat:
+                    del nformat[sign]
             else:
-                nformat.append(iformat)
-                lformat.append(sign)
-        rformat = '0' if len(nformat) == 0 else _FORMAT_SEP.join(sorted(nformat, key=lambda d:(len(d), d)))
+                sign = '0{}'.format(iformat) if len(iformat) == 1 else iformat[0]
+                nformat[sign] = iformat
+        rformat = '0' if len(nformat) == 0 else _FORMAT_SEP.join(sorted(nformat.values(), key=lambda d:(len(d), d)))
         return rformat
 
     def __trim_form(self, text):
@@ -389,7 +424,8 @@ class AREA(object):
     # set coord_y text format
     # tformat is [[b, e, c]] list stands for target area begin, end and color
     # coord is [y, x, l] stands for canvas y and x array and length
-    def __process_format(self, tformat, coord, pformat_list = None, append = True):
+    # method [replace, append, delete]
+    def __process_format(self, tformat, coord, pformat_list = None, method = _PFORMAT_REP):
         if len(tformat) == 0:
             return
         if pformat_list is None:
@@ -402,18 +438,18 @@ class AREA(object):
         for iformat in pformat:
             format_str[iformat[_BEGIN] : iformat[_END]] = [iformat[_FORMAT]] * (iformat[_END] - iformat[_BEGIN])
         for iformat in tformat:
-            if append == False:
+            if method is _PFORMAT_REP:
                 if iformat[_END] <= format_len:
                     format_str[iformat[_BEGIN] + x : iformat[_END] + x] = [iformat[_FORMAT]] * (iformat[_END] - iformat[_BEGIN])
                 elif iformat[_BEGIN] < format_len:
                     format_str[iformat[_BEGIN] + x : format_len + x] = [iformat[_FORMAT]] * (format_len - iformat[_BEGIN])
                 else:
                     break
-            else:
+            else:  # method is _PFORMAT_APD:
                 if iformat[_END] <= format_len:
-                    format_str[iformat[_BEGIN] + x : iformat[_END] + x] = [self.__norm_form('{};{}'.format(z, iformat[_FORMAT])) for z in format_str[iformat[_BEGIN] + x : iformat[_END] + x]]
+                    format_str[iformat[_BEGIN] + x : iformat[_END] + x] = [self.__norm_form('{}{}{}'.format(z, _FORMAT_SEP, iformat[_FORMAT])) for z in format_str[iformat[_BEGIN] + x : iformat[_END] + x]]
                 elif iformat[_BEGIN] < format_len:
-                    format_str[iformat[_BEGIN] + x : format_len + x] = [self.__norm_form('{};{}'.format(z, iformat[_FORMAT])) for z in format_str[iformat[_BEGIN] + x : format_len + x]]
+                    format_str[iformat[_BEGIN] + x : format_len + x] = [self.__norm_form('{}{}{}'.format(z, _FORMAT_SEP, iformat[_FORMAT])) for z in format_str[iformat[_BEGIN] + x : format_len + x]]
                 else:
                     break
         c = '0'
@@ -437,11 +473,15 @@ if __name__ == '__main__':
     canvas = CANVAS()
     canvas.erase()
     canvas.clear_area()
-    canvas.paint('dfegdefdf')
-    canvas.paint('dfegdefdf')
-    canvas.paint('dfegdefdf')
-    canvas.insert_format([1, 1, 1], front = RED)
-    canvas.insert_format([2, 1, 1], other = INVERSE)
+    text1 = '我是你你'
+    text2 = '我你'
+    test_str1 = '|{:>12}|'.format(text1)
+    test_str2 = '|{:>12}|'.format(text2)
+    canvas.paint(test_str1)
+    canvas.paint(test_str2)
+    # canvas.insert_format([1, 1, 0], front = RED)
+    # canvas.insert_format([1, 1, 0], other = INVERSE)
+    # canvas.delete_format([1, 1, 4], other = INVERSE)
     # canvas.insert_format([1, 1, 2], front = BLUE)
     # canvas.insert_format([0, 1, 2], back = RED)
     # canvas.insert_format([1, 1, 2], back = RED)

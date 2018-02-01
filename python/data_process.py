@@ -4,6 +4,7 @@
 # data process
 
 import sys
+import config
 import lianjia
 import proxypool
 import stock
@@ -37,15 +38,14 @@ def main(argv):
         proxy_data.display_data()
     elif FLAGS.target == 'stock_market':
         stock_market_data = stock_market.StockMarketData()
-        # stock_market_data.process_market_data()  # TODO
-        stock_market_data.get_ad_ratios()
+        stock_market_data.process_market_data()  # TODO
+        # stock_market_data.get_ad_ratios()
     elif FLAGS.target == 'stock':
         if not FLAGS.stock_id:
             log.VLOG('choose a stock')
             return 
         stock_data = stock.StockData(FLAGS.stock_id)
-        # stock_data.display_data()  # TODO
-        log.INFO(stock_data.get_ad_ratio('2017.07.07'))
+        stock_data.display_data()
     else:
         log.VLOG(FLAGS.target)
         log.VLOG('error')

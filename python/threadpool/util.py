@@ -23,6 +23,7 @@ is_function
 '''
 
 def test_function(name = THREAD, count = [0]):
+    print('aaa')
     if name == THREAD:
         log.INFO('Hello World {} in thread {}'.format(count[0], threading.current_thread().getName()))
     elif name == PROCESS:

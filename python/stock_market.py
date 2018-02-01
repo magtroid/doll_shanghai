@@ -14,7 +14,6 @@ import proxypool
 import stock
 import tools
 import log
-import time  # TODO
 
 # scrap processing number
 _PROCESSING_NUMBER = 10
@@ -73,12 +72,9 @@ class StockMarket(object):
 
     # scrap stock data
     def get_stock_market_data(self):
-        self.__begin = time.time()
         self.__scrap_stock_market_data()
         self.__write_data_lib()
         log.VLOG('done stock market')
-        self.__end = time.time()
-        print('use time {}'.format(self.__end - self.__begin))
 
     def get_stock_map_list(self):
         map_list = dict()
@@ -181,35 +177,57 @@ _DEFAULT_FILE = 'crf_train_'
 
 # data process class
 class StockMarketData(object):
-    # public
-    #   process_market_data  # main function
-    #   get_ad_ratios
-    # private
+    '''
+    public
+      get_stock_data_async
+      select_stock_async
+      process_market_data  # main function
+      get_ad_ratios
+    private
+      __write_market_data
+    '''
 
     def __init__(self):
         self.__data_lib_file = './datalib/stock_list.lib'
         self.__disable_controler = True
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
         self.__stock_market_lib.load_data_lib()
-        self.__stock_market_class = [_ZS_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
+        self.__stock_market_class = [_SH_CLASS]  # _ZS_CLASS, _SH_CLASS , _SZ_CLASS, _CY_CLASS]
         self.__crf_file = _TRAINING_DIR + _DEFAULT_FILE + 'all.train'
+
+    def get_stock_data_async(self, lstock_code, begin, end):
+        stock_data = stock.StockData(lstock_code)
+        # stock_data_with_tape = stock_data.get_stock_data_with_tape(begin, end)
+        stock_crf_data = stock_data.display_data(begin, end)
+        return stock_crf_data
+
+    def select_stock_async(self, lstock_code, begin, end):
+        stock_data = stock.StockData(lstock_code)
+        select_stock_data = stock_data.select_stock(begin, end)
+        return select_stock_data
 
     # main function
     def process_market_data(self):
+        processingpoolmanager.new_processing(_PROCESSING_NUMBER)
         data = self.__stock_market_lib.get_data()
-        with tools.open_file(self.__crf_file) as fp:
-            for stock_class in self.__stock_market_class:
-                class_data = data[stock_class]
-                for stock_item in class_data.items():
-                    log.VLOG('process {} data'.format(stock_item[0]))
-                    if datalib.LINK_FEATURE not in stock_item[1] or \
-                       stock_item[1][datalib.LINK_FEATURE] == None:
-                        log.VLOG('data empty, try next one')
-                    else:
-                        lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
-                        stock_data = stock.StockData(lstock_code, fp = fp)
-                    stock_data.display_data()
-                    fp.writelines('\n')
+        (begin, end) = tools.get_date_duration()
+        for stock_class in self.__stock_market_class:
+            class_data = data[stock_class]
+            for stock_count, stock_item in enumerate(class_data.items()):
+                log.VLOG('process {} data'.format(stock_item[0]))
+                if datalib.LINK_FEATURE not in stock_item[1] or \
+                   stock_item[1][datalib.LINK_FEATURE] == None:
+                    log.VLOG('data empty, try next one')
+                    continue
+                else:
+                    lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
+                # processingpoolmanager.put_request(self.get_stock_data_async, args = [lstock_code, begin, end])
+                processingpoolmanager.put_request(self.select_stock_async, args = [lstock_code, begin, end])
+        result = processingpoolmanager.close_all_processing(result = True)
+        # self.__write_market_data(result)
+        # self.__write_crf_data(result)
+        # self.__write_select_stock(result)
+        # stock_data.display_data()
 
     # get ad ratios of all stock and sort
     def get_ad_ratios(self):
@@ -244,6 +262,26 @@ class StockMarketData(object):
                 for ranges in range_list:
                     strs += '\t%f' % stock_id[1][ranges]
                 fp.writelines('%s\n' % strs)
+
+    def __write_market_data(self, result):
+        with open('market_result', 'w') as fp:
+            for stock_id, stock_result in result:
+                r_str = stock_id
+                for stock_r in stock_result:
+                    r_str = '{}\t{} {}'.format(r_str, stock_r[stock.ADR_KEY], stock_r[stock.TAPE_ADR_KEY])
+                r_str = '{}\n'.format(r_str)
+                fp.writelines(r_str)
+
+    def __write_crf_data(self, result):
+        with open('crf_train_data_test', 'w') as fp:
+            for stock in result:
+                for day in stock:
+                    r_str = ''
+                    for feature in day:
+                        r_str = '{} {}'.format(r_str, feature)
+                    r_str = '{}\n'.format(r_str)
+                    fp.writelines(r_str)
+                fp.writelines('\n')
 
 if __name__ == '__main__':
     stock_market = StockMarket()

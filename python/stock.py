@@ -52,6 +52,9 @@ _TURN_OVER_KEY = 'turnover'
 
 _UNIT_STOCK_LEN = 15
 
+ADR_KEY = 'adr'
+TAPE_ADR_KEY = 'tadr'
+
 # data period
 _PERIOD_MINUTE    = None
 _PERIOD_DAY_5     = None
@@ -88,21 +91,23 @@ def parse_stock_code(code):
 
 # main class
 class Stock(object):
-    # public:
-    #   insert_stock_data
-    #   update_stock_data
-    #   get_stock_lib
-    #   lib_file
-    #   get_stock_data  # main function
-    #   write_stock_data
-    # private:
-    #   __parse_date
-    #   __parse_period_data
-    #   __write_data_lib
+    '''
+    public:
+      insert_stock_data
+      update_stock_data
+      get_stock_lib
+      lib_file
+      get_stock_data  # main function
+      write_stock_data
+    private:
+      __parse_date
+      __parse_period_data
+      __write_data_lib
 
-    # resource has two types:
-    #   1) string: stock id
-    #   2) dict:   stock lib
+    resource has two types:
+      1) string: stock id
+      2) dict:   stock lib
+    '''
     def __init__(self, resource, proxy_pool = None):
         self.__disable_controler = True  # TODO
         self.__stock_data_url = 'http://api.finance.ifeng.com'
@@ -237,9 +242,6 @@ class Stock(object):
         self.__stock_lib.write_data_lib(backup = False)
         self.__proxy_pool.write_data_lib()
 
-# const define
-_CMD_QUIT = 'qQnN'
-
 # training data dir
 _TRAINING_DIR = './datalib/crf/'
 
@@ -272,24 +274,29 @@ _KLINE_DETAIL = 'kline_detail'
 
 # data process class
 class StockData(object):
-    # public
-    #   display_data  # main function
-    #   get_ad_ratio
-    #   k_line
-    # private
-    #   __get_date_duration
-    #   __get_weekday_strategy
-    #   __form_kline_list
-    #   __get_kline_range
-    #   __update_skip_off
-    #   __draw_kline
-    #   __display_kline
-    #   __kline_detail
-    #   __apply_strategy
-    #   __gen_crf_data
-    #   __fetch_stock_data
-    #   __write_crf_data
-    def __init__(self, resource, fp = None):
+    '''
+    public
+      display_data  # main function
+      get_stock_data_with_tape
+      select_stock
+      stock_lib_data
+      get_ad_ratio
+      k_line
+    private
+      __get_weekday_strategy
+      __form_kline_list
+      __get_kline_range
+      __update_skip_off
+      __draw_kline
+      __display_kline
+      __kline_detail
+      __apply_strategy
+      __gen_crf_data
+      __oppotrend
+      __fetch_stock_data
+      __write_crf_data
+    '''
+    def __init__(self, resource):
         self.__status = _VALID
         self.__disable_controler = True
         if isinstance(resource, str):  # stock id
@@ -298,20 +305,53 @@ class StockData(object):
                 self.__status = _INVALID 
             self.__data_lib_file = STOCK_DIR + self.__stock_code + '.lib'
             self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
-            self.__stock_lib.load_data_lib()
-            if fp == None:
-                self.__fp = _TRAINING_DIR + _DEFAULT_FILE + self.__stock_code + '.train'
-            else:
-                self.__fp = fp
+            self.__stock_lib.load_data_lib(schedule = False)
         else:
             self.__status = _INVALID
         self.__canvas = canvas.CANVAS()
 
+    # return stock lib data
+    def stock_lib_data(self):
+        return self.__stock_lib.get_data()
+
     # data process with strategy or generate training data
-    def display_data(self):
-        data = self.__stock_lib.get_data()
-        # self.__apply_strategy(data[_DAY_KEY])
-        self.__gen_crf_data(data[_DAY_KEY])
+    def display_data(self, begin, end, data_key = _DAY_KEY):
+        # self.__apply_strategy(_DAY_KEY)
+        return self.__gen_crf_data(begin, end, data_key = data_key)
+        # self.__oppotrend(_DAY_KEY)
+
+    def get_stock_data_with_tape(self, begin, end, data_key = _DAY_KEY):
+        stock_data = []
+        tape_stock_id = 'sh000001'
+        data_stock = self.__stock_lib.get_data()[data_key]
+        tape_stock = StockData(tape_stock_id)
+        data_tape = tape_stock.stock_lib_data()[data_key]
+        date = begin
+        while not tools.date_compare(date, end) == tools.EQUAL:
+            date_str = tools.date_list_to_str(date)
+            if date_str in data_stock and date_str in data_tape:
+                cstock_data = dict()
+                stock_data_unit = data_stock[date_str]
+                tape_data_unit = data_tape[date_str]
+                stock_ratio = stock_data_unit[_ADVANCE_DECLINE_RATIO_KEY]
+                tape_ratio = tape_data_unit[_ADVANCE_DECLINE_RATIO_KEY]
+                cstock_data[_DATE_KEY] = date_str
+                cstock_data[ADR_KEY] = stock_ratio
+                cstock_data[TAPE_ADR_KEY] = tape_ratio
+                stock_data.append(cstock_data)
+            date = tools.get_date(1, date)
+        return stock_data
+
+    def select_stock(self, begin, end, data_key = _DAY_KEY):
+        select_stock_data = []
+        data_stock = self.__stock_lib.get_data()[data_key]
+        date = begin
+        while not tools.date_compare(date, end) == tools.EQUAL:
+            date_str = tools.date_list_to_str(date)
+            stock_data_unit = data_stock[date_str]
+            
+            date = tools.get_date(1, date)
+        return select_stock_data
 
     # calculate ad ratio from a target date
     def get_ad_ratio(self, date):
@@ -364,46 +404,6 @@ class StockData(object):
                     pass
                 offs = self.__update_skip_off(cursor, offs, max_kline, len(kline_list))
 
-    # get strategy duration
-    def __get_date_duration(self):
-        finished = False
-        while not finished:
-            log.VLOG('print a date duration (xxxx.xx.xx~yyyy.yy.yy/\d year/\d month/\d week)')
-            log.VLOG('\tor insert "n/q" to cancel')
-            date_range = mio.stdin()
-            if re.match('^\d+ year$', date_range):
-                day = common.YEAR_DAY * int(re.search('(\d+)', date_range).group(1))
-                start = tools.get_date(-day)
-                end = tools.get_date()
-            elif re.match('^\d+ month$', date_range):
-                day = common.MONTH_DAY * int(re.search('(\d+)', date_range).group(1))
-                start = tools.get_date(-day)
-                end = tools.get_date()
-            elif re.match('^\d+ week$', date_range):
-                day = common.WEEK_DAY * int(re.search('(\d+)', date_range).group(1))
-                start = tools.get_date(-day)
-                end = tools.get_date()
-            elif re.match('^\d{4}\.\d{2}\.\d{2}~\d{4}\.\d{2}\.\d{2}$', date_range):
-                start = list(map(int, date_range.split('~')[0].split('.')))
-                end = list(map(int, date_range.split('~')[1].split('.')))
-                if not tools.date_valid(start) or \
-                   not tools.date_valid(end) or \
-                   not tools.date_compare(start, end) == tools.LESS:
-                    log.VLOG('insert date invalid')
-                    continue
-            elif date_range in _CMD_QUIT:
-                start = []
-                end = []
-            else:
-                log.VLOG('not support this type')
-                continue
-            finished = True
-        if len(start) is not 0 and len(end) is not 0:
-            log.VLOG('strategy date range:{start} to {end}'.format(
-                     start = ' '.join(list(map(str, start))),
-                     end = ' '.join(list(map(str, end)))))
-        return [start, end]
-
     # get weekday strategy, weekday in weekday out
     def __get_weekday_strategy(self):
         finished = False
@@ -413,7 +413,7 @@ class StockData(object):
             weekday = mio.stdin()
             if re.match('^[0-6] [0-6]$', weekday):
                 [weekday_in, weekday_out] = list(map(int, re.search('^(\d \d)$', weekday).group(1).split()))
-            elif weekday in _CMD_QUIT:
+            elif weekday in common.CMD_QUIT:
                 weekday_in = -1
                 weekday_out = -1
             else:
@@ -529,11 +529,12 @@ class StockData(object):
         self.__canvas.paint('ADR  : {:6.2f}%'.format(data[_ADR_OFF]), name = _KLINE_DETAIL)
 
     # use strategy for specific day in and out
-    def __apply_strategy(self, data):
+    def __apply_strategy(self, data_key):
+        data = self.__stock_lib.get_data()[data_key]
         principal = 100.0
         service_charge = 0.0
         state = _EMPTY_STATE
-        (start, end) = self.__get_date_duration()
+        (start, end) = tools.get_date_duration()
         (weekday_in, weekday_out) = self.__get_weekday_strategy()
         if len(start) is 0 or len(end) is 0 or \
            weekday_in is -1 or weekday_out is -1:
@@ -564,11 +565,10 @@ class StockData(object):
         log.VLOG('total service charge is {service:.2f}%'.format(service = service_charge))
 
     # generate training data for crf model
-    def __gen_crf_data(self, data):
-        (start, end) = self.__get_date_duration()
-        if len(start) is 0 or len(end) is 0:
-            return
-        date = start
+    def __gen_crf_data(self, begin, end, data_key = _DAY_KEY):
+        crf_least_data_num = 30
+        data = self.__stock_lib.get_data()[data_key]
+        date = begin
         train_list = []
         while not tools.date_compare(date, end) == tools.EQUAL:
             date_str = tools.date_list_to_str(date)
@@ -578,7 +578,7 @@ class StockData(object):
                 data_unit = data[date_str]
                 if _TURN_OVER_KEY not in data_unit:
                     f2 = 0.0
-                elif data_unit[_TURN_OVER_KEY] == 0:
+                elif data_unit[_TRANSACTION_KEY] == 0:
                     continue
                 else:
                     f2 = data_unit[_TURN_OVER_KEY]
@@ -606,24 +606,55 @@ class StockData(object):
                 train_vector.append(f7)  # aver 5 trans ad ratio
                 train_vector.append(f8)  # aver 10 trans ad ratio
                 train_vector.append(f9)  # aver 20 trans ad ratio
-                if len(train_list) > 0:
-                    train_list[-1].append(train_vector[0])  # next day
-                if len(train_list) > 2:
-                    train_list[-3].append(train_vector[0] + train_list[-1][0] + train_list[-2][0])  # next 3 day
+                # if len(train_list) > 0:
+                #     train_list[-1].append(train_vector[0])  # next day
+                # if len(train_list) > 2:
+                #     train_list[-3].append(train_vector[0] + train_list[-1][0] + train_list[-2][0])  # next 3 day
                 if len(train_list) > 4:
-                    train_list[-5].append(train_vector[0] + train_list[-1][0] + train_list[-2][0] + train_list[-3][0] + train_list[-4][0])  # next 5 day
-
+                    train_list[-5].append((100 + train_vector[0]) / 100 * (100 + train_list[-1][0]) / 100 * (100 + train_list[-2][0]) / 100 * (100 + train_list[-3][0]) / 100 * (100 + train_list[-4][0]))  # next 5 day
                 train_list.append(train_vector)
             date = tools.get_date(1, date)
-        # train_list = train_list[20:]
-        train_list_final = []
-        for train_vector in train_list:
-            train_list_final.append([self.__fetch_stock_data(x) for x in train_vector])
-        if isinstance(self.__fp, str):
-            with tools.open_file(self.__fp) as fp:
-                self.__write_crf_data(train_list_final, fp)
-        else:
-            self.__write_crf_data(train_list_final, self.__fp)
+        if len(train_list) < crf_least_data_num:
+            return []
+        train_list.pop()
+        train_list.pop()
+        train_list.pop()
+        train_list.pop()
+        return train_list
+
+    def __oppotrend(self, data_key):
+        (start, end) = tools.get_date_duration()
+        if len(start) == 0 or len(end) == 0:
+            return
+        stock_data = self.get_stock_data_with_tape(start, end, data_key = data_key)
+        oppo_list = []
+        oppo_unit = []
+        for cstock_data in stock_data:
+            stock_ratio = cstock_data[ADR_KEY]
+            tape_ratio = cstock_data[TAPE_ADR_KEY]
+            expect_ratio = tape_ratio * 3
+            delta = stock_ratio - expect_ratio
+            if expect_ratio > 0:
+                weight = delta / expect_ratio
+            else:
+                weight = - delta / expect_ratio
+            if weight > 1:
+                judge = 'oppo_raise'
+            elif weight < -1:
+                judge = 'oppo_down'
+            else:
+                judge = ''
+
+            if judge:
+                if not oppo_unit:
+                    oppo_unit.append(cstock_data[_DATE_KEY])
+            if oppo_unit:
+                oppo_unit.append('{}({})'.format(stock_ratio, tape_ratio))
+            if not judge and oppo_unit:
+                oppo_list.append(oppo_unit[:])
+                oppo_unit.clear()
+        for oppo_u in oppo_list:
+            print(oppo_u)
 
     # fetch stock data into int
     def __fetch_stock_data(self, data):

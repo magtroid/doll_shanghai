@@ -7,21 +7,25 @@ monitor stock and process
 '''
 
 # import library
+import time
+import copy
+import re
+
 import canvas
 import controler
 import common
-import copy
 import datalib
 import log
 import malarm
 import mio
 import proxypool
-import re
 import stock_market
 import tools
 
 # const define
 _URL_KEY = 'url'
+_NAME_KEY = 'stock_name'
+_STOCK_NAME_LEN = 4
 
 _SLEEP_TIME = 3.0
 _REFRESH_STEP = 0.1
@@ -64,6 +68,7 @@ _SERVICE_CHARGE_SELL = 1.75
 _SERVICE_CHARGE_BUY = 0.75
 
 _DISPLAY_NUM_PER_LINE = 4
+_STOCK_HEAD_BUF = 2
 # display const index
 _PROPERTY_INDEX = 0
 _DETAIL_INDEX = 1
@@ -79,6 +84,9 @@ _DETAIL_STRUCT = {1 : [30, [  0, 30, 50]],
                   2 : [30, [ 50, 30, 50]],
                   3 : [30, [100, 30, 50]],
                   } 
+
+_SELECT_SIGN = '@'
+_SELECT_ID_KEY = 'stock_id'
 
 # main class
 class StockMonitor(object):
@@ -109,6 +117,7 @@ class StockMonitor(object):
     #   __get_last_virtual_property
     #   __property_display
     #   __stop_alarm
+    #   __display_cursor_refresh
     #   __display_price
     #   __display_market
     #   __write_data_lib
@@ -136,14 +145,15 @@ class StockMonitor(object):
         self.__get_page_type = common.URL_WRITE
         self.__url = 'http://api.finance.ifeng.com/amin/?code='
         self.__type = '&type=now'
-        self.__max_stock_monitor = 8
+        self.__max_stock_monitor = 15
         self.__system_command = ['quit', 'S', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
-        self.__view_command = ['S', common.UP_KEY, common.DOWN_KEY]
+        self.__view_command = ['S', common.UP_KEY, common.DOWN_KEY, '+', '-', '\n']
         self.__view_model = True
         self.__stock_map_list = dict()
         self.__init_stock_map_list()
         self.__display_feat = [False, dict()]  # 1:property 2:detail_stock
         self.__display_feat_len = 58
+        self.__alarm = []
 
         self.__stock_list = dict()  # TODO load stock list from datalib  value is [id, stock]
         self.__init_stock_list()
@@ -153,10 +163,10 @@ class StockMonitor(object):
 
     # monitor stock and property
     def stock_monitor(self):
-        self.__control = malarm.MAlarm(_SLEEP_TIME, func = self.__command_control, rtime = _REFRESH_STEP)
-        self.__update = malarm.MAlarm(_SLEEP_TIME, func = self.__display_market, rtime = _SLEEP_TIME)
+        self.__alarm.append(malarm.MAlarm(_SLEEP_TIME, func = self.__command_control, rtime = _REFRESH_STEP))
+        self.__alarm.append(malarm.MAlarm(_SLEEP_TIME, func = self.__display_market, rtime = _SLEEP_TIME))
         while self.__status == _STATUS_ALIVE:
-            pass
+            time.sleep(_REFRESH_STEP)
         self.__stop_alarm()
         self.__write_data_lib()
         log.VLOG('done monitor')
@@ -169,7 +179,7 @@ class StockMonitor(object):
             for item in stocks.items():
                 self.__insert_stock_list(item[0])
         select_list = self.__select_lib.get_data()
-        for iselect in sorted(select_list.items(), key = lambda d:d[1]):
+        for iselect in sorted(select_list.items(), key = lambda d:d[0]):
             self.__insert_stock_list(iselect[0])
 
     def __insert_stock_list(self, stock_id, check = False):
@@ -265,9 +275,22 @@ class StockMonitor(object):
         elif command == common.UP_KEY:
             if self.__stock_list_cursor > 0:
                 self.__stock_list_cursor -= 1
+                self.__display_cursor_refresh(self.__stock_list_cursor + 1, self.__stock_list_cursor)
         elif command == common.DOWN_KEY:
             if self.__stock_list_cursor < len(self.__stock_list) - 1:
                 self.__stock_list_cursor += 1
+                self.__display_cursor_refresh(self.__stock_list_cursor - 1, self.__stock_list_cursor)
+        elif command == '+':
+            stock_id = sorted(self.__stock_list.items(), key = lambda d:d[1][_LIST_ID_OFF])[self.__stock_list_cursor][0]
+            select_stock = dict()
+            select_stock[_SELECT_ID_KEY] = stock_id
+            self.__select_lib.insert_data(common.EMPTY_KEY, select_stock, _SELECT_ID_KEY)
+        elif command == '-':
+            stock_id = sorted(self.__stock_list.items(), key = lambda d:d[1][_LIST_ID_OFF])[self.__stock_list_cursor][0]
+            self.__select_lib.delete_data(datalib.form_lkey([stock_id]))
+        elif command == '\n':
+            stock_id = sorted(self.__stock_list.items(), key = lambda d:d[1][_LIST_ID_OFF])[self.__stock_list_cursor][0]
+            self.__set_detail_list(stock_id)
 
     # process command in system_command
     def __process_system_command(self, command, argv = None):
@@ -482,6 +505,14 @@ class StockMonitor(object):
     def __new_stock(self, stock_id):
         stock = dict()
         stock[_URL_KEY] = self.__url + stock_id + self.__type
+        if stock_id in self.__stock_map_list.values():
+            stock_name = list(self.__stock_map_list.keys())[list(self.__stock_map_list.values()).index(stock_id)]
+            if len(stock_name) < _STOCK_NAME_LEN:
+                blank = ' ' * (_STOCK_NAME_LEN - len(stock_name))
+                stock_name = '{}{}{}'.format(blank, stock_name, blank)
+        else:
+            stock_name = ' ' * _STOCK_NAME_LEN * common.MAND_LENGTH
+        stock[_NAME_KEY] = stock_name
         stock[_LAST_CLOSE] = 0.0
         stock[_LAST_TIME] = []
         stock[_LAST_PRICE] = []
@@ -565,15 +596,20 @@ class StockMonitor(object):
         stock_data = self.__get_property_stock()
         for stock in stock_data.items():
             if _STOCK_PRICE_KEY in stock[1]:
-                self.__canvas.paint('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format( \
-                                     stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY], \
-                                     stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY], \
-                                     stock[1][_STOCK_PCOST_KEY], \
-                                     (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), name = _PROPERTY)
+                self.__canvas.paint('   stock: {0} price: {1:-6.2f} number: {2:-6} value: {3:-10.2f} pcost: {4:-5.2f} ratio: {5:-6.2f}%'.format(
+                                    stock[1][_STOCK_ID_KEY], stock[1][_STOCK_PRICE_KEY],
+                                    stock[1][_STOCK_NUM_KEY], stock[1][_STOCK_PRICE_KEY] * stock[1][_STOCK_NUM_KEY],
+                                    stock[1][_STOCK_PCOST_KEY],
+                                    (stock[1][_STOCK_PRICE_KEY] / stock[1][_STOCK_PCOST_KEY] - 1) * 100), name = _PROPERTY)
 
     def __stop_alarm(self):
-        self.__control.stop()
-        self.__update.stop()
+        for c_alarm in self.__alarm:
+            c_alarm.stop()
+        self.__alarm.clear()
+
+    def __display_cursor_refresh(self, pre, cur):
+        self.__canvas.delete_format([_STOCK_HEAD_BUF + pre, 0, 0], other = canvas.HIGHLIGHT)
+        self.__canvas.insert_format([_STOCK_HEAD_BUF + cur, 0, 0], other = canvas.HIGHLIGHT)
 
     # display each stock price
     def __display_price(self):
@@ -587,6 +623,7 @@ class StockMonitor(object):
         for n, stock_item in enumerate(sorted(self.__stock_list.items(), key = lambda d:d[1][_LIST_ID_OFF])):
             stock_id = stock_item[0]
             stock_data = stock_item[1][_LIST_DATA_OFF]
+            stock_name = stock_data[_NAME_KEY]
             response = self.__proxy_pool.get_page(stock_data[_URL_KEY])
             # update property with last price if suspended
             if len(response) == 0:
@@ -611,11 +648,14 @@ class StockMonitor(object):
                 stock_data[_LAST_ADR][-1] = crate
                 stock_data[_LAST_TRANS][-1] = ctransaction
 
-            stock_price = '{sid:2d} | {stock_id} {price:7.2f} {rate:7.2f} {trans:7d}'.format(sid = n + 1,
-                                                                                             stock_id = stock_id,
-                                                                                             price = cprice,
-                                                                                             rate = crate,
-                                                                                             trans = transaction)
+            stock_price = '{sid:2d} | {stock_id} {stock_name} {price:7.2f} {rate:7.2f} {trans:7d}'.format(sid = n + 1,
+                                                                                                          stock_id = stock_id,
+                                                                                                          stock_name = stock_name,
+                                                                                                          price = cprice,
+                                                                                                          rate = crate,
+                                                                                                          trans = transaction)
+            if self.__select_lib.lhas_key(datalib.form_lkey([datalib.DATA_KEY, stock_id])):
+                stock_price = '{} {}'.format(stock_price, _SELECT_SIGN)
             if n == self.__stock_list_cursor:
                 self.__canvas.paint(stock_price, other = canvas.HIGHLIGHT)
             else:
@@ -642,7 +682,7 @@ class StockMonitor(object):
         self.__display_price()
         for stock_id in self.__display_feat[_DETAIL_INDEX]:
             self.__show_detail(stock_id)
-        self.__canvas.display()
+        self.__canvas.display()  # DEBUG
 
     # write data lib
     def __write_data_lib(self):

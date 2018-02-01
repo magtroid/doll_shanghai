@@ -8,7 +8,6 @@ Magtroid @ 2017-10-31 11:25
 # import library
 import sys
 import select
-import threading  # TODO
 import re
 import time
 
@@ -192,7 +191,6 @@ def dfd():
         log.INFO('what you type is: {}'.format(repr(command)))
 
 if __name__ == '__main__':
-    import threading
     while True:
         print('start to type in you command')
         command = kbhit(one_hit = True)

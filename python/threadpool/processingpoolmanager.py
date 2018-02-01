@@ -83,11 +83,15 @@ def close_processing(number = 0, name = _NAME_BASE):
         temp_processing_pool.close()
         temp_processing_pool.join()
 
-def close_all_processing():
+def close_all_processing(result = False):
+    processing_result = []
     for name, processing_pool in list(processing_pool_manager.items()):
         processing_pool.close()
         processing_pool.join()
         del processing_pool_manager[name]
+        if result:
+            processing_result.extend(processing_pool.get_result())
+    return [result.get() for result in processing_result]
 
 '''
 def terminate_processing(name, number):
@@ -97,19 +101,11 @@ def terminate_all_processing():
 def put_request(func, args = None, kwargs = None,
                 call_back = None, cargs = None, ckwargs = None,
                 name = _NAME_BASE):
-    # message = False
-    # while threadpoolmanager.is_locked():
-    #     if not message:
-    #         log.INFO('wait for create processing typing')
-    #         message = True
-    #     pass
-    # set_lock()
     if util.is_function(func) and name in processing_pool_manager:
         try:
             processing_pool_manager[name].process(func, args = args, kwargs = kwargs)
         except:
             log.INFO('processing pool {} is not accessable'.format(name))
-    # set_unlock()
 
 # for test
 def pp():

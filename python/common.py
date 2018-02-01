@@ -14,6 +14,8 @@ URL_READ = '__read__'
 URL_READ_THROUGH = '__read_through__'
 # url exist
 URL_EXIST = '__url_exists__'
+# mandarin length
+MAND_LENGTH = 2
 
 # html parser
 HTML_PARSER = 'html.parser'
@@ -27,6 +29,8 @@ NONE = '__none__'
 EMPTY_KEY = ''
 # backspace key
 BACKSPACE_KEY = '\n'
+# quit command
+CMD_QUIT = 'qQnN'
 
 # enum month
 class Month(Enum):

@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import log
+import time
 
 # login files
 import lianjia
@@ -40,6 +41,7 @@ def main(argv):
         log.INFO('%s\nUsage: %s ARGVS\n%s' % (e, sys.argv[0], FLAGS))
     log.set_log_level(int(FLAGS.v))
 
+    begin = time.time()
     if FLAGS.target == 'zhihu':
         zhihu_login = zhihu.ZhihuLogin()
         zhihu_login.login(FLAGS.account, FLAGS.password)
@@ -72,6 +74,8 @@ def main(argv):
         log.VLOG(FLAGS.target)
         log.VLOG('error')
 
+    end = time.time()
+    log.INFO('use time {}'.format(end - begin))
     log.VLOG('done scrap')
 
 def ass():

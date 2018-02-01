@@ -7,6 +7,7 @@ Magtroid @ 2017-06-26 15:58
 
 # import library
 from datetime import datetime, timedelta
+import common
 import log
 import mmath
 import mio
@@ -43,6 +44,7 @@ TIME_SECOND = 5
 #   get_stair_format
 #   get_terminal_size
 #   is_leap_year
+#   get_date_duration
 #   get_time_str
 #   get_date
 #   get_weekday
@@ -99,6 +101,44 @@ def is_leap_year(year):
         return False
     else:
         return True
+
+# get duration
+def get_date_duration():
+    finished = False
+    while not finished:
+        log.VLOG('print a date duration (xxxx.xx.xx~yyyy.yy.yy/\d year/\d month/\d week)')
+        log.VLOG('\tor insert "n/q" to cancel')
+        date_range = mio.stdin()
+        if re.match('^\d+ year$', date_range):
+            day = common.YEAR_DAY * int(re.search('(\d+)', date_range).group(1))
+            start = get_date(-day)
+            end = get_date()
+        elif re.match('^\d+ month$', date_range):
+            day = common.MONTH_DAY * int(re.search('(\d+)', date_range).group(1))
+            start = get_date(-day)
+            end = get_date()
+        elif re.match('^\d+ week$', date_range):
+            day = common.WEEK_DAY * int(re.search('(\d+)', date_range).group(1))
+            start = get_date(-day)
+            end = get_date()
+        elif re.match('^\d{4}\.\d{2}\.\d{2}~\d{4}\.\d{2}\.\d{2}$', date_range):
+            start = list(map(int, date_range.split('~')[0].split('.')))
+            end = list(map(int, date_range.split('~')[1].split('.')))
+            if not date_valid(start) or not date_valid(end) or not date_compare(start, end) == LESS:
+                log.VLOG('insert date invalid')
+                continue
+        elif date_range in common.CMD_QUIT:
+            start = []
+            end = []
+        else:
+            log.VLOG('not support this type')
+            continue
+        finished = True
+    if len(start) is not 0 and len(end) is not 0:
+        log.VLOG('strategy date range:{start} to {end}'.format(
+                 start = ' '.join(list(map(str, start))),
+                 end = ' '.join(list(map(str, end)))))
+    return [start, end]
 
 # return current time, str format
 def get_time_str(start, end, spliter):
@@ -196,7 +236,6 @@ def date_compare(date1, date2):
 
 # convert list data into str, xxxx.xx.xx format
 def date_list_to_str(date):
-    print(date)
     date_str = str(date[0])
     if len(date) > 1:
         date_str += '.0' + str(date[1]) if date[1] < 10 else '.' + str(date[1])
