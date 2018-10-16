@@ -468,7 +468,7 @@ class DataLib(object):
                 self.__write_data(data_deep, id_prefix_deep, fp_out)
 
 # const define
-_COMMOND_MODEL = '__command__'
+_COMMAND_MODEL = '__command__'
 _FILTER_MODEL  = '__filter__'
 
 # datalib manager
@@ -604,10 +604,10 @@ class DataLibManager(object):
         cur_lib = target_lib.get_data(form_lkey(lkey_path))
         skip_off = 0
         self.__level_display(target_lib = target_lib)
-        model = _COMMOND_MODEL
+        model = _COMMAND_MODEL
         filter_dict = None
         while True:
-            if model == _COMMOND_MODEL:
+            if model == _COMMAND_MODEL:
                 command = mio.choose_command(command_list, block = False, print_log = False)
                 cur_target_key = list(cur_lib)[offs_path[-1]]
                 if command == 'up':
@@ -637,7 +637,7 @@ class DataLibManager(object):
                     continue
                 elif command == 'esc':
                     filter_str = ''
-                    model = _COMMOND_MODEL
+                    model = _COMMAND_MODEL
                 elif command == 'e':
                     if not isinstance(cur_lib[cur_target_key], dict):
                         p_type = type(cur_lib[cur_target_key])
@@ -672,7 +672,7 @@ class DataLibManager(object):
                     offs_path[-1] = 0
                     filter_str = ''
                     filter_dict = None
-                    model = _COMMOND_MODEL
+                    model = _COMMAND_MODEL
                 elif command == 'up':
                     if offs_path[-1] > 0:
                         offs_path[-1] -= 1
@@ -683,14 +683,14 @@ class DataLibManager(object):
                     if cur_target_key is not None and isinstance(cur_lib[cur_target_key], dict):
                         filter_str = ''
                         filter_dict = None
-                        model = _COMMOND_MODEL
+                        model = _COMMAND_MODEL
                         offs_path[-1] = cur_target_off
                         lkey_path.append(cur_target_key)
                         offs_path.append(0)
                     elif cur_target_key == LINK_FEATURE:
                         filter_str = ''
                         filter_dict = None
-                        model = _COMMOND_MODEL
+                        model = _COMMAND_MODEL
                         offs_path[-1] = cur_target_off
                         sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
                         sub_lib.load_data_lib(schedule = False)
@@ -699,7 +699,7 @@ class DataLibManager(object):
                     if len(offs_path) > 1:
                         filter_str = ''
                         filter_dict = None
-                        model = _COMMOND_MODEL
+                        model = _COMMAND_MODEL
                         lkey_path.pop()
                         offs_path.pop()
                 else:

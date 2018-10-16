@@ -73,6 +73,13 @@ _HISTORY_INTERRUPT = 'interrupt'
 # filter domain
 _DOMAIN_FILTER = ['燕郊', '香河']
 
+# date special word
+_DATE_SPECIAL_WORD = '近30天内成交'
+
+# page try time
+_PAGE_MAX_TRY_TIMES = 5
+_PAGE_WAIT_TIME = [5, 5, 10, 10, 30]
+
 # main class
 class LianJia(object):
     # public:
@@ -116,6 +123,7 @@ class LianJia(object):
         self.__get_data_duration()
         self.__new_data_num = 0
         self.__new_data_tail = 0  # for check if data enough to write
+        self.__latest_month_deal = 0  # latest deal for one month
         self.__stop_threshold = _STOP_THRESHOLD
         self.__go_on = self.__stop_threshold  # 0 for stop, 1 for stop region, more for go on
         self.__get_page_type = common.URL_WRITE
@@ -171,6 +179,7 @@ class LianJia(object):
         log.VLOG('{} ~ {} update {} deals'.format(self.__start_date, self.__end_date, self.__new_data_num))
         for sregion in sorted(self.__region.items(), key=lambda d:d[1][_REGION_NUM_KEY], reverse=True):
             log.VLOG('{} update {} deals'.format(sregion[1][_REGION_NAME_KEY], sregion[1][_REGION_NUM_KEY]))
+        log.VLOG('deal number in latest one month: {}'.format(self.__latest_month_deal))
 
         log.VLOG('finished write data')
         write_config = _HISTORY_INTERRUPT if not self.__go_on else _HISTORY_FINISH
@@ -354,9 +363,15 @@ class LianJia(object):
                                                                                          region = region_index[_INDEX_REGION_KEY],
                                                                                          subregion = region_index[_INDEX_SUBREGION_KEY]))
             data_url = tools.parse_href_url('/pg%d' % page, url)
-            if not self.__get_data(data_url, region_index):
-                self.__go_on = _STOP_ALL
-                return
+            try_time = 0
+            while not self.__get_data(data_url, region_index):
+                if try_time < _PAGE_MAX_TRY_TIMES:
+                    log.VLOG('failed to get page data, wait {} s and try again'.format(_PAGE_WAIT_TIME[try_time]))
+                    tools.sleep(_PAGE_WAIT_TIME[try_time])
+                    try_time += 1
+                else:
+                    self.__go_on = _STOP_ALL
+                    return
             self.__check_write_data()
             if self.__go_on <= _STOP_SUBREGION:
                 log.VLOG('subregion finished {} '.format(region_index[_INDEX_SUBREGION_KEY]))
@@ -382,8 +397,7 @@ class LianJia(object):
             log.VLOG('failed to get url page: {}'.format(url))
             return False
         else:  # success to get page
-            self.__parse_data(page, region_index)
-            return True
+            return self.__parse_data(page, region_index)
 
     # parse data page to get lianjia data lib
     def __parse_data(self, page, region_index):
@@ -391,14 +405,17 @@ class LianJia(object):
         flag_all_date_out = True
         data_elements = soup.select('.listContent li')
         log.VLOG('page data number {}'.format(len(data_elements)))
+        if len(data_elements) == 0:
+            return False
         for data_element in data_elements:
             data_element_a = data_element.a
             data_element_div = data_element.div
             lianjia_unit = dict()
             lianjia_unit[_ID_KEY] = str(re.search('(\w*).html', data_element_a[common.HREF_KEY]).group(1))
             # filter mask
-            if len(data_element_div.select('.dealDate')) == 0:
+            if len(data_element_div.select('.dealDate')) == 0 or _DATE_SPECIAL_WORD == data_element_div.select('.dealDate')[0].get_text():
                 log.VLOG('masked for 1 month limit')
+                self.__latest_month_deal += 1
                 continue
             lianjia_unit[_DATE_KEY] = list(map(int, data_element_div.select('.dealDate')[0].get_text().split('.')))
 
@@ -407,12 +424,14 @@ class LianJia(object):
                 log.VLOG('not in search range {data_date} ({begin_date} ~ {end_date})'.format(data_date = lianjia_unit[_DATE_KEY],
                                                                                               begin_date = self.__start_date,
                                                                                               end_date = self.__end_date))
+                if flag_all_date_out and not tools.date_compare(lianjia_unit[_DATE_KEY], self.__start_date) == tools.LESS:
+                    flag_all_date_out = False
                 continue
             flag_all_date_out = False
 
             # if exists data
             if self.__lianjia_lib.lhas_key(datalib.form_lkey([datalib.DATA_KEY, lianjia_unit[_ID_KEY]])):
-                log.VLOG('id exist')
+                log.VLOG('id exist: {}'.format(lianjia_unit[_ID_KEY]))
                 continue
 
             lianjia_unit[_REGION_KEY] = region_index[_INDEX_REGION_KEY]
@@ -435,6 +454,7 @@ class LianJia(object):
                 self.__go_on -= 1
             else:
                 self.__go_on = self.__stop_threshold
+        return True
 
     # form lib history to store last scrap time, data range, data number
     def __form_lib_history(self, config):
@@ -494,7 +514,7 @@ class LianJiaData(object):
         self.__add_date_range(2015, [1, 12])
         self.__add_date_range(2016, [1, 12])
         self.__add_date_range(2017, [1, 12])
-        self.__add_date_range(2018, [1, 6])
+        self.__add_date_range(2018, [1, 12])
 
     # display data
     # command to choose region

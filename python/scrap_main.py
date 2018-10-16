@@ -51,7 +51,7 @@ def main(argv):
             return
         lianjia_login = lianjia.LianJia(FLAGS.city)
         lianjia_login.get_lianjia_data()
-    elif FLAGS.target == 'proxy-cixi':
+    elif FLAGS.target == 'proxy-xici':
         proxy_data = proxy.Proxy()
         proxy_data.get_proxy()
     elif FLAGS.target == 'proxy-66ip':

@@ -38,8 +38,8 @@ def main(argv):
         proxy_data.display_data()
     elif FLAGS.target == 'stock_market':
         stock_market_data = stock_market.StockMarketData()
-        stock_market_data.process_market_data()  # TODO
-        # stock_market_data.get_ad_ratios()
+        # stock_market_data.process_market_data()  # TODO
+        stock_market_data.get_ad_ratios()
     elif FLAGS.target == 'stock':
         if not FLAGS.stock_id:
             log.VLOG('choose a stock')
