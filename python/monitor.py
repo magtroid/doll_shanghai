@@ -26,6 +26,7 @@ import tools
 _URL_KEY = 'url'
 _NAME_KEY = 'stock_name'
 _STOCK_NAME_LEN = 4
+_DEFAULT_USER = 'zz'
 
 _SLEEP_TIME = 3.0
 _REFRESH_STEP = 0.1
@@ -72,18 +73,21 @@ _STOCK_HEAD_BUF = 2
 # display const index
 _PROPERTY_INDEX = 0
 _DETAIL_INDEX = 1
+_F10_INDEX = 2
 
 # canvas area list
 _AREA_Y_KEY = 0
 _AREA_S_KEY = 1
 _PROPERTY = 'property'
 _DETAIL = 'detail'
+_F10 = 'f10'
 # area structure list
 _PROPERTY_STRUCT = [18, [0, 10, 100]]
 _DETAIL_STRUCT = {1 : [30, [  0, 30, 50]],
                   2 : [30, [ 50, 30, 50]],
                   3 : [30, [100, 30, 50]],
                   } 
+_F10_STRUCT = [30, [150, 100, 100]]
 
 _SELECT_SIGN = '@'
 _SELECT_ID_KEY = 'stock_id'
@@ -108,7 +112,9 @@ class StockMonitor(object):
     #   __buy_stock
     #   __sell_stock
     #   __set_detail_list
+    #   __set_stock_f10
     #   __show_detail
+    #   __show_f10
     #   __new_stock
     #   __new_action
     #   __stock_history_append
@@ -122,14 +128,18 @@ class StockMonitor(object):
     #   __display_market
     #   __write_data_lib
     
-    def __init__(self, proxy_pool = None):
+    def __init__(self, user = None, proxy_pool = None):
+        if user == None or user == '':
+            self.__user = _DEFAULT_USER
+        else:
+            self.__user = user
         if proxy_pool == None:
             self.__proxy_pool = proxypool.ProxyPool()
         else:
             self.__proxy_pool = proxy_pool
         self.__proxy_pool.set_threshold(20000)
-        self.__data_lib_file = './datalib/property.lib'
-        self.__select_lib_file = './datalib/select_list.lib'
+        self.__data_lib_file = './datalib/' + self.__user + '_property.lib'
+        self.__select_lib_file = './datalib/' + self.__user + '_select_list.lib'
         self.__disable_controler = False
         self.__property_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
         self.__property_lib.load_data_lib()
@@ -147,7 +157,7 @@ class StockMonitor(object):
         self.__type = '&type=now'
         self.__max_stock_monitor = 15
         self.__system_command = ['quit', 'S', 'q', 'Q', 'buy', 'sell', 'in', 'out', 'd', 'detail', 'show']
-        self.__view_command = ['S', common.UP_KEY, common.DOWN_KEY, '+', '-', '\n']
+        self.__view_command = ['S', common.UP_KEY, common.DOWN_KEY, common.F10_KEY, '+', '-', '\n']
         self.__view_model = True
         self.__stock_map_list = dict()
         self.__init_stock_map_list()
@@ -198,6 +208,7 @@ class StockMonitor(object):
 
     def __init_canvas_area(self):
         self.__canvas.new_area(_PROPERTY_STRUCT[_AREA_S_KEY:], line = _PROPERTY_STRUCT[_AREA_Y_KEY], name = _PROPERTY)
+        # self.__canvas.new_area(_F10_STRUCT[_AREA_S_KEY:], line = _F10_STRUCT[_AREA_Y_KEY], name = _F10)
 
     # make a stock map list between name and id
     def __init_stock_map_list(self):
@@ -291,6 +302,9 @@ class StockMonitor(object):
         elif command == '\n':
             stock_id = sorted(self.__stock_list.items(), key = lambda d:d[1][_LIST_ID_OFF])[self.__stock_list_cursor][0]
             self.__set_detail_list(stock_id)
+        elif command == common.F10_KEY:
+            stock_id = sorted(self.__stock_list.items(), key = lambda d:d[1][_LIST_ID_OFF])[self.__stock_list_cursor][0]
+            self.__set_stock_f10(stock_id)
 
     # process command in system_command
     def __process_system_command(self, command, argv = None):
@@ -459,6 +473,25 @@ class StockMonitor(object):
         else:
             log.VLOG('no such stock {0}'.format(stock_id))
 
+    # set stock f10 information
+    def __set_stock_f10(self, stock_id = None):
+        if stock_id is None:
+            log.VLOG('insert stock id')
+            stock_id = mio.stdin()
+        if stock_id in self.__stock_map_list:
+            stock_id = self.__stock_map_list[stock_id]
+        elif re.match('\d', stock_id):
+            stock_id = int(stock_id) - 1
+            if stock_id >= 0 and stock_id < len(self.__stock_list):
+                stock_id = list(self.__stock_list.keys())[stock_id]
+        if stock_id in self.__stock_list:
+            if self.__display_feat[_F10_INDEX] == stock_id:
+                self.__display_feat[_F10_INDEX] = ''
+            else:
+                self.__display_feat[_F10_INDEX] = stock_id
+        else:
+            log.VLOG('no such stock {0}'.format(stock_id))
+
     # show five range detail of target stock
     def __show_detail(self, stock_id):
         if stock_id not in self.__stock_list:
@@ -500,6 +533,15 @@ class StockMonitor(object):
                 self.__canvas.paint('{0:6.2f}: {1:8d}'.format(price, transaction), front = color, name = stock_id)
             else:
                 self.__canvas.paint('{0:>6s}: {1:8d}'.format('--.--', transaction), name = stock_id)
+
+    # show f10 of one stock
+    def __show_f10(self):
+        stock_id = self.__display_feat[_F10_INDEX]
+        if stock_id not in self.__stock_list:
+            return
+        # TODO
+        # stock_data = StockData(stock_id)
+        # stock_data.k_line()
 
     # create a new stock to monitor
     def __new_stock(self, stock_id):
@@ -682,6 +724,8 @@ class StockMonitor(object):
         self.__display_price()
         for stock_id in self.__display_feat[_DETAIL_INDEX]:
             self.__show_detail(stock_id)
+        # if self.__display_feat[_F10_INDEX] != '':
+        #     self.__show_f10()
         self.__canvas.display()  # DEBUG
 
     # write data lib

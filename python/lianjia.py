@@ -97,6 +97,7 @@ class LianJia(object):
     #   __get_subregion
     #   __get_page_num
     #   __get_subregion_data
+    #   __choose_scrap_region
     #   __check_write_data
     #   __get_data
     #   __parse_data
@@ -148,15 +149,20 @@ class LianJia(object):
             return
 
         self.__get_region()
+        target_region, target_subregion = self.__choose_scrap_region()
 
         region_index = dict()
         region_count = 0
         prev_data_num = 0
         for sregion in self.__region.items():
+            if target_region != _CMD_ALL and target_region != sregion[1][_REGION_NAME_KEY]:
+                continue
             region_count += 1
             region_index[_INDEX_REGION_KEY] = sregion[1][_REGION_NAME_KEY]
             subregion_count = 0
             for ssubregion in sregion[1][_REGION_SUBREGION_KEY].items():
+                if target_subregion != _CMD_ALL and target_subregion != ssubregion[1]:
+                    continue
                 subregion_count += 1
                 subregion_url = ssubregion[0]
                 subregion_name = ssubregion[1]
@@ -378,6 +384,31 @@ class LianJia(object):
                 self.__go_on = self.__stop_threshold
                 return
 
+    # choose scrap region, subregion, return region, subregion
+    def __choose_scrap_region(self):
+        region = ''
+        subregion = ''
+        region_list = [x[_REGION_NAME_KEY] for x in self.__region.values()]
+        region_list.append(_CMD_ALL)
+        command = mio.choose_command(region_list)
+        if command == 'cancel' or command == 'q':
+            log.VLOG('region canceled...')
+        else:
+            region = command
+            if region != _CMD_ALL:
+                for iregion in self.__region.items():
+                    if iregion[1][_REGION_NAME_KEY] == region:
+                        subregion_list = list(iregion[1][_SUBREGION_KEY].values())
+                        subregion_list.append(_CMD_ALL)
+                        command = mio.choose_command(subregion_list)
+                        if command == 'cancel' or command == 'q':
+                            log.VLOG('subregion canceled...')
+                        else:
+                            subregion = command
+            else:
+                subregion = _CMD_ALL
+        return region, subregion
+
     # check if data enough to write data, for safety
     def __check_write_data(self):
         data_tail = self.__new_data_num % _DATA_BUFFER
@@ -415,6 +446,7 @@ class LianJia(object):
             # filter mask
             if len(data_element_div.select('.dealDate')) == 0 or _DATE_SPECIAL_WORD == data_element_div.select('.dealDate')[0].get_text():
                 log.VLOG('masked for 1 month limit')
+                flag_all_date_out = False
                 self.__latest_month_deal += 1
                 continue
             lianjia_unit[_DATE_KEY] = list(map(int, data_element_div.select('.dealDate')[0].get_text().split('.')))

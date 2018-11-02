@@ -28,6 +28,7 @@ gflags.DEFINE_string('target', 'stock', 'zhihu | lianjia | proxy-xici | proxy-66
 gflags.DEFINE_string('account', '', '')
 gflags.DEFINE_string('password', '', '')
 gflags.DEFINE_string('city', '', 'bj | sz | tj | qd | gz | hz | nj | cs | wh')
+gflags.DEFINE_string('user', '', '')
 gflags.DEFINE_string('stock_id', '', '')
 gflags.DEFINE_string('v', '0', 'vlog')
 
@@ -68,7 +69,7 @@ def main(argv):
         stock_data.get_stock_data()
         stock_data.write_stock_data()
     elif FLAGS.target == 'monitor':
-        stock_monitor = monitor.StockMonitor()
+        stock_monitor = monitor.StockMonitor(FLAGS.user)
         stock_monitor.stock_monitor()
     else:
         log.VLOG(FLAGS.target)
