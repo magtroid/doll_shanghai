@@ -9,6 +9,7 @@ method for stock'''
 from bs4 import BeautifulSoup
 import canvas
 import common
+import copy
 import datalib
 import mio
 import proxypool
@@ -49,6 +50,8 @@ _AVER_TRANS_5_KEY = 'tma5'
 _AVER_TRANS_10_KEY = 'tma10'
 _AVER_TRANS_20_KEY = 'tma20'
 _TURN_OVER_KEY = 'turnover'
+# detail feature
+_DETAIL_KEY = 'detail'
 
 _UNIT_STOCK_LEN = 15
 
@@ -94,6 +97,7 @@ class Stock(object):
     '''
     public:
       insert_stock_data
+      insert_stock_detail_data
       update_stock_data
       get_stock_lib
       lib_file
@@ -102,6 +106,7 @@ class Stock(object):
     private:
       __parse_date
       __parse_period_data
+      __get_stock_detail_data
       __write_data_lib
 
     resource has two types:
@@ -111,10 +116,12 @@ class Stock(object):
     def __init__(self, resource, proxy_pool = None):
         self.__disable_controler = True  # TODO
         self.__stock_data_url = 'http://api.finance.ifeng.com'
+        self.__stock_detail_data_url = 'http://vip.stock.finance.sina.com.cn/quotes_service/view/vMS_tradehistory.php?'
         if proxy_pool == None:
             self.__proxy_pool = proxypool.ProxyPool()
         else:
             self.__proxy_pool = proxy_pool
+        self.__proxy_pool.set_threshold(15000)
         self.__status = _VALID
         if isinstance(resource, str):  # stock id
             self.__stock_code = parse_stock_code(resource)
@@ -123,10 +130,16 @@ class Stock(object):
             self.__data_lib_file = STOCK_DIR + self.__stock_code + '.lib'
             self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
             self.__stock_lib.load_data_lib(schedule = False)
+            self.__data_lib_detail_file = STOCK_DIR + self.__stock_code + '_detail.lib'
+            self.__stock_detail_lib = datalib.DataLib(self.__data_lib_detail_file, self.__disable_controler)
+            self.__stock_detail_lib.load_data_lib(schedule = False)
         elif isinstance(resource, dict):  # stock lib
             self.__stock_lib = datalib.DataLib(resource, self.__disable_controler)
             self.__data_lib_file = self.__stock_lib.lib_file()
             self.__stock_code = self.__data_lib_file.split('/')[-1].split('.')[0]  # xx/xx/id.lib
+            self.__data_lib_detail_file = STOCK_DIR + self.__stock_code + '_detail.lib'
+            self.__stock_detail_lib = datalib.DataLib(self.__data_lib_detail_file, self.__disable_controler)
+            self.__stock_detail_lib.load_data_lib(schedule = False)
         else:
             self.__status = _INVALID
         self.__get_page_type = common.URL_WRITE
@@ -138,6 +151,10 @@ class Stock(object):
     # insert stock data
     def insert_stock_data(self, lkey, stock_data):
         self.__stock_lib.insert_data(lkey, stock_data, _DATE_KEY)
+
+    # insert stock detail data
+    def insert_stock_detail_data(self, stock_detail_data):
+        self.__stock_detail_lib.insert_data(common.EMPTY_KEY, stock_detail_data, _DATE_KEY)
 
     # update stock data
     def update_stock_data(self, lkey, stock_data):
@@ -170,6 +187,18 @@ class Stock(object):
                           period_type = period_value[2])
             log.VLOG(period_url)
             self.__parse_period_data(period_url, period_key)
+        detail_finished = False
+        while not detail_finished:
+            log.VLOG('insert target detail date (xxxx.xx.xx)')
+            log.VLOG('\tor insert "n/N" to cancel')
+            target_date = mio.stdin()
+            if re.match('^\d{4}\.\d{2}\.\d{2}$', target_date):
+                self.__get_stock_detail_data(target_date)
+            elif target_date in common.CMD_QUIT:
+                break
+            else:
+                log.VLOG('not support this type')
+                continue
         log.VLOG('done stock {stock_code}'.format(stock_code = self.__stock_code))
         return True if self.__status == _VALID else False
 
@@ -236,10 +265,58 @@ class Stock(object):
             else:
                 self.insert_stock_data(period, period_data_unit)
 
+    # get each deal in target date
+    def __get_stock_detail_data(self, target_date):
+        lkey = datalib.form_lkey([datalib.DATA_KEY, target_date])
+        if self.__stock_detail_lib.lhas_key(lkey):
+            log.VLOG('detail date exist: {date}'.format(date = target_date))
+            return
+        url_date = re.sub('\.', '-', target_date)
+        detail_page_url = '{detail_url}symbol={stock_code}&date={date}'.format(
+                           detail_url = self.__stock_detail_data_url,
+                           stock_code = self.__stock_code,
+                           date = url_date)
+        detail_data_unit = dict()
+        detail_data_unit[_DATE_KEY] = target_date
+        detail_data_unit[_DETAIL_KEY] = []
+        detail_minute_unit = []
+        ctime = '00.00'
+        for ipage in range(1, 200):
+            detail_url = '{base_url}&page={page}'.format(base_url = detail_page_url, page = ipage)
+            page = self.__proxy_pool.get_page(detail_url)
+            if not page:
+                log.VLOG('failed to get period page: {page}'.format(page = detail_url))
+                continue
+            soup = BeautifulSoup(page, common.HTML_PARSER)
+            detail_segment = soup.select('table.datatbl tbody tr')
+            print(detail_url)
+            if len(detail_segment) <= 1:
+                log.VLOG('finish detail scrap in date: {date}, all page: {page}'.format(date = target_date, page = ipage))
+                break
+            for itr in range(len(detail_segment) - 1):
+                td = detail_segment[itr].select('td')
+                th = detail_segment[itr].select('th')
+                time = th[0].get_text().split(':')
+                hm = '{hour}.{minute}'.format(hour = time[0], minute = time[1])
+                sec = int(time[2])
+                if hm != ctime:
+                    if ctime != '00.00':
+                        detail_data_unit[_DETAIL_KEY].append(copy.deepcopy(detail_minute_unit))
+                    detail_minute_unit.clear()
+                    detail_minute_unit.append(hm)
+                    detail_minute_unit.append([])
+                    ctime = hm
+                buy_sell = '+' if th[1].get_text() == '买盘' else '-' if th[1].get_text() == '卖盘' else '='
+                detail_deal_unit = [sec, buy_sell, float(td[0].get_text()), int(td[3].get_text())]
+                detail_minute_unit[1].append(detail_deal_unit)
+            tools.sleep(1)
+        self.insert_stock_detail_data(detail_data_unit)
+
     # write stock data lib
     # config is for lib history TODO
     def __write_data_lib(self, config = None):
         self.__stock_lib.write_data_lib(backup = False)
+        self.__stock_detail_lib.write_data_lib(backup = False)
         self.__proxy_pool.write_data_lib()
 
 # training data dir

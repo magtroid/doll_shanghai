@@ -27,6 +27,7 @@ _STATUS_RETRY = 'retry'
 
 _PROXY_LIMIT_STRING = ['流量异常',
                        '502 Bad Gateway',
+                       '该股票没有交易数据',
                        'Maximum number of open connections reached',
                        'Failed to get IP address for hostname',]
 
@@ -144,7 +145,7 @@ class ProxyPool(object):
     def proxy_num(self):
         return self.__proxy_num
 
-    # set shreshold of max tried times of one proxy
+    # set threshold of max tried times of one proxy
     def set_threshold(self, num):
         self.__request_threshold = num
 

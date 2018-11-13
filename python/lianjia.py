@@ -35,7 +35,6 @@ _CMD_WEEK   = '1 week'
 _CMD_MONTH  = '1 month'
 _CMD_ALL    = 'all'
 _CMD_UPDATE = 'update'
-_CMD_QUIT   = 'qQnN'
 
 _ONE_DAY       = 1
 _ONE_WEEK      = 7
@@ -77,8 +76,7 @@ _DOMAIN_FILTER = ['燕郊', '香河']
 _DATE_SPECIAL_WORD = '近30天内成交'
 
 # page try time
-_PAGE_MAX_TRY_TIMES = 5
-_PAGE_WAIT_TIME = [5, 5, 10, 10, 30]
+_PAGE_WAIT_TIME = [5, 5, 10, 10, 30, 30, 60]
 
 # main class
 class LianJia(object):
@@ -267,7 +265,7 @@ class LianJia(object):
                 else:
                     self.__start_date = self.__end_date
                 self.__end_date = tools.get_date()
-            elif date_range in _CMD_QUIT:
+            elif date_range in common.CMD_QUIT:
                 self.__start_date = []
                 self.__end_date = []
             elif re.match('^\d{4}\.\d{2}\.\d{2}~\d{4}\.\d{2}\.\d{2}$', date_range):
@@ -371,13 +369,16 @@ class LianJia(object):
             data_url = tools.parse_href_url('/pg%d' % page, url)
             try_time = 0
             while not self.__get_data(data_url, region_index):
-                if try_time < _PAGE_MAX_TRY_TIMES:
+                if try_time < len(_PAGE_WAIT_TIME):
                     log.VLOG('failed to get page data, wait {} s and try again'.format(_PAGE_WAIT_TIME[try_time]))
                     tools.sleep(_PAGE_WAIT_TIME[try_time])
                     try_time += 1
                 else:
-                    self.__go_on = _STOP_ALL
-                    return
+                    if page_num == 1:
+                        break
+                    else:
+                        self.__go_on = _STOP_ALL
+                        return
             self.__check_write_data()
             if self.__go_on <= _STOP_SUBREGION:
                 log.VLOG('subregion finished {} '.format(region_index[_INDEX_SUBREGION_KEY]))

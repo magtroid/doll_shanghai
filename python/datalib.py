@@ -152,7 +152,8 @@ class DataLib(object):
                         elif data_format == _LIB_TYPE_BOOL:
                             unit[keys_segs[j]] = bool(data_value)
                         elif data_format == _LIB_TYPE_LIST:
-                            unit[keys_segs[j]] = list(map(int, data_value[1: -1].split(','))) # TODO
+                            # unit[keys_segs[j]] = list(map(int, data_value[1: -1].split(','))) # TODO
+                            unit[keys_segs[j]] = eval(data_value) # TODO
                         elif data_format == _LIB_TYPE_STRING:
                             unit[keys_segs[j]] = data_value
                         else:  # data_format == _LIB_TYPE_OTHERS

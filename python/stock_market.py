@@ -59,7 +59,7 @@ class StockMarket(object):
             self.__proxy_pool = proxypool.ProxyPool()
         else:
             self.__proxy_pool = proxy_pool
-        self.__proxy_pool.set_threshold(15000)
+        self.__proxy_pool.set_threshold(1500000)
         self.__data_lib_file = './datalib/stock_list.lib'
         self.__disable_controler = True  # TODO
         self.__stock_market_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
@@ -103,7 +103,7 @@ class StockMarket(object):
     # parse stocks from urls
     # index is a set to choose which stock to get, empty for all
     def __parse_class_stock_list(self, sclass, index = None):
-        class_url = '%s?type=stock_a&class=%s' % (self.__stock_market_url, sclass)
+        class_url = '{}?type=stock_a&class={}'.format(self.__stock_market_url, sclass)
         page = self.__proxy_pool.get_page(class_url, self.__get_page_type)
         if not page:
             log.VLOG('failed to scrap class page')
