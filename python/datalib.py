@@ -597,7 +597,7 @@ class DataLibManager(object):
 
     # use command to display tree structure of lib
     def __display_lib_tree(self, target_lib = None):
-        command_list = ['s', 'e', 'd', 'up', 'f', 'down', 'left', 'right', 'esc']
+        command_list = ['s', 'e', 'd', 'f', mio.UP_KEY, mio.DOWN_KEY, mio.LEFT_KEY, mio.RIGHT_KEY, mio.ENTER_KEY, 'esc']
         if target_lib is None:
             target_lib = self.__target_lib
         lkey_path = []
@@ -611,13 +611,13 @@ class DataLibManager(object):
             if model == _COMMAND_MODEL:
                 command = mio.choose_command(command_list, block = False, print_log = False)
                 cur_target_key = list(cur_lib)[offs_path[-1]]
-                if command == 'up':
+                if command == mio.UP_KEY:
                     if offs_path[-1] > 0:
                         offs_path[-1] -= 1
-                elif command == 'down':
+                elif command == mio.DOWN_KEY:
                     if offs_path[-1] < len(cur_lib) - 1:
                         offs_path[-1] += 1
-                elif command == 'right' or command == '\n':
+                elif command == mio.RIGHT_KEY or command == mio.ENTER_KEY:
                     if isinstance(cur_lib[cur_target_key], dict) and len(cur_lib[cur_target_key]) > 0:
                         lkey_path.append(cur_target_key)
                         offs_path.append(0)
@@ -625,7 +625,7 @@ class DataLibManager(object):
                         sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
                         sub_lib.load_data_lib()
                         self.__display_lib_tree(sub_lib)
-                elif command == 'left':
+                elif command == mio.LEFT_KEY:
                     if len(offs_path) > 1:
                         lkey_path.pop()
                         offs_path.pop()
@@ -674,13 +674,13 @@ class DataLibManager(object):
                     filter_str = ''
                     filter_dict = None
                     model = _COMMAND_MODEL
-                elif command == 'up':
+                elif command == mio.UP_KEY:
                     if offs_path[-1] > 0:
                         offs_path[-1] -= 1
-                elif command == 'down':
+                elif command == mio.DOWN_KEY:
                     if offs_path[-1] < len(filter_dict) - 1:
                         offs_path[-1] += 1
-                elif command == 'right' or command == '\n':
+                elif command == mio.RIGHT_KEY or command == mio.ENTER_KEY:
                     if cur_target_key is not None and isinstance(cur_lib[cur_target_key], dict):
                         filter_str = ''
                         filter_dict = None
@@ -696,7 +696,7 @@ class DataLibManager(object):
                         sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
                         sub_lib.load_data_lib(schedule = False)
                         self.__display_lib_tree(sub_lib)
-                elif command == 'left':
+                elif command == mio.LEFT_KEY:
                     if len(offs_path) > 1:
                         filter_str = ''
                         filter_dict = None

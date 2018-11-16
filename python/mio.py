@@ -21,6 +21,12 @@ _REST = -1
 _ALL = 0
 _REFRESH_TIMES = 5
 
+LEFT_KEY = 'left'
+RIGHT_KEY = 'right'
+UP_KEY = 'up'
+DOWN_KEY = 'down'
+ENTER_KEY = '\n'
+
 # function
 #   _flush
 #   _lclear
@@ -55,7 +61,7 @@ def kbhit(one_hit = True, refresh_times = _REFRESH_TIMES):
     if one_hit:
         return mstdin.get_stdin()
     else:
-        while mstdin.get_stdin()[-1] != '\n':
+        while mstdin.get_stdin()[-1] != '\n':  # should not use ENTER_KEY
             time.sleep(refresh_time)
         return mstdin.get_stdin()
 
@@ -67,13 +73,13 @@ def stdin(block = True, search_list = None):
         if command == '\x1b':
             rstr = 'esc'
         elif command == '\x1b[A':
-            rstr = 'up'
+            rstr = UP_KEY
         elif command == '\x1b[B':
-            rstr = 'down'
+            rstr = DOWN_KEY
         elif command == '\x1b[C':
-            rstr = 'right'
+            rstr = RIGHT_KEY
         elif command == '\x1b[D':
-            rstr = 'left'
+            rstr = LEFT_KEY
         else:
             rstr = command
         return rstr
@@ -133,7 +139,7 @@ def stdin(block = True, search_list = None):
                         else:
                             pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
                     _refresh_line(pstr)
-            elif command == '\n':
+            elif command == ENTER_KEY:
                 if switch_model:
                     rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
                     switch_model = False
@@ -142,7 +148,7 @@ def stdin(block = True, search_list = None):
                 else:
                     log.VLOG()
                     return rstr
-            elif command in ['esc', 'up', 'down', 'left', 'right']:  # arrow
+            elif command in ['esc', UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY]:  # arrow
                 switch_model = False
                 fill_coordinate = [-1, -1]
                 _refresh_line(rstr)

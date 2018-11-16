@@ -86,8 +86,13 @@ class CANVAS(object):
         self.__found = self.__foundation()
 
     # line stands for area begining line, default 0
-    # struct is a list, each 3 params pair(a, x, y) stands for x * y square at point a
+    # struct is a list, each 3 params pair(a, y, x) stands for y * x square at point a
+    # if struct is empty, default create a area using all terminal size
     def new_area(self, struct, name, line = 0):
+        if not struct:
+            height, width = tools.get_terminal_size()
+            struct = [[0, height - 1, width - _WIDTH_BUFF]]
+            line = 0
         self.__area_dict[name] = AREA(self.__canvas, self.__format, struct, line = line)
 
     def has_area(self, name):

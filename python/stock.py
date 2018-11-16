@@ -349,6 +349,7 @@ _KLINE_DETAIL = 'kline_detail'
 
 # detail feature
 _DETAIL_KEY = 'detail'
+_DAILY_DETAIL = 'daily_detail'
 _DETAIL_MINUTE_OFF = 0
 _DETAIL_TRADE_OFF = 1
 _DDATA_SEC_OFF = 0
@@ -485,12 +486,26 @@ class StockData(object):
             else:  # model == _KLINES_MODEL:
                 self.__display_kline(kline_list, [offs, cursor, max_kline])
                 command = mio.choose_command(block = False, print_log = False)
-                if command == 'left':
+                if command == mio.LEFT_KEY:
                     if cursor < len(kline_list) - 1:
                         cursor += 1
-                elif command == 'right':
+                elif command == mio.RIGHT_KEY:
                     if cursor > 0:
                         cursor -= 1
+                elif command == mio.ENTER_KEY:
+                    date = kline_list[-1 - cursor][_DATE_OFF]
+                    daily_data = self.__stock_detail_lib.get_data()
+                    if date in daily_data:
+                        last_close = self.__get_last_close(date)
+                        if not last_close:
+                            continue
+                        self.__canvas.new_area([], name = _DAILY_DETAIL)
+                        self.__daily_line(daily_data[date], last_close, name = _DAILY_DETAIL)
+                        while True:
+                            command_daily = mio.choose_command(block = False, print_log = False)
+                            if command_daily in common.CMD_QUIT:
+                                self.__canvas.del_area(_DAILY_DETAIL)
+                                break
                 elif command == '-':
                     if max_kline < _KLINE_MAX_INDENSE:
                         max_kline += _KLINE_INDENSE_STEP
@@ -677,7 +692,8 @@ class StockData(object):
             if hm not in min_dict:
                 min_dict[hm] = []
 
-    def __daily_line(self, datas, last_close):
+    # draw daily detail line in name canvas, if no name, using found canvas
+    def __daily_line(self, datas, last_close, name = None):
         min_dict = dict()
         self.__add_min_dict(min_dict, 9, [30, 59])
         self.__add_min_dict(min_dict, 10, [00, 59])
@@ -694,18 +710,19 @@ class StockData(object):
                 mtrans += trade_data[_DDATA_TRANS_OFF]
             mprice = mdata[-1][_DDATA_PRICE_OFF]
             min_dict[hm] = [mprice, mtrans]
-        self.__draw_daily_line(min_dict, last_close)
+        self.__draw_daily_line(min_dict, last_close, name = name)
 
-    def __draw_daily_line(self, min_datas, last_close):
-        cstruct = self.__canvas.get_area_struct()[1]
+    def __draw_daily_line(self, min_datas, last_close, name = None):
+        cstruct = self.__canvas.get_area_struct(name = name)[1]
         height, width = len(cstruct), cstruct[0][1]
         data_width = width - _DAILY_AXIS_PRICE_WIDTH - _DAILY_AXIS_ADR_WIDTH
-        x_step = int(data_width / len(min_datas))
-        if x_step == 0:
-            self.__canvas.paint('canvas too small for daily line, try larger canvas')
-            return
         self.__canvas.erase()
         self.__canvas.clear_area()
+        x_step = int(data_width / len(min_datas))
+        if x_step == 0:
+            self.__canvas.paint('canvas too small for daily line, try larger canvas', name = name)
+            self.__canvas.display()
+            return
 
         price_height = int(height * _DAILY_AXIS_PRICE_RATIO)
         trans_height = height - price_height
@@ -721,12 +738,12 @@ class StockData(object):
         for y in range(price_height):
             y_price = float('{:.2f}'.format(price_t - price_step * y))
             axis_color = canvas.GREEN if y_price < last_close else canvas.RED if y_price > last_close else canvas.WHITE 
-            self.__canvas.paint('{:6.2f}'.format(y_price), coordinate = [y, 0], front = axis_color)
+            self.__canvas.paint('{:6.2f}'.format(y_price), coordinate = [y, 0], front = axis_color, name = name)
             self.__canvas.paint('{:6.2f}%'.format((y_price - last_close) / last_close * 100),
-                    coordinate = [y, _DAILY_AXIS_PRICE_WIDTH + x_step * len(min_datas)], front = axis_color)
-        self.__canvas.insert_format([price_height - 1, 0, _DAILY_AXIS_PRICE_WIDTH + x_step * len(min_datas) + _DAILY_AXIS_ADR_WIDTH], other = canvas.UNDERLINE)
+                    coordinate = [y, _DAILY_AXIS_PRICE_WIDTH + x_step * len(min_datas)], front = axis_color, name = name)
+        self.__canvas.insert_format([price_height - 1, 0, _DAILY_AXIS_PRICE_WIDTH + x_step * len(min_datas) + _DAILY_AXIS_ADR_WIDTH], other = canvas.UNDERLINE, name = name)
         for y in range(trans_height):
-            self.__canvas.paint('{:.0f}'.format(trans_t - trans_step * y), coordinate = [y + price_height, 0])
+            self.__canvas.paint('{:.0f}'.format(trans_t - trans_step * y), coordinate = [y + price_height, 0], name = name)
 
         x = _DAILY_AXIS_PRICE_WIDTH
         for min_item in sorted(min_datas.items(), key = lambda d:d[0]):
@@ -735,10 +752,10 @@ class StockData(object):
                 continue
             color = canvas.GREEN if min_data[_MIN_PRICE_OFF] < last_price else canvas.RED if min_data[_MIN_PRICE_OFF] > last_price else last_color
             price_y = int((price_t - min_data[_MIN_PRICE_OFF]) / price_step)
-            self.__canvas.paint('•', coordinate = [price_y, x])
+            self.__canvas.paint('•', coordinate = [price_y, x], name = name)
             trans_y = price_height + int((trans_t - min_data[_MIN_TRANS_OFF]) / trans_step)
             for y in range(trans_y, height):
-                self.__canvas.paint('│', coordinate = [y, x], front = color)
+                self.__canvas.paint('│', coordinate = [y, x], front = color, name = name)
             last_price = min_data[_MIN_PRICE_OFF]
             last_color = color
             x += x_step
@@ -917,6 +934,6 @@ if __name__ == '__main__':
     log.INFO()
     if stock_id:
         stock_data = StockData(re.sub('\.lib$', '', stock_id))
-        # stock_data.k_line()
-        stock_data.display_daily_line()
+        stock_data.k_line()
+        # stock_data.display_daily_line()
     log.INFO('done')
