@@ -592,7 +592,7 @@ class LianJiaData(object):
         if year not in self.__date_range:
             self.__date_range[year] = [0] * 12
         # set month range
-        if not month_range:
+        if month_range is None:
             start = 1
             end = 12
         else:

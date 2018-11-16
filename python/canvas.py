@@ -15,15 +15,26 @@ BACKSPACE = True
 _COORD_Y = 0
 _COORD_X = 1
 
+_COLORED = True
 # color
-BLACK = 'black'
-RED   = 'red'
-GREEN = 'green'
-YELLOW = 'yellow'
-BLUE = 'blue'
-PURPLE = 'purple'
-ULTRAMARINE = 'ultramarine'
-WHITE = 'white'
+if _COLORED:
+    BLACK = 'black'
+    RED   = 'red'
+    GREEN = 'green'
+    YELLOW = 'yellow'
+    BLUE = 'blue'
+    PURPLE = 'purple'
+    ULTRAMARINE = 'ultramarine'
+    WHITE = 'white'
+else:
+    BLACK = ''
+    RED   = ''
+    GREEN = ''
+    YELLOW = ''
+    BLUE = ''
+    PURPLE = ''
+    ULTRAMARINE = ''
+    WHITE = ''
 # other format
 HIGHLIGHT = 'highlight'
 UNDERLINE = 'underline'

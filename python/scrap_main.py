@@ -66,7 +66,7 @@ def main(argv):
             log.VLOG('choose a stock')
             return 
         stock_data = stock.Stock(FLAGS.stock_id)
-        stock_data.get_stock_data()
+        stock_data.get_stock_data(need_detail = True)
         stock_data.write_stock_data()
     elif FLAGS.target == 'monitor':
         stock_monitor = monitor.StockMonitor(FLAGS.user)

@@ -21,7 +21,6 @@ import log
 STOCK_DIR = './datalib/stocks/'
 _SH_STOCK_CODE = 'sh'
 _SZ_STOCK_CODE = 'sz'
-_COLORED = True
 
 # stock feature period
 _DAY_KEY       = 'day'
@@ -50,8 +49,6 @@ _AVER_TRANS_5_KEY = 'tma5'
 _AVER_TRANS_10_KEY = 'tma10'
 _AVER_TRANS_20_KEY = 'tma20'
 _TURN_OVER_KEY = 'turnover'
-# detail feature
-_DETAIL_KEY = 'detail'
 
 _UNIT_STOCK_LEN = 15
 
@@ -173,7 +170,7 @@ class Stock(object):
 
     # get stock data
     # return true or false if success or not
-    def get_stock_data(self):
+    def get_stock_data(self, need_detail = False):
         for period in self.__stock_period_set:
             if self.__status == _INVALID:
                 break
@@ -187,18 +184,19 @@ class Stock(object):
                           period_type = period_value[2])
             log.VLOG(period_url)
             self.__parse_period_data(period_url, period_key)
-        detail_finished = False
-        while not detail_finished:
-            log.VLOG('insert target detail date (xxxx.xx.xx)')
-            log.VLOG('\tor insert "n/N" to cancel')
-            target_date = mio.stdin()
-            if re.match('^\d{4}\.\d{2}\.\d{2}$', target_date):
-                self.__get_stock_detail_data(target_date)
-            elif target_date in common.CMD_QUIT:
-                break
-            else:
-                log.VLOG('not support this type')
-                continue
+        if need_detail:
+            detail_finished = False
+            while not detail_finished:
+                log.VLOG('insert target detail date (xxxx.xx.xx)')
+                log.VLOG('\tor insert "n/N" to cancel')
+                target_date = mio.stdin()
+                if re.match('^\d{4}\.\d{2}\.\d{2}$', target_date):
+                    self.__get_stock_detail_data(target_date)
+                elif target_date in common.CMD_QUIT:
+                    break
+                else:
+                    log.VLOG('not support this type')
+                    continue
         log.VLOG('done stock {stock_code}'.format(stock_code = self.__stock_code))
         return True if self.__status == _VALID else False
 
@@ -308,7 +306,7 @@ class Stock(object):
                     ctime = hm
                 buy_sell = '+' if th[1].get_text() == '买盘' else '-' if th[1].get_text() == '卖盘' else '='
                 detail_deal_unit = [sec, buy_sell, float(td[0].get_text()), int(td[3].get_text())]
-                detail_minute_unit[1].append(detail_deal_unit)
+                detail_minute_unit[_DETAIL_TRADE_OFF].append(detail_deal_unit)
             tools.sleep(1)
         self.insert_stock_detail_data(detail_data_unit)
 
@@ -349,6 +347,21 @@ _KLINE_INDENSE_STEP = 20
 _KLINE_SPARSE = 2
 _KLINE_DETAIL = 'kline_detail'
 
+# detail feature
+_DETAIL_KEY = 'detail'
+_DETAIL_MINUTE_OFF = 0
+_DETAIL_TRADE_OFF = 1
+_DDATA_SEC_OFF = 0
+_DDATA_BS_OFF = 1  # buy sell
+_DDATA_PRICE_OFF = 2
+_DDATA_TRANS_OFF = 3
+_MIN_PRICE_OFF = 0
+_MIN_TRANS_OFF = 1
+
+_DAILY_AXIS_PRICE_WIDTH = 10
+_DAILY_AXIS_ADR_WIDTH = 10
+_DAILY_AXIS_PRICE_RATIO = 0.6
+
 # data process class
 class StockData(object):
     '''
@@ -359,14 +372,20 @@ class StockData(object):
       stock_lib_data
       get_ad_ratio
       k_line
+      display_daily_line
     private
       __get_weekday_strategy
       __form_kline_list
+      __get_last_close
       __get_kline_range
+      __get_daily_range
       __update_skip_off
       __draw_kline
       __display_kline
       __kline_detail
+      __add_min_dict
+      __daily_line
+      __draw_daily_line
       __apply_strategy
       __gen_crf_data
       __oppotrend
@@ -383,6 +402,9 @@ class StockData(object):
             self.__data_lib_file = STOCK_DIR + self.__stock_code + '.lib'
             self.__stock_lib = datalib.DataLib(self.__data_lib_file, self.__disable_controler)
             self.__stock_lib.load_data_lib(schedule = False)
+            self.__data_lib_detail_file = STOCK_DIR + self.__stock_code + '_detail.lib'
+            self.__stock_detail_lib = datalib.DataLib(self.__data_lib_detail_file, self.__disable_controler)
+            self.__stock_detail_lib.load_data_lib(schedule = False)
         else:
             self.__status = _INVALID
         self.__canvas = canvas.CANVAS()
@@ -481,6 +503,21 @@ class StockData(object):
                     pass
                 offs = self.__update_skip_off(cursor, offs, max_kline, len(kline_list))
 
+    # display daily detail lines
+    def display_daily_line(self):
+        datas = self.__stock_detail_lib.get_data()
+        while True:
+            command = mio.choose_command(list(datas.keys()))
+            if command in common.CMD_QUIT:
+                break
+            else:
+                cdata = datas[command]
+                last_close = self.__get_last_close(command)
+                if not last_close:
+                    log.VLOG('this date has no day data: {}'.format(command))
+                    continue
+                self.__daily_line(cdata, last_close)
+
     # get weekday strategy, weekday in weekday out
     def __get_weekday_strategy(self):
         finished = False
@@ -516,6 +553,17 @@ class StockData(object):
         kline_list.reverse()
         return kline_list
 
+    def __get_last_close(self, c_date):
+        datas = self.__stock_lib.get_data()[_DAY_KEY]
+        if c_date in datas:
+            c_data = datas[c_date]
+            c_price = c_data[_CLOSE_KEY]
+            c_rate = c_data[_ADVANCE_DECLINE_RATIO_KEY]
+            last_close = float('{:.2f}'.format(c_price / (100 + c_rate) * 100))
+        else:
+            last_close = 0
+        return last_close
+
     def __get_kline_range(self, kline_list, begin, end):
         top = 0
         bottom = 99999.99
@@ -527,6 +575,17 @@ class StockData(object):
         top += amp * _KLINE_REDUNT
         bottom -= amp * _KLINE_REDUNT
         return top, bottom
+
+    def __get_daily_range(self, min_datas):
+        price_t = 0
+        price_b = 99999.99
+        trans_t = 0
+        for min_data in min_datas.values():
+            if min_data:
+                price_t = max(min_data[_MIN_PRICE_OFF], price_t)
+                price_b = min(min_data[_MIN_PRICE_OFF], price_b)
+                trans_t = max(min_data[_MIN_TRANS_OFF], trans_t)
+        return price_t, price_b, trans_t
 
     def __update_skip_off(self, cursor, skip_off, width, data_num):
         head_len = 3
@@ -542,13 +601,10 @@ class StockData(object):
 
     def __draw_kline(self, data, n, highlight = False):
         x = _KLINE_SPARSE * n
-        if not _COLORED:
-            color = ''
+        if data[_OPEN_OFF] != data[_CLOSE_OFF]:
+            color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
         else:
-            if data[_OPEN_OFF] != data[_CLOSE_OFF]:
-                color = canvas.GREEN if data[_OPEN_OFF] < data[_CLOSE_OFF] else canvas.RED
-            else:
-                color = canvas.GREEN if data[_ADR_OFF] < 0 else canvas.RED
+            color = canvas.GREEN if data[_ADR_OFF] < 0 else canvas.RED
         line_up, line_down = [_OPEN_OFF, _CLOSE_OFF] if data[_OPEN_OFF] < data[_CLOSE_OFF] else [_CLOSE_OFF, _OPEN_OFF]
         for i in range(data[_HIGH_OFF], data[line_up]):
             self.__canvas.paint('│', coordinate = [i, x], front = color)
@@ -604,6 +660,89 @@ class StockData(object):
         self.__canvas.paint('HIGH : {:6.2f}'.format(data[_HIGH_OFF]), name = _KLINE_DETAIL)
         self.__canvas.paint('LOW  : {:6.2f}'.format(data[_LOW_OFF]), name = _KLINE_DETAIL)
         self.__canvas.paint('ADR  : {:6.2f}%'.format(data[_ADR_OFF]), name = _KLINE_DETAIL)
+
+    # init 240 trade minute list
+    def __add_min_dict(self, min_dict, hour, minute_range = None):
+        # set minute range
+        if minute_range is None:
+            start = 0
+            end = 59
+        else:
+            start = max(0, minute_range[0])
+            end = min(59, minute_range[1])
+        h_str = '0{}'.format(hour) if hour < 10 else '{}'.format(hour)
+        for m in range(start, end + 1):
+            m_str = '0{}'.format(m) if m < 10 else '{}'.format(m)
+            hm = '{hour}.{minute}'.format(hour = h_str, minute = m_str)
+            if hm not in min_dict:
+                min_dict[hm] = []
+
+    def __daily_line(self, datas, last_close):
+        min_dict = dict()
+        self.__add_min_dict(min_dict, 9, [30, 59])
+        self.__add_min_dict(min_dict, 10, [00, 59])
+        self.__add_min_dict(min_dict, 11, [00, 30])
+        self.__add_min_dict(min_dict, 13, [00, 59])
+        self.__add_min_dict(min_dict, 14, [00, 59])
+        self.__add_min_dict(min_dict, 15, [00, 00])
+
+        for data_min in datas[_DETAIL_KEY]:
+            hm = data_min[_DETAIL_MINUTE_OFF]
+            mdata = data_min[_DETAIL_TRADE_OFF]
+            mtrans = 0
+            for trade_data in mdata:
+                mtrans += trade_data[_DDATA_TRANS_OFF]
+            mprice = mdata[-1][_DDATA_PRICE_OFF]
+            min_dict[hm] = [mprice, mtrans]
+        self.__draw_daily_line(min_dict, last_close)
+
+    def __draw_daily_line(self, min_datas, last_close):
+        cstruct = self.__canvas.get_area_struct()[1]
+        height, width = len(cstruct), cstruct[0][1]
+        data_width = width - _DAILY_AXIS_PRICE_WIDTH - _DAILY_AXIS_ADR_WIDTH
+        x_step = int(data_width / len(min_datas))
+        if x_step == 0:
+            self.__canvas.paint('canvas too small for daily line, try larger canvas')
+            return
+        self.__canvas.erase()
+        self.__canvas.clear_area()
+
+        price_height = int(height * _DAILY_AXIS_PRICE_RATIO)
+        trans_height = height - price_height
+
+        price_t, price_b, trans_t= self.__get_daily_range(min_datas)
+        price_t = max(price_t, last_close)
+        price_b = min(price_b, last_close)
+
+        price_step = (price_t - price_b) / (price_height - 1)
+        trans_step = trans_t / (trans_height - 1)
+        last_price = last_close
+        last_color = canvas.WHITE
+        for y in range(price_height):
+            y_price = float('{:.2f}'.format(price_t - price_step * y))
+            axis_color = canvas.GREEN if y_price < last_close else canvas.RED if y_price > last_close else canvas.WHITE 
+            self.__canvas.paint('{:6.2f}'.format(y_price), coordinate = [y, 0], front = axis_color)
+            self.__canvas.paint('{:6.2f}%'.format((y_price - last_close) / last_close * 100),
+                    coordinate = [y, _DAILY_AXIS_PRICE_WIDTH + x_step * len(min_datas)], front = axis_color)
+        self.__canvas.insert_format([price_height - 1, 0, _DAILY_AXIS_PRICE_WIDTH + x_step * len(min_datas) + _DAILY_AXIS_ADR_WIDTH], other = canvas.UNDERLINE)
+        for y in range(trans_height):
+            self.__canvas.paint('{:.0f}'.format(trans_t - trans_step * y), coordinate = [y + price_height, 0])
+
+        x = _DAILY_AXIS_PRICE_WIDTH
+        for min_item in sorted(min_datas.items(), key = lambda d:d[0]):
+            min_data = min_item[1]
+            if not min_data:
+                continue
+            color = canvas.GREEN if min_data[_MIN_PRICE_OFF] < last_price else canvas.RED if min_data[_MIN_PRICE_OFF] > last_price else last_color
+            price_y = int((price_t - min_data[_MIN_PRICE_OFF]) / price_step)
+            self.__canvas.paint('•', coordinate = [price_y, x])
+            trans_y = price_height + int((trans_t - min_data[_MIN_TRANS_OFF]) / trans_step)
+            for y in range(trans_y, height):
+                self.__canvas.paint('│', coordinate = [y, x], front = color)
+            last_price = min_data[_MIN_PRICE_OFF]
+            last_color = color
+            x += x_step
+        self.__canvas.display()
 
     # use strategy for specific day in and out
     def __apply_strategy(self, data_key):
@@ -778,5 +917,6 @@ if __name__ == '__main__':
     log.INFO()
     if stock_id:
         stock_data = StockData(re.sub('\.lib$', '', stock_id))
-        stock_data.k_line()
+        # stock_data.k_line()
+        stock_data.display_daily_line()
     log.INFO('done')

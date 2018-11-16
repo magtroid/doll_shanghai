@@ -22,4 +22,4 @@ for t_dir in t_dirs:
 
 for ifile in sorted(leng_dict.items(), key = lambda d:d[1], reverse=True):
     print('{:90s}: {:4}'.format(ifile[0], ifile[1]))
-print('total line number is: %d' % length)
+print('total line number is: {}'.format(length))
