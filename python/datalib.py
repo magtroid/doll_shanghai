@@ -650,8 +650,11 @@ class DataLibManager(object):
                             log.VLOG('error format')
                         self.__target_lib.set_data(form_lkey(lkey_path + [cur_target_key]), new)
                 elif command == 'd':
-                    if len(lkey_path) > 0 and lkey_path[0] == DATA_KEY:
+                    # to avoid delete only data
+                    if len(cur_lib) != 1 and len(lkey_path) > 0 and lkey_path[0] == DATA_KEY:
                         self.__target_lib.delete_data(form_lkey(lkey_path[1:] + [cur_target_key]))
+                        if offs_path[-1] == len(cur_lib):  # because one has been deleted
+                            offs_path[-1] -= 1
                 # elif command == 'u':  # TODO
                 #     break
                 elif command == 's':

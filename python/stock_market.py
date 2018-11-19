@@ -183,6 +183,7 @@ class StockMarketData(object):
       select_stock_async
       process_market_data  # main function
       get_ad_ratios
+      get_rela_ad_days
     private
       __write_market_data
     '''
@@ -262,6 +263,44 @@ class StockMarketData(object):
                 for ranges in range_list:
                     strs += '\t%f' % stock_id[1][ranges]
                 fp.writelines('%s\n' % strs)
+
+    def get_rela_ad_days(self):
+        data = self.__stock_market_lib.get_data()
+        tape_market_data = data[_ZS_CLASS][_SH_TAPE_ID]
+        ltape_code = tape_market_data[datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
+        tape_data = stock.StockData(ltape_code)
+        tape_ad_days = tape_data.get_ad_days()
+
+        stock_market_class = [_SH_CLASS]  # _SZ_CLASS, _CY_CLASS]
+        market_ad_days = 0
+        market_up_days = 0
+        for stock_class in stock_market_class:
+            class_data = data[stock_class]
+            for stock_item in class_data.items():
+                stock_ad_day_num = 0
+                stock_up_day_num = 0
+                if datalib.LINK_FEATURE not in stock_item[1] or \
+                   stock_item[1][datalib.LINK_FEATURE] == None:
+                    log.VLOG('data empty, try next one')
+                else:
+                    lstock_code = stock_item[1][datalib.LINK_FEATURE].split('/')[-1].split('.')[0]
+                    stock_data = stock.StockData(lstock_code)
+                    stock_ad_days = stock_data.get_ad_days()
+                    for days_item in stock_ad_days.items():
+                        if days_item[0] in tape_ad_days:
+                            market_ad_days += 1
+                            stock_ad_day_num += 1
+                            rela_adr = days_item[1] - 2 * tape_ad_days[days_item[0]]
+                            if rela_adr >= 0:
+                                market_up_days += 1
+                                stock_up_day_num += 1
+                    log.VLOG('{stock_id}: {up_days}/{all_days} {ratio:5.2f}%'.format(stock_id = lstock_code,
+                                                                                     up_days = stock_up_day_num,
+                                                                                     all_days = stock_ad_day_num,
+                                                                                     ratio = float(stock_up_day_num) / stock_ad_day_num * 100))
+        log.VLOG('{up_days}/{all_days} {ratio:5.2f}%'.format(up_days = market_up_days,
+                                                             all_days = market_ad_days,
+                                                             ratio = float(market_up_days) / market_ad_days * 100))
 
     def __write_market_data(self, result):
         with open('market_result', 'w') as fp:

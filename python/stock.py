@@ -55,6 +55,8 @@ _UNIT_STOCK_LEN = 15
 ADR_KEY = 'adr'
 TAPE_ADR_KEY = 'tadr'
 
+_DAILY_SLEEP_TIME = 2
+
 # data period
 _PERIOD_MINUTE    = None
 _PERIOD_DAY_5     = None
@@ -113,7 +115,8 @@ class Stock(object):
     def __init__(self, resource, proxy_pool = None):
         self.__disable_controler = True  # TODO
         self.__stock_data_url = 'http://api.finance.ifeng.com'
-        self.__stock_detail_data_url = 'http://vip.stock.finance.sina.com.cn/quotes_service/view/vMS_tradehistory.php?'
+        self.__stock_daily_history_url = 'http://vip.stock.finance.sina.com.cn/quotes_service/view/vMS_tradehistory.php?'
+        self.__stock_daily_today_url = 'http://vip.stock.finance.sina.com.cn/quotes_service/view/vMS_tradedetail.php?'
         if proxy_pool == None:
             self.__proxy_pool = proxypool.ProxyPool()
         else:
@@ -269,16 +272,17 @@ class Stock(object):
         if self.__stock_detail_lib.lhas_key(lkey):
             log.VLOG('detail date exist: {date}'.format(date = target_date))
             return
+        base_url = self.__stock_daily_today_url if target_date == tools.date_list_to_str(tools.get_date()) else self.__stock_daily_history_url
         url_date = re.sub('\.', '-', target_date)
-        detail_page_url = '{detail_url}symbol={stock_code}&date={date}'.format(
-                           detail_url = self.__stock_detail_data_url,
-                           stock_code = self.__stock_code,
-                           date = url_date)
+        detail_page_url = '{detail_url}symbol={stock_code}&date={date}'.format(detail_url = base_url,
+                                                                               stock_code = self.__stock_code,
+                                                                               date = url_date)
         detail_data_unit = dict()
         detail_data_unit[_DATE_KEY] = target_date
         detail_data_unit[_DETAIL_KEY] = []
         detail_minute_unit = []
         ctime = '00.00'
+        ipage = 1
         for ipage in range(1, 200):
             detail_url = '{base_url}&page={page}'.format(base_url = detail_page_url, page = ipage)
             page = self.__proxy_pool.get_page(detail_url)
@@ -287,14 +291,18 @@ class Stock(object):
                 continue
             soup = BeautifulSoup(page, common.HTML_PARSER)
             detail_segment = soup.select('table.datatbl tbody tr')
-            print(detail_url)
+            log.VLOG('scrap page: {}'.format(detail_url))
             if len(detail_segment) <= 1:
                 log.VLOG('finish detail scrap in date: {date}, all page: {page}'.format(date = target_date, page = ipage))
                 break
+            legal_page = False
             for itr in range(len(detail_segment) - 1):
                 td = detail_segment[itr].select('td')
                 th = detail_segment[itr].select('th')
                 time = th[0].get_text().split(':')
+                if int(time[0]) == 9 and int(time[1]) < 30:  # filter pre trade time
+                    continue
+                legal_page = True
                 hm = '{hour}.{minute}'.format(hour = time[0], minute = time[1])
                 sec = int(time[2])
                 if hm != ctime:
@@ -307,8 +315,14 @@ class Stock(object):
                 buy_sell = '+' if th[1].get_text() == '买盘' else '-' if th[1].get_text() == '卖盘' else '='
                 detail_deal_unit = [sec, buy_sell, float(td[0].get_text()), int(td[3].get_text())]
                 detail_minute_unit[_DETAIL_TRADE_OFF].append(detail_deal_unit)
-            tools.sleep(1)
-        self.insert_stock_detail_data(detail_data_unit)
+            if not legal_page:
+                log.VLOG('finish detail scrap in date: {date}, all page: {page}'.format(date = target_date, page = ipage))
+                break
+            tools.sleep(_DAILY_SLEEP_TIME)
+        if ipage != 1:
+            self.insert_stock_detail_data(detail_data_unit)
+        else:
+            log.VLOG('not deal day: {}'.format(target_date))
 
     # write stock data lib
     # config is for lib history TODO
@@ -372,6 +386,7 @@ class StockData(object):
       select_stock
       stock_lib_data
       get_ad_ratio
+      get_ad_days
       k_line
       display_daily_line
     private
@@ -465,6 +480,15 @@ class StockData(object):
                 ratio *= (100 + data[date_str][_ADVANCE_DECLINE_RATIO_KEY]) / 100
             cdate = tools.get_date(1, cdate)
         return ratio
+
+    # return dict of days adr
+    def get_ad_days(self):
+        adr = dict()
+        today = tools.get_date()
+        data = self.__stock_lib.get_data()[_DAY_KEY]
+        for date in data.items():
+            adr[date[0]] = date[1][_ADVANCE_DECLINE_RATIO_KEY]
+        return adr
 
     # draw k lines of target stock
     def k_line(self):

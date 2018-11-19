@@ -544,6 +544,7 @@ class LianJiaData(object):
         self.__calc_data_duration()
         self.__region = dict()
         self.__date_range = dict()
+        self.__add_date_range(2014, [1, 12])
         self.__add_date_range(2015, [1, 12])
         self.__add_date_range(2016, [1, 12])
         self.__add_date_range(2017, [1, 12])
