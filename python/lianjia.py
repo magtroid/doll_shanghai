@@ -76,7 +76,7 @@ _DOMAIN_FILTER = ['燕郊', '香河']
 _DATE_SPECIAL_WORD = '近30天内成交'
 
 # page try time
-_PAGE_WAIT_TIME = [5, 5, 10, 10, 30, 30, 60]
+_PAGE_WAIT_TIME = [5, 5, 10, 10, 30, 30, 60, 60, 120, 120, 360, 360]
 
 # main class
 class LianJia(object):
