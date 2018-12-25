@@ -4,9 +4,14 @@
 Magtroid @ 2018-12-24 15:29
 '''
 
-import sys
-import random
 from functools import cmp_to_key
+import random
+import sys
+sys.path.append('./gflags')
+import gflags
+
+FLAGS = gflags.FLAGS
+gflags.DEFINE_string('games', '10000', 'game numbers')
 
 _COLOR = ['D', 'C', 'H', 'J']
 _NUMBER = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
@@ -247,8 +252,13 @@ def game():
     # print('final result: {}'.format(' '.join([x.display() for x in pokers])))
 
 def main(argv):
+    try:
+        argv = FLAGS(argv) # parse flags
+    except gflags.FlagsError as e:
+        log.INFO('%s\nUsage: %s ARGVS\n%s' % (e, sys.argv[0], FLAGS))
+
     results = dict()
-    games = 100000
+    games = int(FLAGS.games)
     for i in range(games):
         result = game()
         if result not in results:
