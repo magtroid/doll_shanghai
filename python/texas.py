@@ -4,6 +4,7 @@
 Magtroid @ 2018-12-24 15:29
 '''
 
+import copy
 from functools import cmp_to_key
 import random
 import sys
@@ -11,7 +12,7 @@ sys.path.append('./gflags')
 import gflags
 
 FLAGS = gflags.FLAGS
-gflags.DEFINE_string('games', '10000', 'game numbers')
+gflags.DEFINE_string('games', '1000', 'game numbers')
 
 _COLOR = ['D', 'C', 'H', 'J']
 _NUMBER = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
@@ -69,10 +70,19 @@ class Dealer(object):
     def poker_num(self):
         return len(self.__pokers)
 
-    def deal(self):
+    def deal(self, poker = None):
         if self.poker_num() == 0:
             print('no cards')
             return ''
+        if poker is not None:
+            color, number = poker[0], poker[1:]
+            for i in range(len(self.__pokers)):
+                tpoker = self.__pokers[i]
+                if tpoker.color() == color and tpoker.number() == number:
+                    return self.__pokers.pop(i)
+            else:
+              print('no cards')
+              return ''
         off = int(self.poker_num() * random.random())
         return self.__pokers.pop(off)
 
@@ -93,8 +103,7 @@ class Pokers():
         return self.__pokers[:]
 
     def display(self):
-        print('poker: {}'.format(' '.join([x.display() for x in
-            self.__pokers])))
+        return ' '.join([x.display() for x in self.__pokers])
 
 def check_straight(pokers):
     straight_list = []
@@ -178,9 +187,9 @@ def check_pair(pokers):
             return number, left
     return [], pokers
 
-def check_high_card(pokers):
-    if len(pokers):
-        return pokers[-1], pokers[:-1]
+def check_high_card(pokers, number):
+    if len(pokers) >= number:
+        return pokers[-number :], pokers[:-number]
     else:
         return []
 
@@ -197,12 +206,12 @@ def judge_result(hand_pokers, table_pokers):
             else:
                 return _STRAIGHT_FLUSH, straight_flush
         else:
-            return _FLUSH, flush[-5 : -1]
+            return _FLUSH, flush[-5 :]
     else:
         four_of_a_kind, four_of_a_kind_left = check_four_of_a_kind(cur_pokers)
         if four_of_a_kind:
-            high_card, high_card_left = check_high_card(four_of_a_kind_left)
-            return _FOUR_OF_A_KIND, four_of_a_kind_left + [high_card]
+            high_card, high_card_left = check_high_card(four_of_a_kind_left, 1)
+            return _FOUR_OF_A_KIND, four_of_a_kind_left + high_card
         else:
             three_of_a_kind, three_of_a_kind_left = check_three_of_a_kind(cur_pokers)
             if three_of_a_kind:
@@ -214,42 +223,43 @@ def judge_result(hand_pokers, table_pokers):
                     if straight:
                         return _STRAIGHT, straight
                     else:
-                        high_card1, high_card_left = check_high_card(three_of_a_kind_left)
-                        high_card2, high_card_left = check_high_card(high_card_left)
-                        return _THREE_OF_A_KIND, three_of_a_kind + [high_card1] + [high_card2]
+                        high_card, high_card_left = check_high_card(three_of_a_kind_left, 2)
+                        return _THREE_OF_A_KIND, three_of_a_kind + high_card
             else:
                 pair, pair_left = check_pair(cur_pokers)
                 if pair:
                     pair2, pair2_left = check_pair(pair_left)
                     if pair2:
-                        high_card, high_card_left = check_high_card(pair2_left)
-                        return _TWO_PAIR, pair + pair2 + [high_card]
+                        high_card, high_card_left = check_high_card(pair2_left, 1)
+                        return _TWO_PAIR, pair + pair2 + high_card
                     else:
-                        high_card1, high_card_left = check_high_card(pair_left)
-                        high_card2, high_card_left = check_high_card(high_card_left)
-                        high_card3, high_card_left = check_high_card(high_card_left)
-                        return _PAIR, pair + [high_card1] + [high_card2] + [high_card3]
+                        high_card, high_card_left = check_high_card(pair_left, 3)
+                        return _PAIR, pair + high_card
                 else:
-                    high_card1, high_card_left = check_high_card(cur_pokers)
-                    high_card2, high_card_left = check_high_card(high_card_left)
-                    high_card3, high_card_left = check_high_card(high_card_left)
-                    high_card4, high_card_left = check_high_card(high_card_left)
-                    high_card5, high_card_left = check_high_card(high_card_left)
-                    return _HIGH_CARD, [high_card1, high_card2, high_card3, high_card4, high_card5]
+                    high_card, high_card_left = check_high_card(cur_pokers, 5)
+                    return _HIGH_CARD, high_card
 
-def game():
-    dealer = Dealer()
-    hand = Pokers()
-    for i in range(_HAND_NUM):
+def game(dealer, hand, table):
+    while len(hand.pokers()) < _HAND_NUM:
         hand.insert(dealer.deal())
-    # hand.display()
-    table = Pokers()
-    for i in range(_TABLE_NUM):
+    while len(table.pokers()) < _TABLE_NUM:
         table.insert(dealer.deal())
-    # table.display()
     card_type, pokers = judge_result(hand.pokers(), table.pokers())
-    return card_type
+    return card_type, pokers
     # print('final result: {}'.format(' '.join([x.display() for x in pokers])))
+
+def predict(dealer, hand, table):
+    print('hand: {}    table: {}'.format(hand.display(), table.display()))
+    results = dict()
+    games = int(FLAGS.games)
+    for i in range(games):
+        result, pokers = game(copy.deepcopy(dealer), copy.deepcopy(hand), copy.deepcopy(table))
+        if result not in results:
+            results[result] = 1
+        else:
+            results[result] += 1
+    for item in sorted(results.items(), key = lambda d:d[1], reverse=True):
+        print('{:20s} {:10d}   ({:5.2f}%)'.format(item[0], item[1], item[1] / games * 100))
 
 def main(argv):
     try:
@@ -257,16 +267,39 @@ def main(argv):
     except gflags.FlagsError as e:
         log.INFO('%s\nUsage: %s ARGVS\n%s' % (e, sys.argv[0], FLAGS))
 
-    results = dict()
-    games = int(FLAGS.games)
-    for i in range(games):
-        result = game()
-        if result not in results:
-            results[result] = 1
-        else:
-            results[result] += 1
-    for item in sorted(results.items(), key = lambda d:d[1], reverse=True):
-        print('{:20s} {:10d}   ({:5.2f}%)'.format(item[0], item[1], item[1] / games * 100))
+    dealer = Dealer()
+    hand = Pokers()
+    table = Pokers()
+    predict(dealer, hand, table)
+
+    # flow 1
+    print('choose hand card')
+    input_pokers = sys.stdin.readline().strip().split()
+    for poker in input_pokers:
+        hand.insert(dealer.deal(poker))
+    predict(dealer, hand, table)
+
+    # flow 2
+    print('flop')
+    input_pokers = sys.stdin.readline().strip().split()
+    for poker in input_pokers:
+        table.insert(dealer.deal(poker))
+    predict(dealer, hand, table)
+
+    # flow 3
+    print('turn')
+    input_pokers = sys.stdin.readline().strip().split()
+    for poker in input_pokers:
+        table.insert(dealer.deal(poker))
+    predict(dealer, hand, table)
+
+    # flow 4
+    print('river')
+    input_pokers = sys.stdin.readline().strip().split()
+    for poker in input_pokers:
+        table.insert(dealer.deal(poker))
+    result, pokers = game(dealer, hand, table)
+    print('{} {}'.format(result, ' '.join([x.display() for x in pokers])))
 
 if __name__ == '__main__':
     main(sys.argv)
