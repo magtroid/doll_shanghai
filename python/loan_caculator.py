@@ -9,10 +9,10 @@ import sys
 _BUSINESS_RATIO = 0.0539
 _ACCUMULATION_RATIO = 0.0325
 
-# equal func: xn = a(bn+1 - 1) / bn(b - 1)
+# equal func: xn = a(bn - 1) / bn(b - 1)
 # xn is loan remain in last n month
 # a is return loan every month, b is (1 + ratio)
-# so a = xn * bn(b - 1) / (bn+1 - 1)
+# so a = xn * bn(b - 1) / (bn - 1)
 # e.g. 50w loan, 25year is x300 = 50
 
 def calculate_equal(money, ratio, year):
