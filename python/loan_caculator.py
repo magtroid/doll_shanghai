@@ -6,7 +6,8 @@ Magtroid @ 2018-12-27 17:03
 
 import sys
 
-_BUSINESS_RATIO = 0.0539
+_BUSINESS_RATIO = 0.0539  # baes up 10%
+# _BUSINESS_RATIO = 0.05145  # baes up 5%
 _ACCUMULATION_RATIO = 0.0325
 
 # equal func: xn = a(bn - 1) / bn(b - 1)
@@ -49,15 +50,24 @@ def main(argv):
     year = int(sys.stdin.readline().strip())
     print('')
 
-    business_equal, accumulation_equal = calculate_equal_comb(business, accumulation, year)
     print('equal:')
-    print('{:.2f} ({:.2f}+{:.2f})'.format((business_equal + accumulation_equal), business_equal, accumulation_equal))
+    last = 0
+    for tyear in range(year, year - 6, -1):
+        business_equal, accumulation_equal = calculate_equal_comb(business, accumulation, tyear)
+        all = business_equal + accumulation_equal
+        print('time: {} years'.format(tyear))
+        print('{:.2f} ({:.2f}+{:.2f}) {:.2f}%'.format(all, business_equal, accumulation_equal, last / all * 100))
+        last = all
     print('')
-
-    business_principal, accumulation_principal, business_inc, accumulation_inc = calculate_principal_comb(business, accumulation, year)
     print('principal:')
-    print('{:.2f} ({:.2f}+{:.2f})'.format((business_principal + accumulation_principal), business_principal, accumulation_principal))
-    print('{:.2f} ({:.2f}+{:.2f})'.format((business_inc + accumulation_inc), business_inc, accumulation_inc))
+    last = 0
+    for tyear in range(year, year - 6, -1):
+        business_principal, accumulation_principal, business_inc, accumulation_inc = calculate_principal_comb(business, accumulation, tyear)
+        all = business_principal + accumulation_principal
+        print('time: {} years'.format(tyear))
+        print('{:.2f} ({:.2f}+{:.2f}) {:.2f}%'.format(all, business_principal, accumulation_principal, last / all * 100))
+        print('{:.2f} ({:.2f}+{:.2f})'.format((business_inc + accumulation_inc), business_inc, accumulation_inc))
+        last = all
 
 if __name__ == '__main__':
     main(sys.argv)

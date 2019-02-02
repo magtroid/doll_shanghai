@@ -11,6 +11,7 @@ import select
 import re
 import time
 
+import common
 import mstdin
 import threadpoolmanager
 import log
@@ -72,13 +73,13 @@ def stdin(block = True, search_list = None):
         command = kbhit()
         if command == '\x1b':
             rstr = 'esc'
-        elif command == '\x1b[A':
+        elif command == common.UP_KEY:
             rstr = UP_KEY
-        elif command == '\x1b[B':
+        elif command == common.DOWN_KEY:
             rstr = DOWN_KEY
-        elif command == '\x1b[C':
+        elif command == common.RIGHT_KEY:
             rstr = RIGHT_KEY
-        elif command == '\x1b[D':
+        elif command == common.LEFT_KEY:
             rstr = LEFT_KEY
         else:
             rstr = command

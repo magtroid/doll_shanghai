@@ -374,7 +374,7 @@ class LianJia(object):
                     tools.sleep(_PAGE_WAIT_TIME[try_time])
                     try_time += 1
                 else:
-                    if page_num == 1:
+                    if page == page_num - 1:
                         break
                     else:
                         self.__go_on = _STOP_ALL
@@ -422,6 +422,7 @@ class LianJia(object):
     # get lianjia data from url
     def __get_data(self, url, region_index):
         page = self.__proxy_pool.get_page(url, self.__get_page_type)
+        print(url)
         if page == common.URL_EXIST:
             log.VLOG('page exists: {}'.format(url))
             return True
