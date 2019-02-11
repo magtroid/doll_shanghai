@@ -550,6 +550,7 @@ class LianJiaData(object):
         self.__add_date_range(2016, [1, 12])
         self.__add_date_range(2017, [1, 12])
         self.__add_date_range(2018, [1, 12])
+        self.__add_date_range(2019, [1, 6])
 
     # display data
     # command to choose region
