@@ -39,7 +39,7 @@ def main(argv):
 
     distribution = dict()
     for i in range(_LOOP_TIMES):
-        tools.schedule(i, _LOOP_TIMES)
+        tools.schedule(i + 1, _LOOP_TIMES)
         ranking = peak_game(total_player, your_position)
         if ranking not in distribution:
             distribution[ranking] = 1

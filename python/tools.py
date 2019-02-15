@@ -315,7 +315,7 @@ def parse_href_url(href, root_url):
     else:
         return href
 
-# print schedule of current job
+# print schedule of current job, num should count from 1 to total
 def schedule(num, total):
     if int(num / float(total) * 10000) > int((num - 1) / float(total) * 10000):
         percent = int(num / float(total) * 10000) / 100.0
