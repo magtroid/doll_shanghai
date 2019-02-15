@@ -9,6 +9,7 @@ _MAX_TIME = 3
 _PLAYER_NUMBER = 5
 _FIRST_GAME_NUMBER = 10000
 _SECOND_GAME_NUMBER = 100000
+_BATTLE_RATIO = 0.5  # the bigger means the stronger of our team
 _WIN = 'win'
 _LOSE = 'lose'
 _TOP_NUMBER = 10
@@ -44,7 +45,7 @@ def battle(ocean_team, opponent):
             times_a = 0
             times_b += 1
         else:
-            if random.random() < 0.5:
+            if random.random() < _BATTLE_RATIO:
                 player_b += 1
                 times_a += 1
                 times_b = 0
@@ -91,7 +92,7 @@ def main(argv):
         print('{:20s} {:10d} {:10d} {:10.2f}'.format(item[0], item[1][_WIN], item[1][_LOSE], float(item[1][_WIN]) / _FIRST_GAME_NUMBER * 100))
         top_ocean_teams.append(str2list(item[0]))
         top_n += 1
-        if top_n > _TOP_NUMBER:
+        if top_n >= _TOP_NUMBER:
             break
 
     print('begin to second select team')
