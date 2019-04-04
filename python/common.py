@@ -31,6 +31,10 @@ EMPTY_KEY = ''
 BACKSPACE_KEY = '\n'
 # quit command
 CMD_QUIT = 'qQnN'
+# yes or no command
+YON_COMMAND = ['y', 'n']
+Y_COMMAND = 'y'
+N_COMMAND = 'n'
 
 # enum month
 class Month(Enum):
