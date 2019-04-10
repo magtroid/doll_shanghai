@@ -12,12 +12,12 @@ _INSTANCE_KEY = '_instance'
 
 _STRUCT_PROCESS_COMMAND = ['e', 'q']
 _STRUCT_EDIT_COMMAND = ['a', 'd', 's', 'q']
-_STRUCT_FEATURE_TYPE = ['string', 'int', 'float']
+_STRUCT_FEATURE_TYPE = [common.TYPE_STRING, common.TYPE_INT, common.TYPE_FLOAT]
 
 _NEW_ITEM = '_new_item'
 _NAME_KEY = 'name'
 
-_STRUCT_ORI_KEY = [_NAME_KEY, datalib.DATA_FEATURE]
+_ITEM_ORI_KEY = [_NAME_KEY, datalib.DATA_FEATURE]
 
 class ItemCreator(object):
     '''
@@ -62,7 +62,7 @@ class ItemCreator(object):
         if struct is None:
             struct = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _STRUCT_KEY]))
         for key, value in struct.items():
-            if key not in _STRUCT_ORI_KEY:
+            if key not in _ITEM_ORI_KEY:
                 log.VLOG('{} --> {}'.format(key, value))
 
     def __process_item_structure(self):
@@ -87,7 +87,7 @@ class ItemCreator(object):
                         log.VLOG('feature {} is already used'.format(feature_name))
                 elif command_e == 'd':
                     log.VLOG('delete a feature, please select which feature to delete')
-                    feature_name = mio.choose_command(list(set(struct.keys()) - set(_STRUCT_ORI_KEY)))
+                    feature_name = mio.choose_command(list(set(struct.keys()) - set(_ITEM_ORI_KEY)))
                     if feature_name in common.CMD_QUIT:
                         continue
                     del struct[feature_name]
@@ -101,13 +101,36 @@ class ItemCreator(object):
 
     def __process_item_instance(self):
         instances = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _INSTANCE_KEY]))
-        print(instances)
-        # log.VLOG('insert new item name')
-        # name = mio.stdin()
-        # print(name)
-        # item_data = dict()
-        # item_data[_NAME_KEY] = name
-        # self.__item_data_lib.insert_data(common.EMPTY_KEY, item_data, _NAME_KEY)
+        while True:
+            instance = mio.choose_command(list(set(instances.keys()) - set(_ITEM_ORI_KEY)) + [_NEW_ITEM])
+            if instance == _NEW_ITEM:
+                log.VLOG('insert new item name')
+                name = mio.stdin()
+                item_data = self.__create_new_item(name)
+                self.__item_data_lib.insert_data(_INSTANCE_KEY, item_data, _NAME_KEY)
+            elif instance == 'q':
+                break
+            else:
+                print(instances[instance])
+
+    def __create_new_item(self, name):
+        new_item = dict()
+        new_item[_NAME_KEY] = name
+        struct = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _STRUCT_KEY]))
+        for feature in list(set(struct.keys()) - set(_ITEM_ORI_KEY)):
+            if struct[feature] == common.TYPE_STRING:
+                new_item[feature] = ''
+                log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
+                new_item[feature] = str(mio.stdin())
+            elif struct[feature] == common.TYPE_INT:
+                new_item[feature] = 0
+                log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
+                new_item[feature] = int(mio.stdin())
+            elif struct[feature] == common.TYPE_FLOAT:
+                new_item[feature] = 0.0
+                log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
+                new_item[feature] = float(mio.stdin())
+        return new_item
             
     def __write_data_lib(self):
         self.__item_data_lib.write_data_lib()

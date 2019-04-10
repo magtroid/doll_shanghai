@@ -14,7 +14,8 @@ import gflags
 FLAGS = gflags.FLAGS
 gflags.DEFINE_string('games', '1000', 'game numbers')
 
-_COLOR = ['D', 'C', 'H', 'J']
+_COLOR = ['D', 'C', 'H', 'S']
+_SIGN = ['♦', '♣', '♥', '♠']
 _NUMBER = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 _HAND_NUM = 2
 _TABLE_NUM = 5
@@ -34,6 +35,12 @@ def PokerCmp(poker1, poker2):
     return _COLOR.index(poker1.color()) - _COLOR.index(poker2.color()) if \
 poker1.number() == poker2.number() else _NUMBER.index(poker1.number()) - \
 _NUMBER.index(poker2.number())
+
+def ColorDisplay():
+    color_list = []
+    for i in range(len(_COLOR)):
+        color_list.append('{}:{}'.format(_SIGN[i], _COLOR[i]))
+    return ' '.join(color_list)
 
 class Poker(object):
     '''
@@ -273,28 +280,28 @@ def main(argv):
     predict(dealer, hand, table)
 
     # flow 1
-    print('choose hand card')
+    print('choose hand card (2 cards) {}'.format(ColorDisplay()))
     input_pokers = sys.stdin.readline().strip().split()
     for poker in input_pokers:
         hand.insert(dealer.deal(poker))
     predict(dealer, hand, table)
 
     # flow 2
-    print('flop')
+    print('flop (3 cards) {}'.format(ColorDisplay()))
     input_pokers = sys.stdin.readline().strip().split()
     for poker in input_pokers:
         table.insert(dealer.deal(poker))
     predict(dealer, hand, table)
 
     # flow 3
-    print('turn')
+    print('turn (1 card) {}'.format(ColorDisplay()))
     input_pokers = sys.stdin.readline().strip().split()
     for poker in input_pokers:
         table.insert(dealer.deal(poker))
     predict(dealer, hand, table)
 
     # flow 4
-    print('river')
+    print('river (1 card) {}'.format(ColorDisplay()))
     input_pokers = sys.stdin.readline().strip().split()
     for poker in input_pokers:
         table.insert(dealer.deal(poker))

@@ -69,3 +69,9 @@ DOWN_KEY = '\x1b[B'
 RIGHT_KEY = '\x1b[C'
 LEFT_KEY = '\x1b[D'
 F10_KEY = '\x1b[21'
+
+# type string
+TYPE_STRING = 'string'
+TYPE_INT = 'int'
+TYPE_FLOAT = 'float'
+
