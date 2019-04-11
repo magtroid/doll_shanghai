@@ -22,15 +22,25 @@ _ITEM_ORI_KEY = [_NAME_KEY, datalib.DATA_FEATURE]
 class ItemCreator(object):
     '''
     public:
+      process_item
+      item_list
+      get_item
+    private:
+      __creator_init
+      __display_structure
+      __process_item_structure
+      __process_item_instance
+      __create_new_item
+      __write_data_lib
     '''
 
-    def __init__(self, name = None):
+    def __init__(self, name = None, schedule = True):
         if name is None:
             log.VLOG('input your item name')
             name = mio.stdin()
         self.__item_data_path = './datalib/' + name + '.lib'
         self.__item_data_lib = datalib.DataLib(self.__item_data_path)
-        self.__item_data_lib.load_data_lib()
+        self.__item_data_lib.load_data_lib(schedule = schedule)
         self.__creator_init()
 
     def process_item(self):
@@ -46,6 +56,18 @@ class ItemCreator(object):
         save_or_not = mio.choose_command(common.YON_COMMAND)
         if save_or_not is common.Y_COMMAND:
             self.__write_data_lib()
+
+    def item_list(self):
+        instances = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _INSTANCE_KEY]))
+        return list(set(instances.keys()) - set(_ITEM_ORI_KEY))
+
+    def get_item(self, key):
+        instances = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _INSTANCE_KEY]))
+        if key in instances:
+            return instances[key]
+        else:
+            log.VLOG('can not find item: {}'.format(key))
+            return {}
 
     def __creator_init(self):
         data = self.__item_data_lib.get_data()

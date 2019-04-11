@@ -65,7 +65,7 @@ class DataLib(object):
     #   write_data_lib
     #   display  # TODO
 
-    # private
+    # private:
     #   __merge_data_lib
     #   __reset data_lib
     #   __write_link_data
