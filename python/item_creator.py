@@ -31,6 +31,7 @@ class ItemCreator(object):
       __process_item_structure
       __process_item_instance
       __create_new_item
+      __check_structure_update
       __write_data_lib
     '''
 
@@ -133,26 +134,40 @@ class ItemCreator(object):
             elif instance == 'q':
                 break
             else:
+                self.__check_structure_update(instances[instance])
                 print(instances[instance])
 
     def __create_new_item(self, name):
         new_item = dict()
         new_item[_NAME_KEY] = name
-        struct = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _STRUCT_KEY]))
-        for feature in list(set(struct.keys()) - set(_ITEM_ORI_KEY)):
-            if struct[feature] == common.TYPE_STRING:
-                new_item[feature] = ''
-                log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
-                new_item[feature] = str(mio.stdin())
-            elif struct[feature] == common.TYPE_INT:
-                new_item[feature] = 0
-                log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
-                new_item[feature] = int(mio.stdin())
-            elif struct[feature] == common.TYPE_FLOAT:
-                new_item[feature] = 0.0
-                log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
-                new_item[feature] = float(mio.stdin())
+        self.__check_structure_update(new_item)
         return new_item
+
+    def __check_structure_update(self, instance):
+        log.VLOG('check structure of {}'.format(instance[_NAME_KEY]))
+        struct = self.__item_data_lib.get_data(datalib.form_lkey([datalib.DATA_KEY, _STRUCT_KEY]))
+        # check structure feature all in instance
+        for feature in list(set(struct.keys()) - set(_ITEM_ORI_KEY)):
+            if feature not in instance.keys():
+                if struct[feature] == common.TYPE_STRING:
+                    instance[feature] = ''
+                    log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
+                    instance[feature] = str(mio.stdin())
+                elif struct[feature] == common.TYPE_INT:
+                    instance[feature] = 0
+                    log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
+                    instance[feature] = int(mio.stdin())
+                elif struct[feature] == common.TYPE_FLOAT:
+                    instance[feature] = 0.0
+                    log.VLOG('insert new feature: {}, type: {}'.format(feature, struct[feature]))
+                    instance[feature] = float(mio.stdin())
+        # check instance feature all in structure
+        for feature in list(set(instance.keys()) - set(_ITEM_ORI_KEY)):
+            if feature not in struct.keys():
+                log.VLOG('feature: {} is no in structure, delete or not'.format(feature))
+                del_or_not = mio.choose_command(common.YON_COMMAND)
+                if del_or_not is common.Y_COMMAND:
+                    del instance[feature]
             
     def __write_data_lib(self):
         self.__item_data_lib.write_data_lib()
