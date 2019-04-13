@@ -73,11 +73,11 @@ class Creature(object):
 
 class CreatureCage(object):
     '''
-      public:
-        list_creatures
-        get_creature
-      private:
-        __init_creatures
+    public:
+      list_creatures
+      get_creature
+    private:
+      __init_creatures
     '''
 
     def __init__(self):
