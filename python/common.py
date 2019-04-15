@@ -69,6 +69,10 @@ DOWN_KEY = '\x1b[B'
 RIGHT_KEY = '\x1b[C'
 LEFT_KEY = '\x1b[D'
 F10_KEY = '\x1b[21'
+UP_SIGN = '↑'
+DOWN_SIGN = '↓'
+LEFT_SIGN = '←'
+RIGHT_SIGN = '→'
 
 # type string
 TYPE_STRING = 'string'

@@ -320,7 +320,7 @@ class AREA(object):
                 height, width = tools.get_terminal_size()
                 length = width - _WIDTH_BUFF
             tformat = [[coord[1], coord[1] + length, join_form]]
-            p_coord = [coord[0], self.__struct[coord[0]][_USTOFF], self.__struct[coord[0]][_USTLEN]]
+            p_coord = [coord[0], coord[1], self.__struct[coord[0]][_USTLEN]]
             self.__process_format(tformat, p_coord, method = _PFORMAT_APD)  # TODO
 
     def delete_format(self, coord, other = '', front = '', back = ''):
@@ -331,7 +331,7 @@ class AREA(object):
                 height, width = tools.get_terminal_size()
                 length = width - _WIDTH_BUFF
             tformat = [[coord[1], coord[1] + length, join_form]]
-            p_coord = [coord[0], self.__struct[coord[0]][_USTOFF], self.__struct[coord[0]][_USTLEN]]
+            p_coord = [coord[0], coord[1], self.__struct[coord[0]][_USTLEN]]
             self.__process_format(tformat, p_coord, method = _PFORMAT_APD)  # TODO
 
     def coordinate(self):
@@ -494,7 +494,9 @@ if __name__ == '__main__':
     test_str1 = '|{:>12}|'.format(text1)
     test_str2 = '|{:>12}|'.format(text2)
     canvas.paint(test_str1)
-    canvas.paint(test_str2)
+    canvas.new_area([[1, 10, 40]], line = 1, name = 'billy')
+    canvas.paint(test_str2, name = 'billy')
+    canvas.insert_format([0, 0, 4], back = WHITE, name = 'billy')
     # canvas.insert_format([1, 1, 0], front = RED)
     # canvas.insert_format([1, 1, 0], other = INVERSE)
     # canvas.delete_format([1, 1, 4], other = INVERSE)

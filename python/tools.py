@@ -39,27 +39,30 @@ TIME_HOUR = 3
 TIME_MINUTE = 4
 TIME_SECOND = 5
 
-# function
-#   cmp
-#   get_stair_format
-#   get_terminal_size
-#   is_leap_year
-#   get_date_duration
-#   get_time_str
-#   get_date
-#   get_weekday
-#   date_valid
-#   date_compare
-#   date_list_to_str
-#   form_chart_list
-#   print_list
-#   choose_file_from_dir
-#   get_url_type
-#   parse_href_url
-#   schedule
-#   open_file
-#   sleep
-#   clear
+'''
+function
+  cmp
+  get_stair_format
+  get_terminal_size
+  is_leap_year
+  get_date_duration
+  get_time_str
+  get_date
+  get_weekday
+  date_valid
+  date_compare
+  date_list_to_str
+  form_chart_list
+  format list
+  print_list
+  choose_file_from_dir
+  get_url_type
+  parse_href_url
+  schedule
+  open_file
+  sleep
+  clear
+'''
 
 def cmp(a, b):
     if a > b:
@@ -293,10 +296,26 @@ def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0,
         chart_str_list.append(list_str)
     return chart_str_list
 
+# format list, change up down to target sign
+def format_list(target_list):
+    formated_list = target_list[:]
+    for i in range(len(formated_list)):
+        if formated_list[i] == common.UP_KEY:
+            formated_list[i] = common.UP_SIGN
+        if formated_list[i] == common.DOWN_KEY:
+            formated_list[i] = common.DOWN_SIGN
+        if formated_list[i] == common.LEFT_KEY:
+            formated_list[i] = common.LEFT_SIGN
+        if formated_list[i] == common.RIGHT_KEY:
+            formated_list[i] = common.RIGHT_SIGN
+    return formated_list
+
+
 # format print lists according to elements in list
 # num_per_line if is 0, will print auto
 def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
-    chart_list = form_chart_list(target_list, list_str = True, offset = offset, num_per_line = num_per_line, sep_len = sep_len)
+    formated_list = format_list(target_list)
+    chart_list = form_chart_list(formated_list, list_str = True, offset = offset, num_per_line = num_per_line, sep_len = sep_len)
     for list_line in chart_list:
         log.INFO(list_line)
 
