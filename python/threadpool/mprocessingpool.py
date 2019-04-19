@@ -54,20 +54,27 @@ def work(tes, time = 133):
     print(tes)
     print(time)
 
+def play():
+    os.system('play heroes/music/Tavern-Inferno.mp3')
+
 if __name__ == '__main__':
-    pool = ProcessingPool(3)
-    c = b()
-    # pool = multiprocessing.Pool(processes = 2)
-    for i in range(5):
-        msg = 'hello {}'.format(i)
-        # pool.apply_async(work, [i], {'time' : 12})
-        pool.process(c.func, args = [i], kwargs = {'time' : i + 2})
-    # print ('-' * 20)
+    pool = ProcessingPool(1)
+    pool.process(play)
+    print(pool.pid())
     pool.close()
-    try:
-        pool.process(c.func, args = [i], kwargs = {'time' : i + 2})
-    except:
-        print('closed')
     pool.join()
-    # print pool.result()
+    # c = b()
+    # # pool = multiprocessing.Pool(processes = 2)
+    # for i in range(5):
+    #     msg = 'hello {}'.format(i)
+    #     # pool.apply_async(work, [i], {'time' : 12})
+    #     pool.process(c.func, args = [i], kwargs = {'time' : i + 2})
+    # # print ('-' * 20)
+    # pool.close()
+    # try:
+    #     pool.process(c.func, args = [i], kwargs = {'time' : i + 2})
+    # except:
+    #     print('closed')
+    # pool.join()
+    # # print pool.result()
     print('sub-process done')

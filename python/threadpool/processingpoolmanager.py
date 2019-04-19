@@ -74,7 +74,7 @@ def all_processing_number(detail = False):
     return total_number
 
 def close_processing(number = 0, name = _NAME_BASE):
-    if name in processing_pool_manager:
+    if name in rocessing_pool_manager:
         left_number = processing_number(name) - number if number != 0 else 0
         temp_processing_pool = processing_pool_manager[name]
         del processing_pool_manager[name]
@@ -111,15 +111,20 @@ def put_request(func, args = None, kwargs = None,
 def pp():
     close_processing(2)
 
+def play():
+    os.system('play heroes/music/Tavern-Inferno.mp3')
+
 def qq():
     for i in range(1):
         put_request(util.test_function, args = [util.PROCESS])
 
 if __name__ == '__main__':
-    new_processing(2)
-    new_processing(2, 'function')
+    new_processing(1)
+    # new_processing(2, 'function')
     all_processing_number(detail = True)
-    put_request(qq, name = 'function')  # TODO
+    # put_request(qq, name = 'function')  # TODO
+    put_request(play)
+    time.sleep(3)
     # put_request(pp, name = 'function')
     close_all_processing()
     log.INFO('Done')

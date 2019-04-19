@@ -12,6 +12,7 @@ import log
 import mmath
 import mio
 import os
+import random
 import re
 import sys
 import time
@@ -53,7 +54,8 @@ function
   date_compare
   date_list_to_str
   form_chart_list
-  format list
+  format_list
+  join_path
   print_list
   choose_file_from_dir
   get_url_type
@@ -62,6 +64,10 @@ function
   open_file
   sleep
   clear
+  mrandom
+  random_choose
+  norm_file_name
+  play_music
 '''
 
 def cmp(a, b):
@@ -310,6 +316,9 @@ def format_list(target_list):
             formated_list[i] = common.RIGHT_SIGN
     return formated_list
 
+# join path
+def join_path(path_list):
+    return os.path.join(*path_list)
 
 # format print lists according to elements in list
 # num_per_line if is 0, will print auto
@@ -359,3 +368,28 @@ def sleep(t):
 # clear screan
 def clear():
     os.system('clear')
+
+# random number
+def mrandom(threshould = 1):
+    return threshould * random.random()
+
+# random choose one from list
+def random_choose(choose_list):
+    if len(choose_list) == 0:
+        return ''
+    x = int(mrandom(len(choose_list)))
+    return choose_list[x]
+
+# norm file name to transfer ' ', '(', ')' and so on
+def norm_file_name(file_name):
+    file_name = re.sub(' ', '\ ', file_name)
+    file_name = re.sub('\(', '\(', file_name)
+    file_name = re.sub('\)', '\)', file_name)
+    return file_name
+
+# play a music
+def play_music(music_name, background = True):
+    exec_cmd = 'play {}'.format(norm_file_name(music_name))
+    if background:
+        exec_cmd = '{} > log1 2>&1 &'.format(exec_cmd)
+    os.system(exec_cmd)

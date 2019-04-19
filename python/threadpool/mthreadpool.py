@@ -5,8 +5,9 @@ Magtroid @ 2017-11-20 16:18
 '''
 
 # import library
+import os
 import sys
-sys.path.append('..')
+import threadpool_config
 import ctypes
 import queue
 import threading
@@ -309,23 +310,26 @@ def looop():
         pass
     end = time.time()
 
+def play():
+    os.system('play heroes/music/Tavern-Inferno.mp3')
+
 if __name__ == '__main__':
-    a = ThreadPool(4)
-    req = WorkRequest(loop)
+    a = ThreadPool(1)
+    req = WorkRequest(play)
     a.put_request(req)
-    a.put_request(req)
+    # a.put_request(req)
     # a.put_request(req)
     # a.put_request(req)
     time.sleep(1)
-    thread_num = len(threading._active)
-    n = 1
-    while True:
-        n += 1
-        print(threading._active)
-        time.sleep(1)
-        if n is 5:
-            a.terminate_thread()
-        elif n is 10:
-            break
-        pass
+    # thread_num = len(threading._active)
+    # n = 1
+    # while True:
+    #     n += 1
+    #     print(threading._active)
+    #     time.sleep(1)
+    #     if n is 5:
+    #         a.terminate_thread()
+    #     elif n is 10:
+    #         break
+    #     pass
     print('done')

@@ -13,6 +13,7 @@ import controler
 import mio
 import os
 import re
+import sys
 import tools
 import log
 
@@ -166,8 +167,7 @@ class DataLib(object):
                         unit_tmp.update(unit)
         else:
             log.VLOG('no data current')
-        self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, \
-                        data_file, data_lib)
+        self.set_data(CONFIG_KEY + LIB_CONNECT + _LIB_FILE_KEY, data_file, data_lib)
         log.VLOG('load ok')
         log.VLOG('all data number: {}'.format(self.data_num(data_lib)))
 
@@ -484,8 +484,10 @@ class DataLibManager(object):
     #   __level_display
     #   __display_lib_tree
 
-    def __init__(self):
-        self.__datalib_dir = './datalib/'
+    def __init__(self, datalib_dir = None):
+        if datalib_dir is None:
+            datalib_dir = './datalib'
+        self.__datalib_dir = datalib_dir
         self.__disable_controler = True
         self.__target_lib = dict()
         self.__lib_list = []
@@ -499,7 +501,7 @@ class DataLibManager(object):
         if command == 'cancel' or command == 'q':
             log.VLOG('\ncanceled...')
         else:
-            self.__target_lib = DataLib('{0}{1}'.format(self.__datalib_dir, command), self.__disable_controler)
+            self.__target_lib = DataLib(tools.join_path([self.__datalib_dir, command]), self.__disable_controler)
             self.__target_lib.load_data_lib()
             self.__display_lib_tree()
 
@@ -717,6 +719,7 @@ class DataLibManager(object):
             cur_lib = target_lib.get_data(form_lkey(lkey_path))
 
 if __name__ == '__main__':
-    datalib_manager = DataLibManager()
+    lib_dir = sys.argv[1] if len(sys.argv) == 2 else None
+    datalib_manager = DataLibManager(lib_dir)
     datalib_manager.manage()
     log.INFO('done')

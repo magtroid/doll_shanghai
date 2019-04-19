@@ -108,13 +108,14 @@ def loop():
         print('pass')
 
 def choose():
+    import mio
     command = mio.choose_command()
     print('what you type is: {}'.format(command))
 
 if __name__ == '__main__':
     new_thread(2)
+    log.INFO(threading._active)
     import sys
-    import mio
     import time
     put_request(choose)
     time.sleep(3)

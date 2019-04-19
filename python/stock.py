@@ -684,10 +684,7 @@ class StockData(object):
         self.__canvas.erase()
         self.__canvas.clear_area()
         for n, ikline in enumerate(display_list):
-            if n == icursor:
-                self.__draw_kline(ikline, n, True)
-            else:
-                self.__draw_kline(ikline, n)
+            self.__draw_kline(ikline, n, n == icursor)
         self.__kline_detail(kline_list[-(cursor + 1)])
         self.__canvas.display()
 

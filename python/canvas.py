@@ -320,7 +320,7 @@ class AREA(object):
                 height, width = tools.get_terminal_size()
                 length = width - _WIDTH_BUFF
             tformat = [[coord[1], coord[1] + length, join_form]]
-            p_coord = [coord[0], coord[1], self.__struct[coord[0]][_USTLEN]]
+            p_coord = [coord[0], 0, self.__struct[coord[0]][_USTLEN]]
             self.__process_format(tformat, p_coord, method = _PFORMAT_APD)  # TODO
 
     def delete_format(self, coord, other = '', front = '', back = ''):

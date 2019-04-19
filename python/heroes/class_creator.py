@@ -2,11 +2,13 @@
 # coding=utf-8
 # Magtroid @ 2019-04-04 11:12
 
+import hero_config
 import common
 import datalib
 import item_creator
 import log
 import mio
+import tools
 
 _NEW_CLASS = '_new_class'
 _NAME_KEY = 'name'
@@ -17,7 +19,7 @@ class ClassCreator(object):
     '''
 
     def __init__(self):
-        self.__class_data_path = './datalib/class_creator.lib'
+        self.__class_data_path = tools.join_path([hero_config.DATALIB, 'class_creator.lib'])
         self.__class_data_lib = datalib.DataLib(self.__class_data_path)
         self.__class_data_lib.load_data_lib()
 

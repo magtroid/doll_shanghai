@@ -5,8 +5,7 @@ Magtroid @ 2017-12-04 11:09
 '''
 
 # import library
-import sys
-sys.path.append('..')
+import threadpool_config
 import os
 
 import threading

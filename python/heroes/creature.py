@@ -5,9 +5,7 @@ creature class
 Magtroid @ 2019-04-12 10:54
 '''
 
-import os
-import sys
-sys.path.append('{}/..'.format(os.path.dirname(os.path.realpath(__file__))))
+import hero_config
 import common
 import copy
 import datalib
@@ -100,12 +98,13 @@ class CreatureCage(object):
             creature_data = self.__creature_lib.get_item(creature)
             self.__creatures[creature] = Creature(creature, creature_data = creature_data)
 
+creature_cage = CreatureCage()
+
 def main():
-    creature_lib = item_creator.ItemCreator(_CREATURE_KEY)
-    creature_name = mio.choose_command(creature_lib.item_list())
+    creature_name = mio.choose_command(creature_cage.list_creatures())
     if creature_name in common.CMD_QUIT:
         return
-    creature = Creature(creature_name)
+    creature = creature_cage.get_creature(creature_name)
     creature.display_creature()
 
 if __name__ == '__main__':

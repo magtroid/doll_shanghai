@@ -2,10 +2,14 @@
 # coding=utf-8
 # Magtroid @ 2019-01-06 19:08
 
+import hero_config
 import common
 import datalib
 import log
 import mio
+import tools
+
+_DATALIB_ITEM = ['creature', 'hero']
 
 _STRUCT_KEY = '_struct'
 _INSTANCE_KEY = '_instance'
@@ -38,8 +42,8 @@ class ItemCreator(object):
     def __init__(self, name = None, schedule = True):
         if name is None:
             log.VLOG('input your item name')
-            name = mio.stdin()
-        self.__item_data_path = './datalib/' + name + '.lib'
+            name = mio.choose_command(_DATALIB_ITEM)
+        self.__item_data_path = tools.join_path([hero_config.DATALIB, name + '.lib'])
         self.__item_data_lib = datalib.DataLib(self.__item_data_path)
         self.__item_data_lib.load_data_lib(schedule = schedule)
         self.__creator_init()
