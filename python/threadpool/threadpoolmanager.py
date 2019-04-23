@@ -74,13 +74,13 @@ def dismiss_thread(name = _NAME_BASE, number = 0, do_join = False, time_out = No
 def terminate_thread(name = _NAME_BASE, number = 0):
     if name in thread_pool_manager:
         thread_pool_manager[name].terminate_thread(number = number)
-        if thread_number(name = name) == 0:
-            del thread_pool_manager[name]
+        # if thread_number(name = name) == 0:
+        #     del thread_pool_manager[name]
 
 def dismiss_all_thread():
     for name, threadpool in list(thread_pool_manager.items()):
         threadpool.dismiss_thread(do_join = True)
-        del thread_pool_manager[name]
+        # del thread_pool_manager[name]
 
 def terminate_all_thread():
     for name, threadpool in list(thread_pool_manager.items()):

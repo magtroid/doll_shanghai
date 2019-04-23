@@ -59,15 +59,16 @@ class Creature(object):
     def get_name(self):
         return self.__name
 
-    def display_creature(self):
-        log.VLOG('creature name: {}'.format(self.__name))
-        log.VLOG('hitpoints:  {:6d}{:8s}'.format(self.__hitpoints,
-                                                 '({})'.format(self.__hitpoints + self.__equipment_hitpoints)))
-        log.VLOG('attack:     {:6d}{:8s}  defence:   {:6d}{:8s}'.format(
+    def display_creature(self, ostr = None):
+        ostr = log.VLOG('creature name: {}'.format(self.__name), ostr = ostr)
+        ostr = log.VLOG('hitpoints:  {:6d}{:8s}'.format(self.__hitpoints,
+                                                        '({})'.format(self.__hitpoints + self.__equipment_hitpoints)), ostr = ostr)
+        ostr = log.VLOG('attack:     {:6d}{:8s}  defence:   {:6d}{:8s}'.format(
             self.__attack, '({})'.format(self.__attack + self.__equipment_attack),
-            self.__defence, '({})'.format(self.__defence + self.__equipment_defence)))
-        log.VLOG('spellpower: {:6d}'.format(self.__spellpower))
-        log.VLOG('morale:     {:6d}          luck:      {:6d}'.format(self.__morale, self.__luck))
+            self.__defence, '({})'.format(self.__defence + self.__equipment_defence)), ostr = ostr)
+        ostr = log.VLOG('spellpower: {:6d}'.format(self.__spellpower), ostr = ostr)
+        ostr = log.VLOG('morale:     {:6d}          luck:      {:6d}'.format(self.__morale, self.__luck), ostr = ostr)
+        return ostr
 
 class CreatureCage(object):
     '''

@@ -15,17 +15,26 @@ def set_log_level(level):
     _LEVEL = int(level)
 
 # static function
-def INFO(log = None, end = True):
+def INFO(log = None, end = True, ostr = None):
     if log is None:
         log = ''
     if end:
-        print(log)
+        if ostr is None:
+            print(log)
+        else:
+            ostr += '{}\n'.format(log)
+            return ostr
     else:
-        print(log, end = '')
+        if ostr is None:
+            print(log, end = '')
+        else:
+            ostr += '{}'.format(log)
+            return ostr
 
-def VLOG(log = None, level = 0, end = True):
+def VLOG(log = None, level = 0, end = True, ostr = None):
     if _LEVEL >= level:
-        INFO(log, end = end)
+        ostr = INFO(log, end = end, ostr = ostr)
+        return ostr
 
 if __name__ == '__main__':
     _LEVEL = 3

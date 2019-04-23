@@ -105,7 +105,7 @@ class WorkThread(threading.Thread):
 
     def terminate(self):
         if self.__tid in threading._active:
-            log.VLOG('terminate tid {}'.format(self.__tid), 0)
+            # log.VLOG('terminate tid {}'.format(self.__tid), 0)
             if self.__status is _STATUS_WORKING:
                 ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.__tid), ctypes.py_object(SystemExit))
             self.dismiss()
@@ -315,7 +315,7 @@ def play():
 
 if __name__ == '__main__':
     a = ThreadPool(1)
-    req = WorkRequest(play)
+    req = WorkRequest(loop)
     a.put_request(req)
     # a.put_request(req)
     # a.put_request(req)

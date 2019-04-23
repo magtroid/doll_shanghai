@@ -44,7 +44,8 @@ class ItemCreator(object):
             log.VLOG('input your item name')
             name = mio.choose_command(_DATALIB_ITEM)
         self.__item_data_path = tools.join_path([hero_config.DATALIB, name + '.lib'])
-        self.__item_data_lib = datalib.DataLib(self.__item_data_path)
+        self.__disable_controler = True
+        self.__item_data_lib = datalib.DataLib(self.__item_data_path, self.__disable_controler)
         self.__item_data_lib.load_data_lib(schedule = schedule)
         self.__creator_init()
 

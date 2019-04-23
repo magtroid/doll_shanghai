@@ -12,6 +12,7 @@ import log
 import mmath
 import mio
 import os
+import psutil
 import random
 import re
 import sys
@@ -68,6 +69,7 @@ function
   random_choose
   norm_file_name
   play_music
+  stop_processing
 '''
 
 def cmp(a, b):
@@ -393,3 +395,14 @@ def play_music(music_name, background = True):
     if background:
         exec_cmd = '{} > log1 2>&1 &'.format(exec_cmd)
     os.system(exec_cmd)
+
+# stop a processing based on command or pid or others
+def stop_processing(pid = None, command = None):
+    if pid is not None:
+        os.system('kill -9 {}'.format(pid))
+    elif command is not None:
+        pids = psutil.pids()
+        for pid in pids:
+            p = psutil.Process(pid)
+            if p.name() == command:
+                os.system('kill -9 {}'.format(pid))

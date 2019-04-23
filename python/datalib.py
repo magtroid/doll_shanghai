@@ -77,7 +77,7 @@ class DataLib(object):
     #   2) dict:   stock lib
     def __init__(self, resource, disable_controler = None):
         self.__root_key = [DATA_KEY, CONFIG_KEY]
-        self.__disable_controler = False
+        self.__disable_controler = True
         if isinstance(resource, str):
             self.__data_file = resource
             self.__data_lib = dict()

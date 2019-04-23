@@ -24,7 +24,9 @@ _stdin = ['']
 '''
 _swallow
 clear_stdin
+open_stdin
 get_stdin
+close_stdin
 '''
 
 # use a list to update stdin dynamic
@@ -34,24 +36,32 @@ def _swallow(strs):
     tty.setcbreak(tty_fd)
     try:
         while True:
-            while processingpoolmanager.is_locked():
-                pass
-            threadpoolmanager.set_lock()
+            # while processingpoolmanager.is_locked():
+            #     pass
+            # threadpoolmanager.set_lock()
             char = sys.stdin.read(1)
             strs[0] += char
-            threadpoolmanager.set_unlock()
+            # threadpoolmanager.set_unlock()
             time.sleep(DELTA_TIME)
     finally:
         termios.tcsetattr(tty_fd, termios.TCSADRAIN, tty_old_settings)
 
+
 def clear_stdin():
     _stdin[0] = ''
+
+# thread should new just before put request, other wise the thread will consume
+# lots of cpu resources due to loop in thread
+def open_stdin():
+    threadpoolmanager.new_thread(1, name = _STDIN_NAME)
+    threadpoolmanager.put_request(_swallow, args = [_stdin], name = _STDIN_NAME)
 
 def get_stdin():
     return _stdin[0]
 
-threadpoolmanager.new_thread(1, name = _STDIN_NAME)
-threadpoolmanager.put_request(_swallow, args = [_stdin], name = _STDIN_NAME)
+def close_stdin():
+    threadpoolmanager.dismiss_thread(name = _STDIN_NAME)
+
 
 if __name__ == '__main__':
     import time

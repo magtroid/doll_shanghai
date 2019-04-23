@@ -33,6 +33,8 @@ processing_number
 all_processing_number
 close_processing
 close_all_processing
+dismiss_processing
+dismiss_all_processing
 put_request
 '''
 
@@ -41,7 +43,7 @@ def new_processing(process_number, name = _NAME_BASE):
         message = False
         while threadpoolmanager.is_locked():
             if not message:
-                log.INFO('wait for create processing typing')
+                log.INFO('wait for processing')
                 message = True
             pass
         set_lock()
@@ -74,7 +76,7 @@ def all_processing_number(detail = False):
     return total_number
 
 def close_processing(number = 0, name = _NAME_BASE):
-    if name in rocessing_pool_manager:
+    if name in processing_pool_manager:
         left_number = processing_number(name) - number if number != 0 else 0
         temp_processing_pool = processing_pool_manager[name]
         del processing_pool_manager[name]
@@ -92,6 +94,16 @@ def close_all_processing(result = False):
         if result:
             processing_result.extend(processing_pool.get_result())
     return [result.get() for result in processing_result]
+
+def dismiss_processing(name = _NAME_BASE):
+    if name in processing_pool_manager:
+        origin_number = processing_number(name)
+        close_processing(name = name)
+        new_processing(origin_number, name = name)
+
+def dismiss_all_processing():
+    for name in processing_pool_manager.keys():
+        dismiss_processing(name = name)
 
 '''
 def terminate_processing(name, number):

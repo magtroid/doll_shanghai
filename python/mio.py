@@ -55,15 +55,20 @@ def _refresh_line(pstr):
 def kbhit(one_hit = True, refresh_times = _REFRESH_TIMES):
     refresh_time = refresh_times * mstdin.DELTA_TIME
     mstdin.clear_stdin()
+    mstdin.open_stdin()
     while not mstdin.get_stdin():
         time.sleep(refresh_time)
     time.sleep(refresh_time)
     if one_hit:
-        return mstdin.get_stdin()
+        stdin = mstdin.get_stdin()
+        mstdin.close_stdin()
+        return stdin
     else:
         while mstdin.get_stdin()[-1] != '\n':  # should not use ENTER_KEY
             time.sleep(refresh_time)
-        return mstdin.get_stdin()
+        stdin = mstdin.get_stdin()
+        mstdin.close_stdin()
+        return stdin
 
 # return stdin
 def stdin(block = True, search_list = None):
@@ -199,6 +204,8 @@ def dfd():
 if __name__ == '__main__':
     while True:
         print('start to type in you command')
+        # command = stdin()
+        # command = kbhit(one_hit = False)
         command = kbhit(one_hit = True)
         # command1 = kbhit()
         # command2 = kbhit()

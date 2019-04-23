@@ -11,6 +11,7 @@ import tools
 
 # common const
 BACKSPACE = True
+_BACKSPACE_KEY = '\n'
 
 _COORD_Y = 0
 _COORD_X = 1
@@ -154,7 +155,17 @@ class CANVAS(object):
             target_area = self.__area_dict[name]
         else:
             return
-        target_area.paint(context, backspace, coordinate = coordinate, other = other, front = front, back = back)
+        contexts = context.split(_BACKSPACE_KEY)
+        if len(contexts) == 1:
+            target_area.paint(contexts[0], backspace, coordinate = coordinate, other = other, front = front, back = back)
+        else:
+            # first line backspace is True, coordinate is coordinate
+            target_area.paint(contexts[0], coordinate = coordinate, other = other, front = front, back = back)
+            # middle lines backspace is True, coordinate is 0
+            for i in range(1, len(contexts) - 1):
+                target_area.paint(contexts[i], backspace, other = other, front = front, back = back)
+            # last liine backspace is backspace, coordinate is 0
+            target_area.paint(contexts[-1], backspace = backspace, other = other, front = front, back = back)
 
     # clear screan and display canvas
     def display(self):

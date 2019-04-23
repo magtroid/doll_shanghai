@@ -20,7 +20,8 @@ class ClassCreator(object):
 
     def __init__(self):
         self.__class_data_path = tools.join_path([hero_config.DATALIB, 'class_creator.lib'])
-        self.__class_data_lib = datalib.DataLib(self.__class_data_path)
+        self.__disable_controler = True
+        self.__class_data_lib = datalib.DataLib(self.__class_data_path, self.__disable_controler)
         self.__class_data_lib.load_data_lib()
 
     def create_class(self):
