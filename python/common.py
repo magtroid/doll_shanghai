@@ -74,6 +74,7 @@ LEFT_SIGN = '←'
 RIGHT_SIGN = '→'
 F10_KEY = '\x1b[21'
 BLANK_KEY = ' '
+ESC_KEY = '\x1b'
 
 # type string
 TYPE_STRING = 'string'
