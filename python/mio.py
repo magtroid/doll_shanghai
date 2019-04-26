@@ -21,12 +21,6 @@ _REST = -1
 _ALL = 0
 _REFRESH_TIMES = 5
 
-LEFT_KEY = 'left'
-RIGHT_KEY = 'right'
-UP_KEY = 'up'
-DOWN_KEY = 'down'
-ENTER_KEY = '\n'
-
 # function
 #   _flush
 #   _lclear
@@ -72,32 +66,19 @@ def kbhit(one_hit = True, refresh_times = _REFRESH_TIMES):
 
 # return stdin
 def stdin(block = True, search_list = None):
-    rstr = ''
     if not block:
-        command = kbhit()
-        if command == '\x1b':
-            rstr = 'esc'
-        elif command == common.UP_KEY:
-            rstr = UP_KEY
-        elif command == common.DOWN_KEY:
-            rstr = DOWN_KEY
-        elif command == common.RIGHT_KEY:
-            rstr = RIGHT_KEY
-        elif command == common.LEFT_KEY:
-            rstr = LEFT_KEY
-        else:
-            rstr = command
-        return rstr
+        return kbhit()
 
+    rstr = ''
     if search_list is None:
         search_list = []
     switch_model = False
     while True:
         command = kbhit()
         if command:
-            if command == '\t' or command == '\x1b[Z':
+            if command == common.TAB_KEY or command == common.SHIFT_TAB_KEY:
                 if not switch_model:
-                    if command == '\t':
+                    if command == common.TAB_KEY:
                         switch_model = True
                         fill_coordinate = [0, 0]
                         fill_list = []
@@ -121,7 +102,7 @@ def stdin(block = True, search_list = None):
                             fill_coordinate = [-1, -1]
                             _refresh_line(rstr)
                 else:
-                    if command == '\t':
+                    if command == common.TAB_KEY:
                         fill_coordinate[1] += 1
                         if fill_coordinate[1] >= len(fill_chart[fill_coordinate[0]]):
                             fill_coordinate[0] += 1
@@ -144,7 +125,7 @@ def stdin(block = True, search_list = None):
                         else:
                             pstr += '{0:>{1}}  '.format(fill_seg, segs_len)
                     _refresh_line(pstr)
-            elif command == ENTER_KEY:
+            elif command == common.ENTER_KEY:
                 if switch_model:
                     rstr = fill_chart[fill_coordinate[0]][fill_coordinate[1]]
                     switch_model = False
@@ -153,11 +134,12 @@ def stdin(block = True, search_list = None):
                 else:
                     log.VLOG()
                     return rstr
-            elif command in ['esc', UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY]:  # arrow
+            elif command in [common.ESC_KEY, common.UP_KEY, common.DOWN_KEY, common.LEFT_KEY, common.RIGHT_KEY]:  # arrow
                 switch_model = False
                 fill_coordinate = [-1, -1]
+                rstr += command
                 _refresh_line(rstr)
-            elif command == '\x7f':  # backspace
+            elif command == common.DELETE_KEY:
                 switch_model = False
                 fill_coordinate = [-1, -1]
                 rstr = rstr[:-1]
@@ -204,9 +186,10 @@ def dfd():
 if __name__ == '__main__':
     while True:
         print('start to type in you command')
+        command = choose_command([common.UP_KEY, common.DOWN_KEY, common.LEFT_KEY, common.RIGHT_KEY])
         # command = stdin()
         # command = kbhit(one_hit = False)
-        command = kbhit(one_hit = True)
+        # command = kbhit(one_hit = True)
         # command1 = kbhit()
         # command2 = kbhit()
         log.INFO('what you type is: {}'.format(repr(command)))

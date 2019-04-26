@@ -27,8 +27,8 @@ FIND_NONE = -1
 NONE = '__none__'
 # empty key
 EMPTY_KEY = ''
-# backspace key
-BACKSPACE_KEY = '\n'
+# enter key
+ENTER_KEY = '\n'
 # quit command
 CMD_QUIT = 'qQnN'
 # yes or no command
@@ -68,6 +68,8 @@ UP_KEY = '\x1b[A'
 DOWN_KEY = '\x1b[B'
 RIGHT_KEY = '\x1b[C'
 LEFT_KEY = '\x1b[D'
+TAB_KEY = '\t'
+SHIFT_TAB_KEY = '\x1b[Z'
 UP_SIGN = '↑'
 DOWN_SIGN = '↓'
 LEFT_SIGN = '←'
@@ -75,6 +77,7 @@ RIGHT_SIGN = '→'
 F10_KEY = '\x1b[21'
 BLANK_KEY = ' '
 ESC_KEY = '\x1b'
+DELETE_KEY = '\x7f'
 
 # type string
 TYPE_STRING = 'string'

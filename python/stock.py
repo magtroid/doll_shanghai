@@ -510,13 +510,13 @@ class StockData(object):
             else:  # model == _KLINES_MODEL:
                 self.__display_kline(kline_list, [offs, cursor, max_kline])
                 command = mio.choose_command(block = False, print_log = False)
-                if command == mio.LEFT_KEY:
+                if command == common.LEFT_KEY:
                     if cursor < len(kline_list) - 1:
                         cursor += 1
-                elif command == mio.RIGHT_KEY:
+                elif command == common.RIGHT_KEY:
                     if cursor > 0:
                         cursor -= 1
-                elif command == mio.ENTER_KEY:
+                elif command == common.ENTER_KEY:
                     date = kline_list[-1 - cursor][_DATE_OFF]
                     daily_data = self.__stock_detail_lib.get_data()
                     if date in daily_data:

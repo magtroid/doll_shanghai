@@ -9,6 +9,9 @@ import log
 import re
 import tools
 
+# debug switch
+_FOR_DEBUG = False
+
 # common const
 BACKSPACE = True
 _BACKSPACE_KEY = '\n'
@@ -178,8 +181,10 @@ class CANVAS(object):
             area.display()
         self.__form_text()
         for canvas_line in self.__canvas:
-            # log.VLOG(repr(canvas_line))  # FOR DEBUG
-            log.VLOG(canvas_line)
+            if _FOR_DEBUG:
+                log.VLOG(repr(canvas_line))
+            else:
+                log.VLOG(canvas_line)
 
     # '' is the foundation key
     # if area_list is none, clear all areas
@@ -505,9 +510,14 @@ if __name__ == '__main__':
     test_str1 = '|{:>12}|'.format(text1)
     test_str2 = '|{:>12}|'.format(text2)
     canvas.paint(test_str1)
-    canvas.new_area([[1, 10, 40]], line = 1, name = 'billy')
-    canvas.paint(test_str2, name = 'billy')
-    canvas.insert_format([0, 0, 4], back = WHITE, name = 'billy')
+    canvas.paint(test_str2)
+    canvas.new_area([[0, 2, 40]], line = 0, name = 'billy')
+    canvas.new_area([[0, 2, 40]], line = 0, name = 'cllen')
+    canvas.insert_format([0, 0, 12], back = WHITE, name = 'cllen')
+    canvas.paint(test_str1, name = 'cllen')
+    # canvas.insert_format([0, 0, 12], front = RED, name = 'billy')
+    # canvas.paint(test_str2, name = 'billy')
+    # canvas.insert_format([0, 0, 4], back = WHITE, name = 'billy')
     # canvas.insert_format([1, 1, 0], front = RED)
     # canvas.insert_format([1, 1, 0], other = INVERSE)
     # canvas.delete_format([1, 1, 4], other = INVERSE)

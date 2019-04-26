@@ -599,7 +599,7 @@ class DataLibManager(object):
 
     # use command to display tree structure of lib
     def __display_lib_tree(self, target_lib = None):
-        command_list = ['s', 'e', 'd', 'f', mio.UP_KEY, mio.DOWN_KEY, mio.LEFT_KEY, mio.RIGHT_KEY, mio.ENTER_KEY, 'esc']
+        command_list = ['s', 'e', 'd', 'f', common.UP_KEY, common.DOWN_KEY, common.LEFT_KEY, common.RIGHT_KEY, common.ENTER_KEY, common.ESC_KEY]
         if target_lib is None:
             target_lib = self.__target_lib
         lkey_path = []
@@ -613,13 +613,13 @@ class DataLibManager(object):
             if model == _COMMAND_MODEL:
                 command = mio.choose_command(command_list, block = False, print_log = False)
                 cur_target_key = list(cur_lib)[offs_path[-1]]
-                if command == mio.UP_KEY:
+                if command == common.UP_KEY:
                     if offs_path[-1] > 0:
                         offs_path[-1] -= 1
-                elif command == mio.DOWN_KEY:
+                elif command == common.DOWN_KEY:
                     if offs_path[-1] < len(cur_lib) - 1:
                         offs_path[-1] += 1
-                elif command == mio.RIGHT_KEY or command == mio.ENTER_KEY:
+                elif command == common.RIGHT_KEY or command == common.ENTER_KEY:
                     if isinstance(cur_lib[cur_target_key], dict) and len(cur_lib[cur_target_key]) > 0:
                         lkey_path.append(cur_target_key)
                         offs_path.append(0)
@@ -627,7 +627,7 @@ class DataLibManager(object):
                         sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
                         sub_lib.load_data_lib()
                         self.__display_lib_tree(sub_lib)
-                elif command == mio.LEFT_KEY:
+                elif command == common.LEFT_KEY:
                     if len(offs_path) > 1:
                         lkey_path.pop()
                         offs_path.pop()
@@ -638,7 +638,7 @@ class DataLibManager(object):
                     for n, key in enumerate(list(cur_lib)):
                         filter_dict[key] = n
                     continue
-                elif command == 'esc':
+                elif command == common.ESC_KEY:
                     filter_str = ''
                     model = _COMMAND_MODEL
                 elif command == 'e':
@@ -674,18 +674,18 @@ class DataLibManager(object):
                 cur_sort_item = sorted(filter_dict.items(), key = lambda d:d[1])
                 cur_target_off = cur_sort_item[offs_path[-1]][1] if len(cur_sort_item) != 0 else None
                 cur_target_key = cur_sort_item[offs_path[-1]][0] if len(cur_sort_item) != 0 else None
-                if command == 'esc':
+                if command == common.ESC_KEY:
                     offs_path[-1] = 0
                     filter_str = ''
                     filter_dict = None
                     model = _COMMAND_MODEL
-                elif command == mio.UP_KEY:
+                elif command == common.UP_KEY:
                     if offs_path[-1] > 0:
                         offs_path[-1] -= 1
-                elif command == mio.DOWN_KEY:
+                elif command == common.DOWN_KEY:
                     if offs_path[-1] < len(filter_dict) - 1:
                         offs_path[-1] += 1
-                elif command == mio.RIGHT_KEY or command == mio.ENTER_KEY:
+                elif command == common.RIGHT_KEY or command == common.ENTER_KEY:
                     if cur_target_key is not None and isinstance(cur_lib[cur_target_key], dict):
                         filter_str = ''
                         filter_dict = None
@@ -701,7 +701,7 @@ class DataLibManager(object):
                         sub_lib = DataLib(cur_lib[cur_target_key], self.__disable_controler)
                         sub_lib.load_data_lib(schedule = False)
                         self.__display_lib_tree(sub_lib)
-                elif command == mio.LEFT_KEY:
+                elif command == common.LEFT_KEY:
                     if len(offs_path) > 1:
                         filter_str = ''
                         filter_dict = None
