@@ -1,0 +1,18 @@
+__dict
+DATA	CONFIG
+__dict	__dict
+__dict__DATA
+_struct	_instance
+__dict	__dict
+__dict__DATA___struct
+name	ID	attack	defence	spellpower	hitpoints
+__string___struct	__string___struct	__string__int	__string__int	__string__int	__string__int
+__dict__DATA___instance
+name	ID	beast
+__string___instance	__string___instance	__dict
+__dict__DATA___instance__beast
+name	defence	spellpower	attack	ID	hitpoints
+__string__beast	__int__10	__int__0	__int__4	__string__beast	__int__20
+__dict__CONFIG
+DATA_NUM	LIB_FILE
+__int__3	__string__./datalib/creature.lib

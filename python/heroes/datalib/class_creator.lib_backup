@@ -1,0 +1,15 @@
+__dict
+DATA	CONFIG
+__dict	__dict
+__dict__DATA
+hero	creature
+__dict	__dict
+__dict__DATA__hero
+name	ID
+__string__hero	__string__hero
+__dict__DATA__creature
+name	ID
+__string__creature	__string__creature
+__dict__CONFIG
+DATA_NUM	LIB_FILE
+__int__2	__string__./heroes/datalib/class_creator.lib

@@ -23,22 +23,25 @@ _BATTLE_MATRIX = [8, 12]
 _BATTLE_UNIT_SIZE = [3, 7]
 _BATTLE_HEIGHT = _BATTLE_MATRIX[_COORD_Y] * _BATTLE_UNIT_SIZE[_COORD_Y] + _BATTLE_MATRIX[_COORD_Y] + 1
 _BATTLE_WIDTH = _BATTLE_MATRIX[_COORD_X] * _BATTLE_UNIT_SIZE[_COORD_X] + _BATTLE_MATRIX[_COORD_X] + 1
-_BATTLE_STRUCTURE = [[0, _BATTLE_HEIGHT, _BATTLE_WIDTH]]
+_BATTLE_COORD = [0, 0]
+_BATTLE_STRUCTURE = [_BATTLE_HEIGHT, _BATTLE_WIDTH]
 
 _CURSOR_KEY = 'cursor'
-_CURSOR_LINE_INIT = 1
-_CURSOR_STRUCTURE = [[1, _BATTLE_UNIT_SIZE[_COORD_Y], _BATTLE_UNIT_SIZE[_COORD_X]]]
+_CURSOR_COORD = [1, 1]
+_CURSOR_STRUCTURE = [_BATTLE_UNIT_SIZE[_COORD_Y], _BATTLE_UNIT_SIZE[_COORD_X]]
 
 # army status structure
 _CUR_ARMY_STATUS_KEY = 'cur_army_status'
-_CUR_ARMY_STATUS_STRUCTURE = [[_BATTLE_WIDTH + 1, 10, 50]]
+_CUR_ARMY_STATUS_COORD = [0, _BATTLE_WIDTH + 1]
+_CUR_ARMY_STATUS_STRUCTURE = [10, 50]
 _TAR_ARMY_STATUS_KEY = 'tar_army_status'
-_TAR_ARMY_STATUS_STRUCTURE = [[_BATTLE_WIDTH + 1, 30, 50]]
+_TAR_ARMY_STATUS_COORD = [15, _BATTLE_WIDTH + 1]
+_TAR_ARMY_STATUS_STRUCTURE = [10, 50]
 
 # move queue
 _MOVE_QUEUE_KEY = 'move_queue'
-_MOVE_QUEUE_STRUCTURE = [[0, _BATTLE_UNIT_SIZE[_COORD_Y] + 2, _BATTLE_WIDTH]]
-_MOVE_QUEUE_LINE = _BATTLE_HEIGHT + 1
+_MOVE_QUEUE_COORD = [_BATTLE_HEIGHT + 1, 0]
+_MOVE_QUEUE_STRUCTURE = [_BATTLE_UNIT_SIZE[_COORD_Y] + 2, _BATTLE_WIDTH]
 
 # battle command
 _BATTLE_GRID_ON = '+'
@@ -104,11 +107,11 @@ class BattleField(object):
             return
         self.__grid = False
         self.__canvas = canvas.CANVAS()
-        self.__canvas.new_area(_BATTLE_STRUCTURE, name = _BATTLE_KEY)
-        self.__canvas.new_area(_CUR_ARMY_STATUS_STRUCTURE, name = _CUR_ARMY_STATUS_KEY)
-        self.__canvas.new_area(_TAR_ARMY_STATUS_STRUCTURE, name = _TAR_ARMY_STATUS_KEY)
-        self.__canvas.new_area(_CURSOR_STRUCTURE, line = _CURSOR_LINE_INIT, name = _CURSOR_KEY)
-        self.__canvas.new_area(_MOVE_QUEUE_STRUCTURE, line = _MOVE_QUEUE_LINE, name = _MOVE_QUEUE_KEY)
+        self.__canvas.sub_canvas(_BATTLE_COORD, _BATTLE_STRUCTURE, name = _BATTLE_KEY)
+        self.__canvas.sub_canvas(_CUR_ARMY_STATUS_COORD, _CUR_ARMY_STATUS_STRUCTURE, name = _CUR_ARMY_STATUS_KEY)
+        self.__canvas.sub_canvas(_TAR_ARMY_STATUS_COORD, _TAR_ARMY_STATUS_STRUCTURE, name = _TAR_ARMY_STATUS_KEY)
+        self.__canvas.sub_canvas(_CURSOR_COORD, _CURSOR_STRUCTURE, name = _CURSOR_KEY)
+        self.__canvas.sub_canvas(_MOVE_QUEUE_COORD, _MOVE_QUEUE_STRUCTURE, name = _MOVE_QUEUE_KEY)
         self.__cursor_coord = [0, 0]
         self.__cur_status_coord = []
         self.__tar_status_coord = []
@@ -145,22 +148,22 @@ class BattleField(object):
                 if self.__cursor_coord[_COORD_Y] > 0:
                     self.__cursor_coord[_COORD_Y] -= 1
                     coord = [-_BATTLE_UNIT_SIZE[_COORD_Y] - 1, 0]
-                    self.__canvas.move_area(_CURSOR_KEY, coord)
+                    self.__canvas.move_sub_canvas(_CURSOR_KEY, coord)
             elif command == common.DOWN_KEY:
                 if self.__cursor_coord[_COORD_Y] < _BATTLE_MATRIX[_COORD_Y] - 1:
                     self.__cursor_coord[_COORD_Y] += 1
                     coord = [_BATTLE_UNIT_SIZE[_COORD_Y] + 1, 0]
-                    self.__canvas.move_area(_CURSOR_KEY, coord)
+                    self.__canvas.move_sub_canvas(_CURSOR_KEY, coord)
             elif command == common.LEFT_KEY:
                 if self.__cursor_coord[_COORD_X] > 0:
                     self.__cursor_coord[_COORD_X] -= 1
                     coord = [0, -_BATTLE_UNIT_SIZE[_COORD_X] - 1]
-                    self.__canvas.move_area(_CURSOR_KEY, coord)
+                    self.__canvas.move_sub_canvas(_CURSOR_KEY, coord)
             elif command == common.RIGHT_KEY:
                 if self.__cursor_coord[_COORD_X] < _BATTLE_MATRIX[_COORD_X] - 1:
                     self.__cursor_coord[_COORD_X] += 1
                     coord = [0, _BATTLE_UNIT_SIZE[_COORD_X] + 1]
-                    self.__canvas.move_area(_CURSOR_KEY, coord)
+                    self.__canvas.move_sub_canvas(_CURSOR_KEY, coord)
             elif command == _BATTLE_GRID_ON:
                 prev_grid = self.__grid
                 self.__grid = True
@@ -173,7 +176,7 @@ class BattleField(object):
                 if prev_grid:
                     self.__paint_battle_field()
                     self.__paint_cursor()
-            elif command == common.BLANK_KEY:
+            elif command == _BATTLE_ENTER_KEY:
                 break
                 # self.__process_enter()
                 # self.__paint_status()
@@ -195,7 +198,7 @@ class BattleField(object):
         return True
 
     def __paint_battle_field(self):
-        self.__canvas.clear_area()
+        self.__canvas.erase()
         self.__canvas.paint('┌{}┐'.format('─' * (_BATTLE_WIDTH - 2)), name = _BATTLE_KEY)
         for i in range(1, _BATTLE_HEIGHT - 1):
             self.__canvas.paint('│', coordinate = [i, 0], name = _BATTLE_KEY)
@@ -215,8 +218,7 @@ class BattleField(object):
                 self.__canvas.paint('┴', coordinate = [_BATTLE_HEIGHT - 1, (_BATTLE_UNIT_SIZE[_COORD_X] + 1) * i], name = _BATTLE_KEY)
 
     def __paint_cursor(self):
-        for i in range(_BATTLE_UNIT_SIZE[_COORD_Y]):
-            self.__canvas.insert_format([i, 0, _BATTLE_UNIT_SIZE[_COORD_X]], back = canvas.WHITE, name = _CURSOR_KEY)
+            self.__canvas.dump(back = canvas.WHITE, name = _CURSOR_KEY)
 
     def __embattle(self):
         self.__embattle_init()
@@ -266,6 +268,8 @@ class BattleField(object):
             self.__canvas.paint('┴', coordinate = [_BATTLE_UNIT_SIZE[_COORD_Y] + 1, (_BATTLE_UNIT_SIZE[_COORD_X] + 1) * i], name = _MOVE_QUEUE_KEY)
 
     def __gen_move_queue(self):
+        if not self.__battle_army:
+            return
         atb_list = []
         for i in range(len(self.__battle_army)):
             atb_list.append(self.__battle_army[i][_ARMY_ATB_KEY])
@@ -292,10 +296,10 @@ class BattleField(object):
 
     def __paint_move_queue_army(self):
         for i in range(len(self.__move_queue)):
-            queue_structure = [[i * (_BATTLE_UNIT_SIZE[_COORD_X] + 1) + 1, _BATTLE_UNIT_SIZE[_COORD_Y], _BATTLE_UNIT_SIZE[_COORD_X]]]
-            queue_line = _BATTLE_HEIGHT + 2
+            queue_coord = [_BATTLE_HEIGHT + 2, i * (_BATTLE_UNIT_SIZE[_COORD_X] + 1) + 1]
+            queue_structure = [_BATTLE_UNIT_SIZE[_COORD_Y], _BATTLE_UNIT_SIZE[_COORD_X]]
             queue_name = _MOVE_QUEUE_KEY + str(i)
-            self.__canvas.new_area(queue_structure, line = queue_line, name = queue_name)
+            self.__canvas.sub_canvas(queue_coord, queue_structure, name = queue_name)
             self.__canvas.paint('{:{}d}'.format(self.__move_queue[i][_BATTLE_ARMY_KEY][hero.ARMY_NUM_KEY], _BATTLE_UNIT_SIZE[_COORD_X]), coordinate = [_BATTLE_UNIT_SIZE[_COORD_Y] - 1, 0], name = queue_name)
 
     def __paint_hero(self):
@@ -306,12 +310,11 @@ class BattleField(object):
             for x in range(len(self.__battle_board[y])):
                 battle_army = self.__battle_board[y][x]
                 if battle_army:
-                    # print('{} {}'.format(y, x))
                     army_name = battle_army[_ARMY_NAME_KEY]
                     army_army = battle_army[_BATTLE_ARMY_KEY]
-                    army_structure = [[x * (_BATTLE_UNIT_SIZE[_COORD_X] + 1) + 1, _BATTLE_UNIT_SIZE[_COORD_Y], _BATTLE_UNIT_SIZE[_COORD_X]]]
-                    army_line = y * (_BATTLE_UNIT_SIZE[_COORD_Y] + 1) + 1
-                    self.__canvas.new_area(army_structure, line = army_line, name = army_name)
+                    army_coord = [y * (_BATTLE_UNIT_SIZE[_COORD_Y] + 1) + 1, x * (_BATTLE_UNIT_SIZE[_COORD_X] + 1) + 1]
+                    army_structure = [_BATTLE_UNIT_SIZE[_COORD_Y], _BATTLE_UNIT_SIZE[_COORD_X]]
+                    self.__canvas.sub_canvas(army_coord, army_structure, name = army_name)
                     self.__canvas.paint('{:{}d}'.format(army_army[hero.ARMY_NUM_KEY], _BATTLE_UNIT_SIZE[_COORD_X]), coordinate = [_BATTLE_UNIT_SIZE[_COORD_Y] - 1, 0], name = army_name)
 
     def __move_army(self):
@@ -334,11 +337,11 @@ class BattleField(object):
             ostr = ''
             ostr = log.VLOG('army: {:20s} number: {:8d}'.format(creature.get_name(), number), ostr = ostr)
             ostr = creature.display_creature(ostr = ostr)
-            self.__canvas.clear_area(area_list = [_CUR_ARMY_STATUS_KEY])
+            self.__canvas.erase(name = _CUR_ARMY_STATUS_KEY)
             self.__canvas.paint(ostr, name = _CUR_ARMY_STATUS_KEY)
             self.__module = _SELECT_MODULE
         else:
-            self.__canvas.clear_area(area_list = [_CUR_ARMY_STATUS_KEY])
+            self.__canvas.erase(name = _CUR_ARMY_STATUS_KEY)
         self.__cur_status_coord = self.__cursor_coord[:]
 
     def __highlight_army(self, army):
@@ -350,6 +353,8 @@ class BattleField(object):
         return [battle_coord[_COORD_Y] * (_BATTLE_UNIT_SIZE[_COORD_Y] + 1) + 1, battle_coord[_COORD_X] * (_BATTLE_UNIT_SIZE[_COORD_X] + 1) + 1]
 
     def __next_move(self):
+        if not self.__move_queue:
+            return
         next_army = self.__move_queue[0]
         self.__cur_status_coord = next_army[_ARMY_COORD_KEY]
         self.__paint_cur_status()

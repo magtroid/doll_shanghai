@@ -1,0 +1,33 @@
+__dict
+DATA	CONFIG
+__dict	__dict
+__dict__DATA
+AITheme-Dungeon	Battle-Inferno2	Heroes-Godric	Heroes-Zehir	Siege-Haven	Tavern-Haven	Tavern-Inferno	Tavern-Necropolis
+__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict
+__dict__DATA__AITheme-Dungeon
+name	path	ID
+__string__AITheme-Dungeon	__string__AITheme-Dungeon.mp3	__string__AITheme-Dungeon
+__dict__DATA__Battle-Inferno2
+name	path	ID
+__string__Battle-Inferno2	__string__Battle-Inferno2.mp3	__string__Battle-Inferno2
+__dict__DATA__Heroes-Godric
+name	path	ID
+__string__Heroes-Godric	__string__Heroes-Godric.mp3	__string__Heroes-Godric
+__dict__DATA__Heroes-Zehir
+name	path	ID
+__string__Heroes-Zehir	__string__Heroes-Zehir.mp3	__string__Heroes-Zehir
+__dict__DATA__Siege-Haven
+name	path	ID
+__string__Siege-Haven	__string__Siege-Haven.mp3	__string__Siege-Haven
+__dict__DATA__Tavern-Haven
+name	path	ID
+__string__Tavern-Haven	__string__Tavern-Haven.mp3	__string__Tavern-Haven
+__dict__DATA__Tavern-Inferno
+name	path	ID
+__string__Tavern-Inferno	__string__Tavern-Inferno.mp3	__string__Tavern-Inferno
+__dict__DATA__Tavern-Necropolis
+name	path	ID
+__string__Tavern-Necropolis	__string__Tavern-Necropolis.mp3	__string__Tavern-Necropolis
+__dict__CONFIG
+DATA_NUM	LIB_FILE
+__int__8	__string__./heroes/datalib/music.lib

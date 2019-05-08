@@ -6,8 +6,11 @@ Magtroid @ 2017-06-27 15:51
 methods for datas
 '''
 
+import config
+
 # import library
 import canvas
+import common
 import copy
 import controler
 import mio
@@ -549,11 +552,10 @@ class DataLibManager(object):
         off = 0
         filter_num = 0
         cur_node = target_lib.get_data('')
-        terminal_h = tools.get_terminal_size()[0]
         if skip_offset > 0:
             skip_offset -= 1
         else:
-            self.__canvas.paint('│')
+            self.__canvas.paint('│\n')
         while True:
             is_tail = True if off == len(cur_node) - 1 else False
             cur_key = list(cur_node)[off]
@@ -571,8 +573,8 @@ class DataLibManager(object):
                         cur_str = '{0}: {1}'.format(cur_str, cur_node[cur_key])
                     if n == len(offs_path) - 1 and off - filter_num == offs_path[n]:
                         cur_str = '{}  <--'.format(cur_str)
-                    self.__canvas.paint(cur_str)
-            if self.__canvas.coordinate()[0] > terminal_h - 2:
+                    self.__canvas.paint('{}\n'.format(cur_str))
+            if self.__canvas.full():
                 break
             if n < len(offs_path) - 1 and off == offs_path[n] and isinstance(cur_node[cur_key], dict):
                 cur_node = cur_node[cur_key]
@@ -713,8 +715,7 @@ class DataLibManager(object):
                     filter_str += command
                     filter_dict = self.__update_filter_dict(filter_dict, filter_str)
             skip_off = self.__update_skip_off(offs_path, skip_off)
-            self.__canvas.erase()
-            self.__canvas.clear_area()
+            self.__canvas.erase_all()
             self.__level_display(skip_offset = skip_off, target_lib = target_lib, lkey_path = lkey_path, offs_path = offs_path, filter_dict = filter_dict)
             cur_lib = target_lib.get_data(form_lkey(lkey_path))
 

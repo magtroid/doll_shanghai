@@ -83,4 +83,3 @@ DELETE_KEY = '\x7f'
 TYPE_STRING = 'string'
 TYPE_INT = 'int'
 TYPE_FLOAT = 'float'
-

@@ -1,0 +1,21 @@
+__dict
+DATA	CONFIG
+__dict	__dict
+__dict__DATA
+_struct	_instance
+__dict	__dict
+__dict__DATA___struct
+name	ID	attack	defence	spellpower	knowledge
+__string___struct	__string___struct	__string__int	__string__int	__string__int	__string__int
+__dict__DATA___instance
+name	ID	lucario	gala
+__string___instance	__string___instance	__dict	__dict
+__dict__DATA___instance__lucario
+name	attack	spellpower	knowledge	defence	ID
+__string__lucario	__int__6	__int__4	__int__4	__int__8	__string__lucario
+__dict__DATA___instance__gala
+name	defence	spellpower	attack	knowledge	ID
+__string__gala	__int__10	__int__2	__int__9	__int__1	__string__gala
+__dict__CONFIG
+DATA_NUM	LIB_FILE
+__int__4	__string__./heroes/datalib/hero.lib
