@@ -27,7 +27,7 @@ _REFRESH_TIMES = 5
 #   _refresh_line
 #   kbhit
 #   stdin
-#   choose command
+#   choose_command
 
 # clear stdout
 def _flush():

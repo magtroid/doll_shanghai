@@ -9,7 +9,7 @@ methods for datas
 import config
 
 # import library
-import canvas
+# import canvas
 import common
 import copy
 import controler
@@ -134,7 +134,7 @@ class DataLib(object):
                     keys_segs = keys.strip().split('\t')
                     values_segs = values.strip().split('\t')
                     # process empty data
-                    if index_segs[-1] == DATA_KEY and len(keys_segs) == 1 and keys_segs[0] == '':
+                    if len(keys_segs) == 1 and keys_segs[0] == '':
                         keys_segs = []
                     for j in range(len(keys_segs)):
                         data_format, data_value = re.search('(^__[^_]+)(.*)', values_segs[j]).groups()  # split type and value
@@ -301,7 +301,7 @@ class DataLib(object):
 
     # set data value, if not exist, form one
     # if data_lib exist, set data lib instead
-    def set_data(self, lkey, value, data_lib = None):
+    def set_data(self, lkey, value, data_lib = None, is_id = False):
         if data_lib == None:
             data_lib = self.__data_lib
         key_segs = lkey.split(LIB_CONNECT)
@@ -310,7 +310,26 @@ class DataLib(object):
             if key not in cdata:
                 cdata[key] = dict()
             cdata = cdata[key]
+        prev_data = None
+        if key_segs[-1] in cdata:
+            prev_data = cdata[key_segs[-1]]
         cdata[key_segs[-1]] = value
+
+        # set id value
+        if is_id:
+            # 3 conditions reset id is illegal
+            # 1. previous data not exist
+            # 2. cdata is not a data, don't contain DATA_FEATURE
+            # 3. key_segs should contain at least [DATA_KEY, key, feature] 3 feature
+            if not prev_data or DATA_FEATURE not in cdata or len(key_segs) < 3:
+                return
+            pdata = data_lib
+            for key in key_segs[:-2]:
+                pdata = pdata[key]
+            if prev_data not in pdata:
+                return
+            pdata[value] = pdata.pop(prev_data)
+            pdata[value][DATA_FEATURE] = value
 
     # increase data value by number (default 1)
     def increase_data(self, lkey, number = None):

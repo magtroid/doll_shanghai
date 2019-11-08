@@ -10,6 +10,11 @@ _BUSINESS_RATIO = 0.0539  # baes up 10%
 # _BUSINESS_RATIO = 0.05145  # baes up 5%
 _ACCUMULATION_RATIO = 0.0325
 
+_YEAR_RANGE = 1  # loan year decrease range
+
+_ACCUMULATION = 60
+_YEAR = 25
+
 # equal func: xn = a(bn - 1) / bn(b - 1)
 # xn is loan remain in last n month
 # a is return loan every month, b is (1 + ratio)
@@ -40,19 +45,25 @@ def calculate_principal_comb(business, accumulation, year):
     return business_principal, accumulation_principal, business_inc, accumulation_inc
 
 def main(argv):
-    # input loan
-    print('input total loan number')
-    total_loan = float(sys.stdin.readline().strip()) * 10000
-    print('input accumulation fund')
-    accumulation = float(sys.stdin.readline().strip()) * 10000
-    business = total_loan - accumulation
-    print('input years')
-    year = int(sys.stdin.readline().strip())
-    print('')
+    if len(argv) == 1:
+        # input loan
+        print('input total loan number')
+        total_loan = float(sys.stdin.readline().strip()) * 10000
+        print('input accumulation fund')
+        accumulation = float(sys.stdin.readline().strip()) * 10000
+        business = total_loan - accumulation
+        print('input years')
+        year = int(sys.stdin.readline().strip())
+        print('')
+    else:
+        total_loan = float(argv[1]) * 10000
+        accumulation = float(argv[2]) * 10000 if len(argv) >= 3 else _ACCUMULATION * 10000
+        business = total_loan - accumulation
+        year = int(argv[3]) if len(argv) == 4 else _YEAR
 
     print('equal:')
     last = 0
-    for tyear in range(year, year - 6, -1):
+    for tyear in range(year, year - _YEAR_RANGE, -1):
         business_equal, accumulation_equal = calculate_equal_comb(business, accumulation, tyear)
         all = business_equal + accumulation_equal
         print('time: {} years'.format(tyear))
@@ -61,7 +72,7 @@ def main(argv):
     print('')
     print('principal:')
     last = 0
-    for tyear in range(year, year - 6, -1):
+    for tyear in range(year, year - _YEAR_RANGE, -1):
         business_principal, accumulation_principal, business_inc, accumulation_inc = calculate_principal_comb(business, accumulation, tyear)
         all = business_principal + accumulation_principal
         print('time: {} years'.format(tyear))

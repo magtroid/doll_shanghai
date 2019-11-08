@@ -7,85 +7,30 @@ Magtroid @ 2017-10-17 10:35
 import canvas_config
 
 # import library
-import log
-import tools
+from layer import *
 
-# debug switch
-_FOR_DEBUG = False
-
-# common const
-_BACKSPACE_KEY = '\n'
-
-COORD_Y = 0
-COORD_X = 1
-_COORD_Y = 0
-_COORD_X = 1
-
-# color and format defines
-_COLORED = True
-# color
-if _COLORED:
-    BLACK = 'black'
-    RED   = 'red'
-    GREEN = 'green'
-    YELLOW = 'yellow'
-    BLUE = 'blue'
-    PURPLE = 'purple'
-    ULTRAMARINE = 'ultramarine'
-    WHITE = 'white'
-else:
-    BLACK = ''
-    RED   = ''
-    GREEN = ''
-    YELLOW = ''
-    BLUE = ''
-    PURPLE = ''
-    ULTRAMARINE = ''
-    WHITE = ''
-# other format
-HIGHLIGHT = 'highlight'
-UNDERLINE = 'underline'
-TWINKLE = 'twinkle'
-INVERSE = 'inverse'
-_EMPTY_FORMAT = '0'
-
-_COORD_TYPE = 0
-_OTHER = '0'
-_FRONT = '3'
-_BACK = '4'
-_COLOR_PALLET = {'black' : '0',
-                 'red' : '1',
-                 'green' : '2',
-                 'yellow' : '3',
-                 'blue' : '4',
-                 'purple' : '5',
-                 'ultramarine' : '6',
-                 'white' : '7'}
-_FORMAT_PALLET = {'highlight' : '1',
-                  'underline' : '4',
-                  'twinkle' : '5',
-                  'inverse' : '7'}
-
-_STRUCT_HEIGHT_BUFFER = 1  # buffer for other command lines print
-_STRUCT_WIDTH_BUFFER = 4  # if context contains chinese, it is longer than 1 character in display, and it will overflow to next line
-
-_FORMAT_SEP = ';'  # format seperate sign
-# process format methods
-_PFORMAT_SET = '__set__'
-_PFORMAT_APPEND = '__append__'
-_PFORMAT_DELETE = '__delete__'
-
-# format coord
-_FCOORD_LEN = 2
-
-# format format [begin, end, format]
-_FORMAT_BEGIN = 0
-_FORMAT_END = 1
-_FORMAT_FORMAT = 2
+# import log
+# import tools
+# 
+# # debug switch
+# _FOR_DEBUG = False
 
 # move canvas coord module
 MOVE_MODULE_OFF = '__module_off__'  # move offset coord
 MOVE_MODULE_TO  = '__module_to__'  # move to target coord
+
+class Canvas(Layer):
+    '''
+    public:
+    private:
+    '''
+
+    def __init__(self, struct = None):
+        super().__init__(struct = struct)
+
+    def paint(self, context, coord = None, other = '', front = '', back = ''):
+        if 
+
 
 # main class
 class CANVAS(object):
@@ -439,19 +384,15 @@ class CANVAS(object):
             canvas_display[y] = context
         return canvas_display
 
-# debug test
+class Filter(CANVAS):
+    '''
+    public:
+    private:
+    '''
+
 if __name__ == '__main__':
     canvas = CANVAS([10, 20])
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
-    canvas.paint('a\n' * 20)
+    canvas.paint('a' * 20)
     canvas.sub_canvas([0, 10], [5, 5], name = 'cissy')
     canvas.dump(name = 'cissy', back = WHITE)
     # canvas.paint('hello world\n', name = 'cissy', front = BLUE)

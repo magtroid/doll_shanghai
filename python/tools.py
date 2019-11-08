@@ -19,6 +19,8 @@ import sys
 import time
 
 # const define
+_TERMINAL_BUFFER = 10
+
 _SCHEDULE_LEN = 50
 
 _SOLAR_MONTH= [4, 6, 9, 11]
@@ -58,9 +60,13 @@ function
   format_list
   join_path
   print_list
+  join_list
+  merge_list
+  colume
   choose_file_from_dir
   get_url_type
   parse_href_url
+  change_format
   schedule
   open_file
   sleep
@@ -258,7 +264,7 @@ def date_list_to_str(date):
 # offset stands for print front blank, if num per line is 0, auto form
 # if list string is true return list string, else return formed list and seg_len pair
 def form_chart_list(target_list, list_str = False, offset = 0, num_per_line = 0, sep_len = 4):
-    terminal_width = get_terminal_size()[1] - offset
+    terminal_width = get_terminal_size()[1] - offset - _TERMINAL_BUFFER
     thread_line_num = 10
     max_seg_len = 24 if terminal_width > 24 else terminal_width
     min_seg_len = max_seg_len // 2
@@ -330,6 +336,27 @@ def print_list(target_list, offset = 0, num_per_line = 0, sep_len = 4):
     for list_line in chart_list:
         log.INFO(list_line)
 
+def join_list(target_list, sep = ' '):
+    return sep.join(list(map(str, target_list)))
+
+def delete_duplicate(origin):
+    tmp = list(set([str(x) for x in origin]))
+    return [eval(x) for x in tmp]
+
+# join target list to origin list, cell not contained
+def merge_list(origin, target):
+    output = origin[:]
+    for n, i in enumerate(target):
+        schedule(n + 1, len(target))
+        if i not in output:
+            output.append(i)
+    return output
+
+def colume(in_list, col):
+    if not in_list or not isinstance(in_list[0], list) or len(in_list[0]) <= col:
+        return []
+    return [x[col] for x in in_list]
+
 def choose_file_from_dir(target_dir, print_log = True):
     files = os.listdir(target_dir)
     return mio.choose_command(files, print_log = print_log)
@@ -344,6 +371,17 @@ def parse_href_url(href, root_url):
         return re.sub('(?<!:)/+', '/', root_url + href)
     else:
         return href
+
+def change_format(data, form):
+    if form == common.TYPE_STRING:
+        return str(data)
+    elif form == common.TYPE_FLOAT:
+        return float(data)
+    elif form == common.TYPE_INT:
+        return int(data)
+    else:
+        log.INFO('format error: {}'.format(form))
+        return data
 
 # print schedule of current job, num should count from 1 to total
 def schedule(num, total):

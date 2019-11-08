@@ -1,0 +1,12 @@
+__dict
+DATA	CONFIG
+__dict	__dict
+__dict__DATA
+red_tide
+__dict
+__dict__DATA__red_tide
+name	ID
+__string__red_tide	__string__red_tide
+__dict__CONFIG
+DATA_NUM	LIB_FILE
+__int__1	__string__./auto_chess/datalib/auto_chess_list.lib

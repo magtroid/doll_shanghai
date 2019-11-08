@@ -2,6 +2,9 @@
 # coding=utf-8
 # Magtroid @ 2017-05-04 17:33
 # frame works
+
+import config
+
 import os
 import re
 import sys
@@ -10,11 +13,11 @@ import time
 
 # login files
 import lianjia
-import monitor
+# import monitor
 import proxy
 import proxy66
-import stock
-import stock_market
+# import stock
+# import stock_market
 import tools
 import zhihu
 
@@ -27,7 +30,7 @@ gflags.DEFINE_string('target', 'stock', 'zhihu | lianjia | proxy-xici | proxy-66
 # gflags.DEFINE_string('password', '1122344751', '')
 gflags.DEFINE_string('account', '', '')
 gflags.DEFINE_string('password', '', '')
-gflags.DEFINE_string('city', '', 'bj | sz | tj | qd | gz | hz | nj | cs | wh')
+gflags.DEFINE_string('city', '', 'bj | sz | tj | qd | gz | hz | nj | cs | wh | su')
 gflags.DEFINE_string('user', '', '')
 gflags.DEFINE_string('stock_id', '', '')
 gflags.DEFINE_string('v', '0', 'vlog')

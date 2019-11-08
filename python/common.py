@@ -83,3 +83,9 @@ DELETE_KEY = '\x7f'
 TYPE_STRING = 'string'
 TYPE_INT = 'int'
 TYPE_FLOAT = 'float'
+
+# new content
+NEW_KEY = '__new__'
+DEL_KEY = '__delete__'
+MOD_KEY = '__modify__'
+CONFIRM_KEY = '__confirm__'

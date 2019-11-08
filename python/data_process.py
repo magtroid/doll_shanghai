@@ -7,8 +7,8 @@ import sys
 import config
 import lianjia
 import proxypool
-import stock
-import stock_market
+# import stock
+# import stock_market
 import log
 
 sys.path.append('./gflags')

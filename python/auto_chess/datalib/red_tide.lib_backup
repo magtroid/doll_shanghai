@@ -1,0 +1,861 @@
+__dict
+DATA	CONFIG
+__dict	__dict
+__dict__DATA
+chess_piece	chess_combine
+__dict	__dict
+__dict__DATA__chess_piece
+斧奴	灵鹫	天师	神枪手	军医	鸟骑兵	维修机	铁狗	炼金塔	眼虫	武僧熊猫	巨齿象	真人	童子	刀奴	空蟹	铁猿	火焰兵	护盾兵	轰炸机	娜可露露	爆裂虫	猛毒兽	蝙蝠	藤妖	雷震子	神威塔	投石车	摩托骑兵	特种兵	幽灵机	橘右京	鬼狼	蜘蛛	忍者熊猫	狂狮	不死鸟	盾奴	翔龙	须弥鲨	棍奴	投弹手	铁鸡	方舟	变形塔	不知火舞	长生鹿	杀人蜂	血鹰	骨龙	禅师熊猫	勾魂使	幻鲸	玄龟	铁巨神	飞天蛤蟆	树妖	电蛟
+__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict
+__dict__DATA__chess_piece__斧奴
+name	species	profession	★	★★	★★★	ID	cost
+__string__斧奴	__list__['傀儡']	__list__['刺杀']	__dict	__dict	__dict	__string__斧奴	__int__1
+__dict__DATA__chess_piece__斧奴__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__80	__int__113	__int__5	__float__1.9	__int__1	__int__550	__int__0
+__dict__DATA__chess_piece__斧奴__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__161	__int__226	__int__5	__float__1.9	__int__1	__int__1100	__int__0
+__dict__DATA__chess_piece__斧奴__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__323	__int__452	__int__5	__float__1.9	__int__1	__int__2200	__int__0
+__dict__DATA__chess_piece__灵鹫
+name	species	profession	★	★★	★★★	ID	cost
+__string__灵鹫	__list__['海神']	__list__['刺杀']	__dict	__dict	__dict	__string__灵鹫	__int__1
+__dict__DATA__chess_piece__灵鹫__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__66	__int__88	__int__5	__float__2.1	__int__3	__int__500	__int__0
+__dict__DATA__chess_piece__灵鹫__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__132	__int__177	__int__5	__float__2.1	__int__3	__int__850	__int__0
+__dict__DATA__chess_piece__灵鹫__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__266	__int__355	__int__5	__float__2.1	__int__3	__int__1600	__int__0
+__dict__DATA__chess_piece__天师
+name	species	profession	★	★★	★★★	ID	cost
+__string__天师	__list__['灵能者']	__list__['爆破']	__dict	__dict	__dict	__string__天师	__int__1
+__dict__DATA__chess_piece__天师__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__36	__int__44	__int__5	__float__1.1	__int__4	__int__400	__int__0
+__dict__DATA__chess_piece__天师__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__73	__int__88	__int__5	__float__1.1	__int__4	__int__800	__int__0
+__dict__DATA__chess_piece__天师__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__146	__int__176	__int__5	__float__1.1	__int__4	__int__1500	__int__0
+__dict__DATA__chess_piece__神枪手
+name	species	profession	★	★★	★★★	ID	cost
+__string__神枪手	__list__['步兵']	__list__['狙击']	__dict	__dict	__dict	__string__神枪手	__int__1
+__dict__DATA__chess_piece__神枪手__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__34	__int__38	__int__5	__float__1.0	__int__4	__int__400	__int__0
+__dict__DATA__chess_piece__神枪手__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__69	__int__76	__int__5	__float__1.0	__int__4	__int__800	__int__0
+__dict__DATA__chess_piece__神枪手__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__138	__int__153	__int__5	__float__1.0	__int__4	__int__1600	__int__0
+__dict__DATA__chess_piece__军医
+name	species	profession	★	★★	★★★	ID	cost
+__string__军医	__list__['步兵']	__list__['辅助']	__dict	__dict	__dict	__string__军医	__int__1
+__dict__DATA__chess_piece__军医__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__43	__int__52	__int__5	__float__1.3	__int__2	__int__400	__int__0
+__dict__DATA__chess_piece__军医__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__86	__int__104	__int__5	__float__1.3	__int__2	__int__800	__int__0
+__dict__DATA__chess_piece__军医__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__173	__int__208	__int__5	__float__1.3	__int__2	__int__1500	__int__0
+__dict__DATA__chess_piece__鸟骑兵
+name	cost	species	profession	★	★★	★★★	ID
+__string__鸟骑兵	__string__1	__list__['骑兵']	__list__['狙击']	__dict	__dict	__dict	__string__鸟骑兵
+__dict__DATA__chess_piece__鸟骑兵__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__51	__int__57	__int__5	__float__1.5	__int__4	__int__400	__int__0
+__dict__DATA__chess_piece__鸟骑兵__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__103	__int__115	__int__5	__float__1.5	__int__4	__int__800	__int__0
+__dict__DATA__chess_piece__鸟骑兵__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__207	__int__230	__int__5	__float__1.5	__int__4	__int__1600	__int__0
+__dict__DATA__chess_piece__维修机
+name	cost	species	profession	★	★★	★★★	ID
+__string__维修机	__string__1	__list__['空军']	__list__['辅助']	__dict	__dict	__dict	__string__维修机
+__dict__DATA__chess_piece__维修机__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__33	__int__41	__int__5	__float__1.2	__int__4	__int__550	__int__0
+__dict__DATA__chess_piece__维修机__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__67	__int__82	__int__5	__float__1.2	__int__4	__int__1100	__int__0
+__dict__DATA__chess_piece__维修机__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__135	__int__165	__int__5	__float__1.2	__int__4	__int__2200	__int__0
+__dict__DATA__chess_piece__铁狗
+name	cost	species	profession	★	★★	★★★	ID
+__string__铁狗	__int__1	__list__['装甲']	__list__['爆破']	__dict	__dict	__dict	__string__铁狗
+__dict__DATA__chess_piece__铁狗__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__32	__int__39	__int__5	__float__1.0	__int__2	__int__600	__int__0
+__dict__DATA__chess_piece__铁狗__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__64	__int__78	__int__7	__float__1.0	__int__2	__int__1200	__int__0
+__dict__DATA__chess_piece__铁狗__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__128	__int__157	__int__9	__float__1.0	__int__2	__int__2400	__int__0
+__dict__DATA__chess_piece__炼金塔
+name	cost	species	profession	★	★★	★★★	ID
+__string__炼金塔	__int__1	__list__['建筑']	__list__['辅助']	__dict	__dict	__dict	__string__炼金塔
+__dict__DATA__chess_piece__炼金塔__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__0	__int__0	__int__5	__float__0.0	__int__11	__int__400	__int__0
+__dict__DATA__chess_piece__炼金塔__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__0	__int__0	__int__5	__float__0.0	__int__11	__int__800	__int__0
+__dict__DATA__chess_piece__炼金塔__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__0	__int__0	__int__5	__float__0.0	__int__11	__int__1600	__int__0
+__dict__DATA__chess_piece__眼虫
+name	cost	species	profession	★	★★	★★★	ID
+__string__眼虫	__int__1	__list__['异虫']	__list__['法术']	__dict	__dict	__dict	__string__眼虫
+__dict__DATA__chess_piece__眼虫__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__35	__int__39	__int__0	__float__1.1	__int__4	__int__500	__int__0
+__dict__DATA__chess_piece__眼虫__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__70	__int__78	__int__0	__float__1.1	__int__4	__int__1000	__int__0
+__dict__DATA__chess_piece__眼虫__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__141	__int__157	__int__0	__float__1.1	__int__4	__int__1900	__int__0
+__dict__DATA__chess_piece__武僧熊猫
+name	cost	species	profession	★	★★	★★★	ID
+__string__武僧熊猫	__int__1	__list__['熊猫']	__list__['战士']	__dict	__dict	__dict	__string__武僧熊猫
+__dict__DATA__chess_piece__武僧熊猫__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__61	__int__67	__int__5	__float__1.9	__int__1	__int__700	__int__0
+__dict__DATA__chess_piece__武僧熊猫__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__123	__int__135	__int__5	__float__1.9	__int__1	__int__1400	__int__0
+__dict__DATA__chess_piece__武僧熊猫__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__246	__int__271	__int__5	__float__1.9	__int__1	__int__2800	__int__0
+__dict__DATA__chess_piece__巨齿象
+name	cost	species	profession	★	★★	★★★	ID
+__string__巨齿象	__int__1	__list__['野兽']	__list__['战士']	__dict	__dict	__dict	__string__巨齿象
+__dict__DATA__chess_piece__巨齿象__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__34	__int__58	__int__5	__float__1.2	__int__1	__int__650	__int__0
+__dict__DATA__chess_piece__巨齿象__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__69	__int__116	__int__5	__float__1.2	__int__1	__int__1300	__int__0
+__dict__DATA__chess_piece__巨齿象__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__139	__int__232	__int__5	__float__1.2	__int__1	__int__2600	__int__0
+__dict__DATA__chess_piece__真人
+name	cost	species	profession	★	★★	★★★	ID
+__string__真人	__int__2	__list__['灵能者', '傀儡']	__list__['召唤']	__dict	__dict	__dict	__string__真人
+__dict__DATA__chess_piece__真人__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__41	__int__46	__int__0	__float__1.3	__int__4	__int__500	__int__0
+__dict__DATA__chess_piece__真人__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__83	__int__92	__int__0	__float__1.3	__int__4	__int__1000	__int__0
+__dict__DATA__chess_piece__真人__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__167	__int__185	__int__0	__float__1.3	__int__4	__int__1900	__int__0
+__dict__DATA__chess_piece__童子
+name	cost	species	profession	★	★★	★★★	ID
+__string__童子	__int__2	__list__['灵能者']	__list__['辅助']	__dict	__dict	__dict	__string__童子
+__dict__DATA__chess_piece__童子__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__31	__int__35	__int__5	__float__1.0	__int__4	__int__600	__int__0
+__dict__DATA__chess_piece__童子__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__62	__int__70	__int__5	__float__1.0	__int__4	__int__1200	__int__0
+__dict__DATA__chess_piece__童子__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__125	__int__141	__int__5	__float__1.0	__int__4	__int__2400	__int__0
+__dict__DATA__chess_piece__刀奴
+name	cost	species	profession	★	★★	★★★	ID
+__string__刀奴	__int__2	__list__['傀儡']	__list__['战士']	__dict	__dict	__dict	__string__刀奴
+__dict__DATA__chess_piece__刀奴__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__76	__int__82	__int__5	__float__1.3	__int__1	__int__600	__int__0
+__dict__DATA__chess_piece__刀奴__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__153	__int__165	__int__5	__float__1.3	__int__1	__int__1200	__int__0
+__dict__DATA__chess_piece__刀奴__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__307	__int__330	__int__5	__float__1.3	__int__1	__int__2400	__int__0
+__dict__DATA__chess_piece__空蟹
+name	cost	species	profession	★	★★	★★★	ID
+__string__空蟹	__int__2	__list__['海神']	__list__['攻城']	__dict	__dict	__dict	__string__空蟹
+__dict__DATA__chess_piece__空蟹__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__46	__int__51	__int__5	__float__1.5	__int__5	__int__550	__int__0
+__dict__DATA__chess_piece__空蟹__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__93	__int__103	__int__5	__float__1.5	__int__5	__int__1100	__int__0
+__dict__DATA__chess_piece__空蟹__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__187	__int__206	__int__5	__float__1.5	__int__5	__int__2200	__int__0
+__dict__DATA__chess_piece__铁猿
+name	cost	species	profession	★	★★	★★★	ID
+__string__铁猿	__int__2	__list__['装甲']	__list__['爆破']	__dict	__dict	__dict	__string__铁猿
+__dict__DATA__chess_piece__铁猿__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__47	__int__51	__int__6	__float__1.2	__int__1	__int__800	__int__0
+__dict__DATA__chess_piece__铁猿__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__94	__int__102	__int__8	__float__1.2	__int__1	__int__1600	__int__0
+__dict__DATA__chess_piece__铁猿__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__188	__int__205	__int__10	__float__1.2	__int__1	__int__3200	__int__0
+__dict__DATA__chess_piece__火焰兵
+name	cost	species	profession	★	★★	★★★	ID
+__string__火焰兵	__int__2	__list__['步兵']	__list__['战士']	__dict	__dict	__dict	__string__火焰兵
+__dict__DATA__chess_piece__火焰兵__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__70	__int__82	__int__5	__float__1.3	__int__1	__int__600	__int__0
+__dict__DATA__chess_piece__火焰兵__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__141	__int__165	__int__5	__float__1.3	__int__1	__int__1200	__int__0
+__dict__DATA__chess_piece__火焰兵__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__283	__int__330	__int__5	__float__1.3	__int__1	__int__2400	__int__0
+__dict__DATA__chess_piece__护盾兵
+name	cost	species	profession	★	★★	★★★	ID
+__string__护盾兵	__int__2	__list__['步兵']	__list__['护卫']	__dict	__dict	__dict	__string__护盾兵
+__dict__DATA__chess_piece__护盾兵__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__30	__int__84	__int__5	__float__1.0	__int__1	__int__750	__int__0
+__dict__DATA__chess_piece__护盾兵__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__61	__int__169	__int__5	__float__1.0	__int__1	__int__1500	__int__0
+__dict__DATA__chess_piece__护盾兵__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__123	__int__338	__int__5	__float__1.0	__int__1	__int__3000	__int__9
+__dict__DATA__chess_piece__轰炸机
+name	cost	species	profession	★	★★	★★★	ID
+__string__轰炸机	__int__2	__list__['空军']	__list__['爆破']	__dict	__dict	__dict	__string__轰炸机
+__dict__DATA__chess_piece__轰炸机__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__28	__int__35	__int__5	__float__1.2	__int__3	__int__450	__int__0
+__dict__DATA__chess_piece__轰炸机__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__56	__int__70	__int__5	__float__1.2	__int__3	__int__900	__int__0
+__dict__DATA__chess_piece__轰炸机__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__112	__int__141	__int__5	__float__1.2	__int__3	__int__1800	__int__0
+__dict__DATA__chess_piece__娜可露露
+name	cost	species	profession	★	★★	★★★	ID
+__string__娜可露露	__int__2	__list__['格斗家']	__list__['刺杀']	__dict	__dict	__dict	__string__娜可露露
+__dict__DATA__chess_piece__娜可露露__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__59	__int__65	__int__5	__float__1.3	__int__1	__int__550	__int__0
+__dict__DATA__chess_piece__娜可露露__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__119	__int__130	__int__5	__float__1.3	__int__1	__int__1100	__int__0
+__dict__DATA__chess_piece__娜可露露__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__238	__int__260	__int__5	__float__1.3	__int__1	__int__2200	__int__0
+__dict__DATA__chess_piece__爆裂虫
+name	cost	species	profession	★	★★	★★★	ID
+__string__爆裂虫	__int__2	__list__['异虫']	__list__['爆破']	__dict	__dict	__dict	__string__爆裂虫
+__dict__DATA__chess_piece__爆裂虫__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__38	__int__42	__int__0	__float__1.2	__int__2	__int__500	__int__0
+__dict__DATA__chess_piece__爆裂虫__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__83	__int__92	__int__0	__float__1.3	__int__2	__int__1000	__int__0
+__dict__DATA__chess_piece__爆裂虫__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__167	__int__185	__int__0	__float__1.3	__int__2	__int__1900	__int__0
+__dict__DATA__chess_piece__猛毒兽
+name	cost	species	profession	★	★★	★★★	ID
+__string__猛毒兽	__int__2	__list__['野兽']	__list__['战士']	__dict	__dict	__dict	__string__猛毒兽
+__dict__DATA__chess_piece__猛毒兽__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__87	__int__125	__int__5	__float__1.5	__int__1	__int__650	__int__0
+__dict__DATA__chess_piece__猛毒兽__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__175	__int__250	__int__5	__float__1.5	__int__1	__int__1300	__int__0
+__dict__DATA__chess_piece__猛毒兽__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__350	__int__500	__int__5	__float__1.5	__int__1	__int__2600	__int__0
+__dict__DATA__chess_piece__蝙蝠
+name	cost	species	profession	★	★★	★★★	ID
+__string__蝙蝠	__int__2	__list__['猛禽']	__list__['狙击']	__dict	__dict	__dict	__string__蝙蝠
+__dict__DATA__chess_piece__蝙蝠__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__83	__int__102	__int__5	__float__1.9	__int__4	__int__450	__int__0
+__dict__DATA__chess_piece__蝙蝠__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__187	__int__229	__int__5	__float__2.1	__int__4	__int__900	__int__0
+__dict__DATA__chess_piece__蝙蝠__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__363	__int__462	__int__5	__float__2.1	__int__4	__int__1800	__int__0
+__dict__DATA__chess_piece__藤妖
+name	cost	species	profession	★	★★	★★★	ID
+__string__藤妖	__int__2	__list__['不朽者']	__list__['法术']	__dict	__dict	__dict	__string__藤妖
+__dict__DATA__chess_piece__藤妖__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__70	__int__100	__int__5	__float__1.2	__int__1	__int__650	__int__0
+__dict__DATA__chess_piece__藤妖__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__140	__int__200	__int__5	__float__1.2	__int__1	__int__1300	__int__0
+__dict__DATA__chess_piece__藤妖__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__280	__int__400	__int__5	__float__1.2	__int__1	__int__2600	__int__0
+__dict__DATA__chess_piece__雷震子
+name	cost	species	profession	★	★★	★★★	ID
+__string__雷震子	__int__3	__list__['灵能者']	__list__['狙击']	__dict	__dict	__dict	__string__雷震子
+__dict__DATA__chess_piece__雷震子__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__69	__int__90	__int__5	__float__1.6	__int__3	__int__450	__int__0
+__dict__DATA__chess_piece__雷震子__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__138	__int__181	__int__5	__float__1.6	__int__3	__int__900	__int__0
+__dict__DATA__chess_piece__雷震子__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__277	__int__362	__int__5	__float__1.6	__int__3	__int__1800	__int__0
+__dict__DATA__chess_piece__神威塔
+name	cost	species	profession	★	★★	★★★	ID
+__string__神威塔	__int__3	__list__['建筑']	__list__['法术']	__dict	__dict	__dict	__string__神威塔
+__dict__DATA__chess_piece__神威塔__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__59	__int__77	__int__5	__float__1.2	__int__11	__int__450	__int__0
+__dict__DATA__chess_piece__神威塔__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__118	__int__154	__int__5	__float__1.2	__int__11	__int__900	__int__0
+__dict__DATA__chess_piece__神威塔__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__236	__int__308	__int__5	__float__1.2	__int__11	__int__1800	__int__0
+__dict__DATA__chess_piece__投石车
+name	cost	species	profession	★	★★	★★★	ID
+__string__投石车	__int__3	__list__['装甲']	__list__['攻城']	__dict	__dict	__dict	__string__投石车
+__dict__DATA__chess_piece__投石车__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__41	__int__50	__int__5	__float__1.0	__int__5	__int__700	__int__0
+__dict__DATA__chess_piece__投石车__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__83	__int__100	__int__5	__float__1.0	__int__5	__int__1400	__int__0
+__dict__DATA__chess_piece__投石车__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__166	__int__200	__int__5	__float__1.0	__int__5	__int__2800	__int__0
+__dict__DATA__chess_piece__摩托骑兵
+name	cost	species	profession	★	★★	★★★	ID
+__string__摩托骑兵	__int__3	__list__['骑兵']	__list__['爆破']	__dict	__dict	__dict	__string__摩托骑兵
+__dict__DATA__chess_piece__摩托骑兵__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__44	__int__48	__int__5	__float__1.2	__int__3	__int__500	__int__0
+__dict__DATA__chess_piece__摩托骑兵__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__81	__int__89	__int__5	__float__1.2	__int__3	__int__1000	__int__0
+__dict__DATA__chess_piece__摩托骑兵__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__156	__int__172	__int__5	__float__1.2	__int__3	__int__2000	__int__0
+__dict__DATA__chess_piece__特种兵
+name	cost	species	profession	★	★★	★★★	ID
+__string__特种兵	__int__3	__list__['步兵']	__list__['狙击']	__dict	__dict	__dict	__string__特种兵
+__dict__DATA__chess_piece__特种兵__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__97	__int__127	__int__5	__float__1.8	__int__7	__int__450	__int__0
+__dict__DATA__chess_piece__特种兵__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__195	__int__255	__int__5	__float__1.8	__int__7	__int__900	__int__0
+__dict__DATA__chess_piece__特种兵__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__390	__int__510	__int__5	__float__1.8	__int__7	__int__1800	__int__0
+__dict__DATA__chess_piece__幽灵机
+name	cost	species	profession	★	★★	★★★	ID
+__string__幽灵机	__int__3	__list__['空军']	__list__['刺杀']	__dict	__dict	__dict	__string__幽灵机
+__dict__DATA__chess_piece__幽灵机__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__55	__int__66	__int__5	__float__1.1	__int__1	__int__500	__int__0
+__dict__DATA__chess_piece__幽灵机__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__110	__int__132	__int__5	__float__1.1	__int__1	__int__850	__int__0
+__dict__DATA__chess_piece__幽灵机__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__220	__int__264	__int__5	__float__1.1	__int__1	__int__1600	__int__0
+__dict__DATA__chess_piece__橘右京
+name	cost	species	profession	★	★★	★★★	ID
+__string__橘右京	__int__3	__list__['格斗家']	__list__['战士']	__dict	__dict	__dict	__string__橘右京
+__dict__DATA__chess_piece__橘右京__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__53	__int__64	__int__5	__float__1.0	__int__1	__int__650	__int__0
+__dict__DATA__chess_piece__橘右京__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__107	__int__128	__int__5	__float__1.0	__int__1	__int__1300	__int__0
+__dict__DATA__chess_piece__橘右京__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__214	__int__257	__int__5	__float__1.0	__int__1	__int__2600	__int__0
+__dict__DATA__chess_piece__鬼狼
+name	cost	species	profession	★	★★	★★★	ID
+__string__鬼狼	__int__3	__list__['野兽']	__list__['召唤']	__dict	__dict	__dict	__string__鬼狼
+__dict__DATA__chess_piece__鬼狼__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__59	__int__70	__int__5	__float__1.3	__int__1	__int__750	__int__0
+__dict__DATA__chess_piece__鬼狼__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__154	__int__185	__int__5	__float__1.7	__int__1	__int__1500	__int__0
+__dict__DATA__chess_piece__鬼狼__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__309	__int__370	__int__5	__float__1.7	__int__1	__int__3000	__int__0
+__dict__DATA__chess_piece__蜘蛛
+name	cost	species	profession	★	★★	★★★	ID
+__string__蜘蛛	__int__3	__list__['异虫']	__list__['法术']	__dict	__dict	__dict	__string__蜘蛛
+__dict__DATA__chess_piece__蜘蛛__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__68	__int__75	__int__5	__float__2.2	__int__3	__int__550	__int__0
+__dict__DATA__chess_piece__蜘蛛__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__137	__int__151	__int__5	__float__2.2	__int__3	__int__1100	__int__0
+__dict__DATA__chess_piece__蜘蛛__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__275	__int__302	__int__5	__float__2.2	__int__3	__int__2200	__int__0
+__dict__DATA__chess_piece__忍者熊猫
+name	cost	species	profession	★	★★	★★★	ID
+__string__忍者熊猫	__int__3	__list__['熊猫']	__list__['刺杀']	__dict	__dict	__dict	__string__忍者熊猫
+__dict__DATA__chess_piece__忍者熊猫__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__60	__int__72	__int__5	__float__1.2	__int__3	__int__550	__int__0
+__dict__DATA__chess_piece__忍者熊猫__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__120	__int__144	__int__5	__float__1.2	__int__3	__int__1100	__int__0
+__dict__DATA__chess_piece__忍者熊猫__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__240	__int__288	__int__5	__float__1.2	__int__3	__int__2200	__int__0
+__dict__DATA__chess_piece__狂狮
+name	cost	species	profession	★	★★	★★★	ID
+__string__狂狮	__int__3	__list__['野兽']	__list__['护卫']	__dict	__dict	__dict	__string__狂狮
+__dict__DATA__chess_piece__狂狮__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__45	__int__54	__int__10	__float__1.5	__int__1	__int__700	__int__0
+__dict__DATA__chess_piece__狂狮__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__91	__int__109	__int__10	__float__1.5	__int__1	__int__1400	__int__0
+__dict__DATA__chess_piece__狂狮__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__182	__int__218	__int__10	__float__1.5	__int__1	__int__2800	__int__0
+__dict__DATA__chess_piece__不死鸟
+name	cost	species	profession	★	★★	★★★	ID
+__string__不死鸟	__int__3	__list__['猛禽']	__list__['爆破', '法术']	__dict	__dict	__dict	__string__不死鸟
+__dict__DATA__chess_piece__不死鸟__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__71	__int__81	__int__5	__float__1.6	__int__3	__int__450	__int__0
+__dict__DATA__chess_piece__不死鸟__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__142	__int__162	__int__5	__float__1.6	__int__3	__int__900	__int__0
+__dict__DATA__chess_piece__不死鸟__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__285	__int__325	__int__5	__float__1.6	__int__3	__int__1800	__int__0
+__dict__DATA__chess_piece__盾奴
+name	cost	species	profession	★	★★	★★★	ID
+__string__盾奴	__int__4	__list__['傀儡']	__list__['护卫']	__dict	__dict	__dict	__string__盾奴
+__dict__DATA__chess_piece__盾奴__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__101	__int__110	__int__5	__float__1.2	__int__1	__int__1050	__int__0
+__dict__DATA__chess_piece__盾奴__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__203	__int__221	__int__5	__float__1.2	__int__1	__int__2100	__int__0
+__dict__DATA__chess_piece__盾奴__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__406	__int__443	__int__5	__float__1.2	__int__1	__int__4200	__int__0
+__dict__DATA__chess_piece__翔龙
+name	cost	species	profession	★	★★	★★★	ID
+__string__翔龙	__int__4	__list__['龙']	__list__['攻城']	__dict	__dict	__dict	__string__翔龙
+__dict__DATA__chess_piece__翔龙__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__66	__int__79	__int__5	__float__1.2	__int__4	__int__750	__int__0
+__dict__DATA__chess_piece__翔龙__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__132	__int__158	__int__5	__float__1.2	__int__4	__int__1500	__int__0
+__dict__DATA__chess_piece__翔龙__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__264	__int__316	__int__5	__float__1.2	__int__4	__int__3000	__int__0
+__dict__DATA__chess_piece__须弥鲨
+name	cost	species	profession	★	★★	★★★	ID
+__string__须弥鲨	__int__4	__list__['海神', '傀儡']	__list__['召唤']	__dict	__dict	__dict	__string__须弥鲨
+__dict__DATA__chess_piece__须弥鲨__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__88	__int__106	__int__0	__float__2.3	__int__4	__int__8000	__int__0
+__dict__DATA__chess_piece__须弥鲨__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__176	__int__212	__int__0	__float__2.3	__int__4	__int__1600	__int__0
+__dict__DATA__chess_piece__须弥鲨__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__353	__int__424	__int__0	__float__2.3	__int__4	__int__3000	__int__0
+__dict__DATA__chess_piece__棍奴
+name	cost	species	profession	★	★★	★★★	ID
+__string__棍奴	__int__4	__list__['傀儡']	__list__['战士']	__dict	__dict	__dict	__string__棍奴
+__dict__DATA__chess_piece__棍奴__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__98	__int__109	__int__5	__float__1.2	__int__1	__int__900	__int__0
+__dict__DATA__chess_piece__棍奴__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__196	__int__218	__int__5	__float__1.2	__int__1	__int__1800	__int__0
+__dict__DATA__chess_piece__棍奴__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__392	__int__436	__int__5	__float__1.2	__int__1	__int__3600	__int__0
+__dict__DATA__chess_piece__投弹手
+name	cost	species	profession	★	★★	★★★	ID
+__string__投弹手	__int__4	__list__['步兵']	__list__['法术']	__dict	__dict	__dict	__string__投弹手
+__dict__DATA__chess_piece__投弹手__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__36	__int__40	__int__5	__float__1.1	__int__4	__int__700	__int__0
+__dict__DATA__chess_piece__投弹手__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__72	__int__80	__int__5	__float__1.1	__int__4	__int__1400	__int__0
+__dict__DATA__chess_piece__投弹手__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__145	__int__161	__int__5	__float__1.1	__int__4	__int__2800	__int__0
+__dict__DATA__chess_piece__铁鸡
+name	cost	species	profession	★	★★	★★★	ID
+__string__铁鸡	__int__4	__list__['装甲']	__list__['刺杀']	__dict	__dict	__dict	__string__铁鸡
+__dict__DATA__chess_piece__铁鸡__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__90	__int__110	__int__5	__float__1.2	__int__3	__int__750	__int__0
+__dict__DATA__chess_piece__铁鸡__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__180	__int__220	__int__5	__float__1.2	__int__3	__int__1500	__int__0
+__dict__DATA__chess_piece__铁鸡__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__360	__int__440	__int__5	__float__1.2	__int__3	__int__3000	__int__0
+__dict__DATA__chess_piece__方舟
+name	cost	species	profession	★	★★	★★★	ID
+__string__方舟	__int__4	__list__['空军']	__list__['攻城']	__dict	__dict	__dict	__string__方舟
+__dict__DATA__chess_piece__方舟__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__30	__int__34	__int__5	__float__1.3	__int__5	__int__650	__int__0
+__dict__DATA__chess_piece__方舟__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__61	__int__68	__int__5	__float__1.3	__int__5	__int__1300	__int__0
+__dict__DATA__chess_piece__方舟__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__122	__int__137	__int__5	__float__1.3	__int__5	__int__2600	__int__0
+__dict__DATA__chess_piece__变形塔
+name	cost	species	profession	★	★★	★★★	ID
+__string__变形塔	__int__4	__list__['建筑']	__list__['攻城']	__dict	__dict	__dict	__string__变形塔
+__dict__DATA__chess_piece__变形塔__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__55	__int__55	__int__5	__float__1.4	__int__11	__int__850	__int__0
+__dict__DATA__chess_piece__变形塔__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__138	__int__138	__int__5	__float__1.4	__int__11	__int__1700	__int__0
+__dict__DATA__chess_piece__变形塔__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__277	__int__277	__int__5	__float__1.4	__int__11	__int__3400	__int__0
+__dict__DATA__chess_piece__不知火舞
+name	cost	species	profession	★	★★	★★★	ID
+__string__不知火舞	__int__4	__list__['格斗家']	__list__['爆破']	__dict	__dict	__dict	__string__不知火舞
+__dict__DATA__chess_piece__不知火舞__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__70	__int__82	__int__5	__float__1.3	__int__3	__int__950	__int__0
+__dict__DATA__chess_piece__不知火舞__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__141	__int__165	__int__5	__float__1.3	__int__3	__int__1900	__int__0
+__dict__DATA__chess_piece__不知火舞__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__283	__int__330	__int__5	__float__1.3	__int__3	__int__3800	__int__0
+__dict__DATA__chess_piece__长生鹿
+name	cost	species	profession	★	★★	★★★	ID
+__string__长生鹿	__int__4	__list__['野兽']	__list__['辅助']	__dict	__dict	__dict	__string__长生鹿
+__dict__DATA__chess_piece__长生鹿__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__79	__int__95	__int__5	__float__1.9	__int__4	__int__850	__int__0
+__dict__DATA__chess_piece__长生鹿__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__183	__int__220	__int__5	__float__2.2	__int__4	__int__1700	__int__0
+__dict__DATA__chess_piece__长生鹿__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__316	__int__380	__int__5	__float__1.9	__int__4	__int__3400	__int__0
+__dict__DATA__chess_piece__杀人蜂
+name	cost	species	profession	★	★★	★★★	ID
+__string__杀人蜂	__int__4	__list__['异虫']	__list__['狙击']	__dict	__dict	__dict	__string__杀人蜂
+__dict__DATA__chess_piece__杀人蜂__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__63	__int__72	__int__5	__float__1.0	__int__3	__int__450	__int__0
+__dict__DATA__chess_piece__杀人蜂__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__127	__int__145	__int__5	__float__1.0	__int__3	__int__900	__int__0
+__dict__DATA__chess_piece__杀人蜂__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__254	__int__290	__int__5	__float__1.0	__int__3	__int__1800	__int__0
+__dict__DATA__chess_piece__血鹰
+name	cost	species	profession	★	★★	★★★	ID
+__string__血鹰	__int__4	__list__['猛禽', '野兽']	__list__['战士']	__dict	__dict	__dict	__string__血鹰
+__dict__DATA__chess_piece__血鹰__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__75	__int__90	__int__5	__float__1.4	__int__3	__int__950	__int__0
+__dict__DATA__chess_piece__血鹰__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__150	__int__180	__int__5	__float__1.4	__int__3	__int__1900	__int__0
+__dict__DATA__chess_piece__血鹰__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__300	__int__360	__int__5	__float__1.4	__int__3	__int__3800	__int__0
+__dict__DATA__chess_piece__骨龙
+name	cost	species	profession	★	★★	★★★	ID
+__string__骨龙	__int__4	__list__['龙', '不朽者']	__list__['攻城']	__dict	__dict	__dict	__string__骨龙
+__dict__DATA__chess_piece__骨龙__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__117	__int__141	__int__5	__float__2.2	__int__4	__int__950	__int__0
+__dict__DATA__chess_piece__骨龙__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__235	__int__282	__int__5	__float__2.2	__int__4	__int__1900	__int__0
+__dict__DATA__chess_piece__骨龙__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__471	__int__565	__int__5	__float__2.2	__int__4	__int__3800	__int__0
+__dict__DATA__chess_piece__禅师熊猫
+name	cost	species	profession	★	★★	★★★	ID
+__string__禅师熊猫	__int__4	__list__['熊猫']	__list__['法术']	__dict	__dict	__dict	__string__禅师熊猫
+__dict__DATA__chess_piece__禅师熊猫__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__56	__int__63	__int__5	__float__2.1	__int__5	__int__850	__int__0
+__dict__DATA__chess_piece__禅师熊猫__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__112	__int__133	__int__5	__float__2.1	__int__5	__int__1700	__int__0
+__dict__DATA__chess_piece__禅师熊猫__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__224	__int__252	__int__5	__float__2.1	__int__5	__int__3400	__int__0
+__dict__DATA__chess_piece__勾魂使
+name	cost	species	profession	★	★★	★★★	ID
+__string__勾魂使	__int__4	__list__['不朽者']	__list__['刺杀']	__dict	__dict	__dict	__string__勾魂使
+__dict__DATA__chess_piece__勾魂使__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__63	__int__77	__int__5	__float__1.2	__int__2	__int__600	__int__0
+__dict__DATA__chess_piece__勾魂使__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__126	__int__154	__int__5	__float__1.2	__int__2	__int__1000	__int__0
+__dict__DATA__chess_piece__勾魂使__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__252	__int__308	__int__5	__float__1.2	__int__2	__int__2400	__int__0
+__dict__DATA__chess_piece__幻鲸
+name	cost	species	profession	★	★★	★★★	ID
+__string__幻鲸	__int__5	__list__['海神']	__list__['攻城']	__dict	__dict	__dict	__string__幻鲸
+__dict__DATA__chess_piece__幻鲸__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__63	__int__77	__int__5	__float__2.1	__int__4	__int__1000	__int__0
+__dict__DATA__chess_piece__幻鲸__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__126	__int__154	__int__5	__float__2.1	__int__4	__int__2000	__int__0
+__dict__DATA__chess_piece__幻鲸__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__252	__int__308	__int__5	__float__2.1	__int__4	__int__4000	__int__0
+__dict__DATA__chess_piece__玄龟
+name	cost	species	profession	★	★★	★★★	ID
+__string__玄龟	__int__5	__list__['灵能者']	__list__['护卫']	__dict	__dict	__dict	__string__玄龟
+__dict__DATA__chess_piece__玄龟__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__34	__int__45	__int__10	__float__1.6	__int__1	__int__1500	__int__0
+__dict__DATA__chess_piece__玄龟__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__68	__int__91	__int__10	__float__1.6	__int__1	__int__2600	__int__0
+__dict__DATA__chess_piece__玄龟__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__137	__int__182	__int__10	__float__1.6	__int__1	__int__4500	__int__0
+__dict__DATA__chess_piece__铁巨神
+name	cost	species	profession	★	★★	★★★	ID
+__string__铁巨神	__int__5	__list__['装甲']	__list__['爆破']	__dict	__dict	__dict	__string__铁巨神
+__dict__DATA__chess_piece__铁巨神__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__100	__int__106	__int__15	__float__1.2	__int__5	__int__900	__int__0
+__dict__DATA__chess_piece__铁巨神__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__200	__int__213	__int__15	__float__1.2	__int__5	__int__1800	__int__0
+__dict__DATA__chess_piece__铁巨神__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__400	__int__480	__int__15	__float__1.2	__int__5	__int__3600	__int__0
+__dict__DATA__chess_piece__飞天蛤蟆
+name	cost	species	profession	★	★★	★★★	ID
+__string__飞天蛤蟆	__int__5	__list__['猛禽']	__list__['法术']	__dict	__dict	__dict	__string__飞天蛤蟆
+__dict__DATA__chess_piece__飞天蛤蟆__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__36	__int__44	__int__5	__float__1.1	__int__4	__int__1000	__int__0
+__dict__DATA__chess_piece__飞天蛤蟆__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__72	__int__88	__int__5	__float__1.1	__int__4	__int__2000	__int__0
+__dict__DATA__chess_piece__飞天蛤蟆__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__145	__int__177	__int__5	__float__1.1	__int__4	__int__4000	__int__0
+__dict__DATA__chess_piece__树妖
+name	cost	species	profession	★	★★	★★★	ID
+__string__树妖	__int__5	__list__['不朽者']	__list__['战士']	__dict	__dict	__dict	__string__树妖
+__dict__DATA__chess_piece__树妖__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__30	__int__36	__int__5	__float__1.2	__int__1	__int__950	__int__0
+__dict__DATA__chess_piece__树妖__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__59	__int__72	__int__5	__float__1.2	__int__1	__int__1900	__int__0
+__dict__DATA__chess_piece__树妖__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__118	__int__145	__int__5	__float__1.2	__int__1	__int__3800	__int__0
+__dict__DATA__chess_piece__电蛟
+name	cost	species	profession	★	★★	★★★	ID
+__string__电蛟	__int__3	__list__['海神']	__list__['法术']	__dict	__dict	__dict	__string__电蛟
+__dict__DATA__chess_piece__电蛟__★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__63	__int__76	__int__5	__float__1.4	__int__3	__int__750	__int__0
+__dict__DATA__chess_piece__电蛟__★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__127	__int__152	__int__5	__float__1.4	__int__3	__int__1500	__int__0
+__dict__DATA__chess_piece__电蛟__★★★
+min_attack	max_attack	armor	attack_speed	attack_range	health	mana
+__int__254	__int__305	__int__5	__float__1.4	__int__3	__int__3000	__int__0
+__dict__DATA__chess_combine
+species	profession
+__dict	__dict
+__dict__DATA__chess_combine__species
+傀儡	海神	灵能者	步兵	骑兵	空军	装甲	建筑	异虫	熊猫	野兽	格斗家	猛禽	不朽者	龙
+__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict
+__dict__DATA__chess_combine__species__傀儡
+name	combine_pieces	combine_buff	ID
+__string__傀儡	__list__['斧奴', '真人', '刀奴', '盾奴', '须弥鲨', '棍奴']	__dict	__string__傀儡
+__dict__DATA__chess_combine__species__傀儡__combine_buff
+2	4	6
+__string__傀儡+10%攻击力	__string__傀儡+30%攻击力	__string__所有友军+55%攻击力
+__dict__DATA__chess_combine__species__海神
+name	combine_pieces	combine_buff	ID
+__string__海神	__list__['灵鹫', '空蟹', '电蛟', '须弥鲨', '幻鲸']	__dict	__string__海神
+__dict__DATA__chess_combine__species__海神__combine_buff
+2	4
+__string__+15%能量	__string__+35%能量，+10初始能量
+__dict__DATA__chess_combine__species__灵能者
+name	combine_pieces	combine_buff	ID
+__string__灵能者	__list__['天师', '真人', '童子', '雷震子', '玄龟']	__dict	__string__灵能者
+__dict__DATA__chess_combine__species__灵能者__combine_buff
+2	4
+__string__灵能者收到伤害时反弹20点真实伤害	__string__所有友军（包含召唤单位）收到伤害时反弹40点真实伤害
+__dict__DATA__chess_combine__species__步兵
+name	combine_pieces	combine_buff	ID
+__string__步兵	__list__['神枪手', '军医', '火焰兵', '护盾兵', '特种兵', '投弹手']	__dict	__string__步兵
+__dict__DATA__chess_combine__species__步兵__combine_buff
+2	4	6
+__string__-3护甲	__string__-9护甲	__string__-18护甲
+__dict__DATA__chess_combine__species__骑兵
+name	combine_pieces	combine_buff	ID
+__string__骑兵	__list__['鸟骑兵', '摩托骑兵']	__dict	__string__骑兵
+__dict__DATA__chess_combine__species__骑兵__combine_buff
+2
+__string__所有敌人回复能量-5
+__dict__DATA__chess_combine__species__空军
+name	combine_pieces	combine_buff	ID
+__string__空军	__list__['维修机', '轰炸机', '幽灵机', '方舟']	__dict	__string__空军
+__dict__DATA__chess_combine__species__空军__combine_buff
+2	4
+__string__+20%闪避	__string__+50%闪避
+__dict__DATA__chess_combine__species__装甲
+name	combine_pieces	combine_buff	ID
+__string__装甲	__list__['铁狗', '铁猿', '投石车', '铁鸡', '铁巨神']	__dict	__string__装甲
+__dict__DATA__chess_combine__species__装甲__combine_buff
+2	4
+__string__+15回复生命，开场时己方人数小于敌方时，效果提升100%	__string__+50回复生命，开场时己方人数小于敌方时，效果提升100%
+__dict__DATA__chess_combine__species__建筑
+name	combine_pieces	combine_buff	ID
+__string__建筑	__list__['炼金塔', '神威塔', '变形塔']	__dict	__string__建筑
+__dict__DATA__chess_combine__species__建筑__combine_buff
+2
+__string__友军技能冷却-20%
+__dict__DATA__chess_combine__species__异虫
+name	combine_pieces	combine_buff	ID
+__string__异虫	__list__['眼虫', '爆裂虫', '蜘蛛', '杀人蜂']	__dict	__string__异虫
+__dict__DATA__chess_combine__species__异虫__combine_buff
+2	4
+__string__合成2星异虫需要的棋子数量-1	__string__合成2、3星异虫需要的棋子数量-1
+__dict__DATA__chess_combine__species__熊猫
+name	combine_pieces	combine_buff	ID
+__string__熊猫	__list__['武僧熊猫', '忍者熊猫', '禅师熊猫']	__dict	__string__熊猫
+__dict__DATA__chess_combine__species__熊猫__combine_buff
+3
+__string__所有熊猫开战时可以立即施放技能
+__dict__DATA__chess_combine__species__野兽
+name	combine_pieces	combine_buff	ID
+__string__野兽	__list__['巨齿象', '猛毒兽', '鬼狼', '狂狮', '长生鹿', '血鹰']	__dict	__string__野兽
+__dict__DATA__chess_combine__species__野兽__combine_buff
+2	4	6
+__string__野兽+10%攻击速度	__string__所有友军+25%攻击速度	__string__所有友军+60%攻击速度
+__dict__DATA__chess_combine__species__格斗家
+name	combine_pieces	combine_buff	ID
+__string__格斗家	__list__['娜可露露', '橘右京', '不知火舞']	__dict	__string__格斗家
+__dict__DATA__chess_combine__species__格斗家__combine_buff
+2
+__string__敌人眩晕0.5秒，格斗家+20%攻击力，+20%攻击速度，+30%能量回复，永久免疫眩晕、石化以及沉默
+__dict__DATA__chess_combine__species__猛禽
+name	combine_pieces	combine_buff	ID
+__string__猛禽	__list__['蝙蝠', '不死鸟', '血鹰', '飞天蛤蟆']	__dict	__string__猛禽
+__dict__DATA__chess_combine__species__猛禽__combine_buff
+2	4
+__string__+20%攻击力	__string__+40%攻击力，+10%技能伤害
+__dict__DATA__chess_combine__species__不朽者
+name	combine_pieces	combine_buff	ID
+__string__不朽者	__list__['藤妖', '骨龙', '勾魂使', '树妖']	__dict	__string__不朽者
+__dict__DATA__chess_combine__species__不朽者__combine_buff
+2	4
+__string__不朽者死亡后可以继续战斗3秒，不朽状态下护甲-15，技能防御-60	__string__不朽者死亡后可以继续战斗4秒
+__dict__DATA__chess_combine__species__龙
+name	combine_pieces	combine_buff	ID
+__string__龙	__list__['翔龙', '骨龙']	__dict	__string__龙
+__dict__DATA__chess_combine__species__龙__combine_buff
+1
+__string__我方只有唯一的龙时攻击变为真实伤害
+__dict__DATA__chess_combine__profession
+刺杀	爆破	狙击	辅助	法术	战士	召唤	攻城	护卫
+__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict	__dict
+__dict__DATA__chess_combine__profession__刺杀
+name	combine_pieces	combine_buff	ID
+__string__刺杀	__list__['斧奴', '灵鹫', '娜可露露', '幽灵机', '忍者熊猫', '铁鸡', '勾魂使']	__dict	__string__刺杀
+__dict__DATA__chess_combine__profession__刺杀__combine_buff
+3	6
+__string__15%几率产生3倍暴击	__string__35%几率产生4.5倍暴击
+__dict__DATA__chess_combine__profession__爆破
+name	combine_pieces	combine_buff	ID
+__string__爆破	__list__['天师', '铁狗', '铁猿', '轰炸机', '爆裂虫', '摩托骑兵', '不死鸟', '不知火舞', '铁巨神']	__dict	__string__爆破
+__dict__DATA__chess_combine__profession__爆破__combine_buff
+3	6
+__string__-25%技能防御	__string__-75%技能防御
+__dict__DATA__chess_combine__profession__狙击
+name	combine_pieces	combine_buff	ID
+__string__狙击	__list__['神枪手', '鸟骑兵', '蝙蝠', '雷震子', '特种兵', '杀人蜂']	__dict	__string__狙击
+__dict__DATA__chess_combine__profession__狙击__combine_buff
+3	6
+__string__20%概率触发连击	__string__70%概率触发连击，狙击和目标距离每多一格，普攻伤害+10%
+__dict__DATA__chess_combine__profession__辅助
+name	combine_pieces	combine_buff	ID
+__string__辅助	__list__['军医', '维修机', '炼金塔', '童子', '长生鹿']	__dict	__string__辅助
+__dict__DATA__chess_combine__profession__辅助__combine_buff
+2	4
+__string__+30%技能防御	__string__+50%技能防御
+__dict__DATA__chess_combine__profession__法术
+name	combine_pieces	combine_buff	ID
+__string__法术	__list__['眼虫', '藤妖', '神威塔', '蜘蛛', '不死鸟', '投弹手', '禅师熊猫', '飞天蛤蟆', '电蛟']	__dict	__string__法术
+__dict__DATA__chess_combine__profession__法术__combine_buff
+3	6	9
+__string__获得15能量	__string__获得20能量，所有法术每秒额外回复3点能量	__string__获得45能量，所有法术每秒回复10点能量，每次释放主动技能有30%概率立即重置技能冷却并回复100点能量
+__dict__DATA__chess_combine__profession__战士
+name	combine_pieces	combine_buff	ID
+__string__战士	__list__['武僧熊猫', '巨齿象', '刀奴', '火焰兵', '猛毒兽', '橘右京', '棍奴', '血鹰', '树妖']	__dict	__string__战士
+__dict__DATA__chess_combine__profession__战士__combine_buff
+3	6	9
+__string__+4护甲	__string__+12护甲	__string__+24护甲
+__dict__DATA__chess_combine__profession__召唤
+name	combine_pieces	combine_buff	ID
+__string__召唤	__list__['真人', '鬼狼', '须弥鲨']	__dict	__string__召唤
+__dict__DATA__chess_combine__profession__召唤__combine_buff
+3
+__string__被召唤的单位-10护甲，-50%技能防御
+__dict__DATA__chess_combine__profession__攻城
+name	combine_pieces	combine_buff	ID
+__string__攻城	__list__['空蟹', '投石车', '翔龙', '方舟', '变形塔', '骨龙', '幻鲸']	__dict	__string__攻城
+__dict__DATA__chess_combine__profession__攻城__combine_buff
+3	6
+__string__攻城+30%普攻伤害	__string__攻城+50%普攻伤害
+__dict__DATA__chess_combine__profession__护卫
+name	combine_pieces	combine_buff	ID
+__string__护卫	__list__['护盾兵', '狂狮', '盾奴', '玄龟']	__dict	__string__护卫
+__dict__DATA__chess_combine__profession__护卫__combine_buff
+2	4
+__string__护卫获得300护盾，护盾每次最多受到150伤害，护盾持续15秒	__string__护卫获得300护盾，其他友军获得150护盾，护盾每次最多受到150伤害，护盾持续15秒
+__dict__CONFIG
+DATA_NUM	LIB_FILE
+__int__82	__string__./auto_chess/datalib/red_tide.lib

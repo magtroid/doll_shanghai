@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import common
 import datalib
 import mio
+import mmath
 import proxypool
 import re
 import sys
@@ -475,9 +476,12 @@ class LianJia(object):
             hang_element = data_element_div.select('.dealCycleTxt span')
             deal_element = data_element_div.select('.totalPrice')
             # process str if price is not listed
-            unit_str = re.sub('[^\d.]', '', unit_element[0].get_text()) if unit_element else '0'
-            hang_str = re.sub('[^\d.]', '', hang_element[0].get_text()) if hang_element else '0'
-            deal_str = re.sub('[^\d.]', '', deal_element[0].get_text()) if deal_element else '0'
+            unit_str = re.sub('[^\d.-]', '', unit_element[0].get_text()) if unit_element else '0'
+            hang_str = re.sub('[^\d.-]', '', hang_element[0].get_text()) if hang_element else '0'
+            deal_str = re.sub('[^\d.-]', '', deal_element[0].get_text()) if deal_element else '0'
+            unit_str = mmath.mean(list(map(float, unit_str.split('-')))) if unit_str else 0
+            hang_str = mmath.mean(list(map(float, hang_str.split('-')))) if hang_str else 0
+            deal_str = mmath.mean(list(map(float, deal_str.split('-')))) if deal_str else 0
             lianjia_unit[_UNIT_KEY] = float(unit_str) if unit_str else 0
             lianjia_unit[_HANG_KEY] = float(hang_str) if hang_str else 0
             lianjia_unit[_DEAL_KEY] = float(deal_str) if deal_str else 0
@@ -550,7 +554,7 @@ class LianJiaData(object):
         self.__add_date_range(2016, [1, 12])
         self.__add_date_range(2017, [1, 12])
         self.__add_date_range(2018, [1, 12])
-        self.__add_date_range(2019, [1, 6])
+        self.__add_date_range(2019, [1, 12])
 
     # display data
     # command to choose region
