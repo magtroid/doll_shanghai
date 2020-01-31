@@ -10,6 +10,7 @@ import auto_chess_list
 import chess_pieces
 import common
 import mio
+import mtimer
 import mmath
 import log
 import tools
@@ -18,7 +19,7 @@ _MAX_TEAM_MEMBER = 10
 _FILTER_DEL = '__filt_del__'
 
 _BACK_SEARCH_LEVEL = 3
-_TOP_RECOMMEND_NUM = 10
+_TOP_RECOMMEND_NUM = 30
 
 class ChessTeam(object):
     '''
@@ -80,12 +81,18 @@ class ChessTeam(object):
     def recommend_team(self):
         self.build_chess_team()
         log.VLOG('insert member number')
-        member_num = int(mio.stdin().strip())
+        num = mio.stdin().strip()
+        if num in common.CMD_QUIT:
+            return
+        member_num = int(num)
         self.__recommend_filter(member_num)
         self.__recommend_team(member_num = member_num)
         while True:
-            recommend = mio.choose_command(list(map(str, range(1, member_num + 1))))
+            recommend = mio.choose_command(list(map(str, range(1, member_num + 1))) + [common.SAVE_KEY])
             if recommend in common.CMD_QUIT:
+                return
+            elif recommend == common.SAVE_KEY:
+                # TODO: save result
                 return
             for team in self.__recommend_teams[int(recommend)]:
                 self.__display_chess_team(chess_team = team)
@@ -115,14 +122,13 @@ class ChessTeam(object):
         self.__filter.update(self.__chess_pieces.member_num_filter(member_num))
 
     def __try_teams(self, recommend_teams, level):
-        log.VLOG('begin to try teams')
+        log.VLOG('begin to try teams level:{}'.format(level))
         new_recommend_teams = []
-        for recommend_team in recommend_teams:
+        for m, recommend_team in enumerate(recommend_teams):
             candidate = list(set(self.__chess_pieces.get_pieces(filts = self.__filter)) - set(recommend_team))
-            log.VLOG('caculating permutation')
             candidate_combs = mmath.c(candidate, level)
             for n, candidate_comb in enumerate(candidate_combs):
-                tools.schedule(n + 1, len(candidate_combs))
+                tools.schedule(m * len(candidate_combs) + n + 1, len(candidate_combs) * len(recommend_teams))
                 new_recommend_teams.append(recommend_team + candidate_comb)
         log.VLOG('try teams finished')
         return new_recommend_teams
@@ -137,6 +143,7 @@ class ChessTeam(object):
             combine_score = chess_pieces.get_combines_score(combined)
             top_recommend.insert(recommend_team, combine_score)
         log.VLOG('judge teams finished')
+        mtimer.DISPLAY_TIMER()
         return top_recommend.list()
 
     def __display_filter(self):
@@ -150,7 +157,8 @@ class ChessTeam(object):
         log.VLOG('your team: {}'.format(tools.join_list(chess_team)))
         team_combines = self.__chess_pieces.team_combines(chess_team)
         combined, not_combined = self.__chess_pieces.combine_buff(team_combines)
-        log.VLOG('joined combines:')
+        combine_score = chess_pieces.get_combines_score(combined)
+        log.VLOG('joined combines({}):'.format(combine_score))
         for comb_type in combined.values():
             for comb_key, comb_buff in comb_type.items():
                 log.VLOG('  {} {}'.format(comb_key, chess_pieces.display_combine_buff(comb_buff)))

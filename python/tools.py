@@ -12,6 +12,7 @@ import log
 import mmath
 import mio
 import os
+import proxypool
 import psutil
 import random
 import re
@@ -76,6 +77,7 @@ function
   norm_file_name
   play_music
   stop_processing
+  currency_exchange_ratio
 '''
 
 def cmp(a, b):
@@ -340,8 +342,7 @@ def join_list(target_list, sep = ' '):
     return sep.join(list(map(str, target_list)))
 
 def delete_duplicate(origin):
-    tmp = list(set([str(x) for x in origin]))
-    return [eval(x) for x in tmp]
+    return [list(y) for y in list(set([tuple(x) for x in origin]))]
 
 # join target list to origin list, cell not contained
 def merge_list(origin, target):
@@ -444,3 +445,20 @@ def stop_processing(pid = None, command = None):
             p = psutil.Process(pid)
             if p.name() == command:
                 os.system('kill -9 {}'.format(pid))
+
+def currency_exchange_ratio(bank, currency):
+    url = 'http://data.bank.hexun.com/other/cms/foreignexchangejson.ashx?callback=ShowDatalist'
+    proxy_pool = proxypool.ProxyPool()
+    page = proxy_pool.get_page(url, common.URL_WRITE)
+    exchange_data = page[page.find('['):-1][2:-2].split('},{')
+    for data in exchange_data:
+        data_dict = dict()
+        items = data.split(',')
+        for item in items:
+            segs = item.split(':')
+            key = segs[0]
+            value = segs[1][1:-1]
+            data_dict[key] = value
+        if data_dict['bank'] == bank and data_dict['currency'] == currency:
+            return data_dict
+    return dict()

@@ -12,6 +12,7 @@ import copy
 import datalib
 import log
 import mio
+import mtimer
 import tools
 
 FILTER_KEY = '__filter__'
@@ -62,6 +63,8 @@ _COMBINE_BUFF = 'combine_buff'
 
 _MEM_NUM_FILTER = [[1], [1, 2], [1, 2], [1, 2, 3],
         [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4]]
+_SCORE_MAP = [0, 1.5, 2, 3, 5.2, 6, 8.5, 10, 12, 15, 18]
+_SPECIAL_SCORE = {'异虫' : 0}
 
 def create_combine_buff(need, exist, buff_content):
     buff = dict()
@@ -80,7 +83,10 @@ def get_combines_score(combines):
     score = 0
     for comb_type in combines.values():
         for key, combine in comb_type.items():
-            score += combine[_COMBINE_NEED_NUM]
+            if key in _SPECIAL_SCORE:
+                score += _SPECIAL_SCORE[key]
+            else:
+                score += _SCORE_MAP[combine[_COMBINE_NEED_NUM]]
     return score
 
 class ChessPieces(object):
